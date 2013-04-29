@@ -80,6 +80,7 @@ INGREDIENT <- (
 
 MEASUREMENT <- (
                   ( AMOUNT ?ws SPECIFIER pws UNIT pws ) |
+                  ( AMOUNT ?ws SPECIFIER ) |
                   ( AMOUNT pws UNIT pws ) |
                   ( AMOUNT )
                )
@@ -88,7 +89,7 @@ AMOUNT <- NUMBER_OR_FRACTION
 UNIT <- ( "cup"?"s" |
           "can"?"s" |
           "cp"?"s" |
-          "c"?"s" |
+          "container"?"s" |
           "teaspoon"?"s" |
           "tsp"?"s" |
           "tablespoon"?"s" |
@@ -114,11 +115,13 @@ UNIT <- ( "cup"?"s" |
           "qrt"?"s" |
           "jar"?"s" |
           "inch"?"es" |
+          "package"?"es" |
           "handful"?"s" |
           "large" |
           "serving"?"s" |
           "people"?"s" |
-          "person"?"s"
+          "person"?"s" |
+          "c"?"s"
         )
 
 SPECIFIER <- ?"(" ?GENERALIZER ws AMOUNT (ws|'-') UNIT ?")"
