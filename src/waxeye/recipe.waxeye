@@ -1,0 +1,143 @@
+# Recipe grammar for use with Waxeye Parser Generator
+# (C) Kyle Kamperschroer 2013
+
+RECIPE <- wsn TITLE wsn ATTRIBUTES wsn INGREDIENTS_LIST wsn DIRECTIONS wsn
+
+TITLE <- WORDS
+WORDS <= +[A-Za-z0-9:;_!?.,()/ -°½¼]
+WORDS_NO_BREAK <= +[A-Za-z_!?/ ]
+
+ATTRIBUTES <- +ATTRIBUTE
+ATTRIBUTE <- ( YIELD |
+               COOK_TIME |
+               PREP_TIME |
+               OVERALL_TIME
+             )
+             ?( +[|,- ] |
+                wsn
+              )
+
+YIELD <- YIELD_PREFIX ?wsn
+         ?(ATTRIBUTE_SEPARATOR wsn)
+         AMOUNT ?ws ?UNIT
+
+YIELD_PREFIX <- ( "yield"?'s' |
+                  "serve"?'s' |
+                  "make"?'s'
+                )
+                ?wsn
+
+COOK_TIME <- COOK_TIME_PREFIX wsn
+             ?(ATTRIBUTE_SEPARATOR wsn)
+             AMOUNT ws TIME_UNITS
+
+COOK_TIME_PREFIX <- ( "cook" |
+                      "bake"
+                    ) wsn
+                    ?("time")
+
+TIME_UNITS <- ( "hour"?'s' |
+                "minute"?'s' |
+                "h"?'s' |
+                "m"?'s' |
+                "min"?'s'
+              )
+              ?wsn
+
+PREP_TIME <- PREP_TIME_PREFIX wsn
+             ?(ATTRIBUTE_SEPARATOR wsn)
+             AMOUNT ws TIME_UNITS
+
+PREP_TIME_PREFIX <- ( "prep" |
+                      "preparation" |
+                      "hands-on" |
+                      "hands on"
+                    ) wsn
+                    ?("time")
+
+OVERALL_TIME <- OVERALL_TIME_PREFIX wsn
+                ?(ATTRIBUTE_SEPARATOR wsn)
+                AMOUNT ws TIME_UNITS
+
+OVERALL_TIME_PREFIX <- ( "overall" |
+                         "total" |
+                         "ready in"
+                       ) wsn
+                       ?("time")
+
+ATTRIBUTE_SEPARATOR <= (":" | "=" | "is")
+
+INGREDIENTS_LIST <- ?("ingredient"?'s' ?"list" wsn) +(INGREDIENT pwsn)
+
+INGREDIENT <- (
+                 ( MEASUREMENT pws PRODUCT ?ws SPECIAL_DIRECTIONS ) |
+                 ( MEASUREMENT pws PRODUCT ) |
+                 ( PRODUCT ?ws SPECIAL_DIRECTIONS ) |
+                 ( PRODUCT )
+              )
+
+MEASUREMENT <- (
+                  ( AMOUNT pws UNIT ) |
+                  ( AMOUNT ?ws SPECIFIER pws UNIT )
+               )
+
+AMOUNT <- NUMBER_OR_FRACTION
+UNIT <- ( "cup"?'s' |
+          "cp"?'s' |
+          "c"?'s' |
+          "teaspoon"?'s' |
+          "tsp"?'s' |
+          "tablespoon"?'s' |
+          "tb"?'s' |
+          "lb"?'s' |
+          "pound"?'s' |
+          "oz"?'s' |
+          "fluid oz"?'s' |
+          "fl oz"?'s' |
+          "fl ounce"?'s' |
+          "ounce"?'s' |
+          "fluid ounce"?'s' |
+          "gallon"?'s' |
+          "gal"?'s' |
+          "pinch"?'s' |
+          "dash"?'s' |
+          "dollup"?'s' |
+          "qt"?'s' |
+          "quarts"?'s' |
+          "pint"?'s' |
+          "pnt"?'s' |
+          "pt"?'s' |
+          "qrt"?'s' |
+          "jar"?'s' |
+          "$"?'s' |
+          "handful"?'s' |
+          "serving"?'s' |
+          "people"?'s' |
+          "person"?'s' |
+          "can"?'s'
+        )
+
+SPECIFIER <- ?"(" AMOUNT (ws|'-') UNIT ?")"
+        
+NUMBER_OR_FRACTION <= +[0-9]' '+[0-9]'/'+[0-9] |
+                      +[0-9] |
+                      +[0-9]'/'+[0-9] |
+                      +[0-9]'.'+[0-9]
+
+SPECIAL_DIRECTIONS <- (
+                         ( [,.-] ?ws WORDS ) |
+                         ( '(' ?ws WORDS ?ws ')' )
+                      )
+#SPECIAL_DIRECTIONS <- [,.-(] ?ws WORDS ?(ws ")")
+                      
+PRODUCT <- WORDS_NO_BREAK
+DIRECTIONS <- ?("direction"?'s' wsn) +(WORDS wsn)
+
+#wsn = Whitespace and newlines
+wsn <: *[ \t\n\r]
+#ws = Whitespace (no newlines)
+ws <: *[ \t]
+#pwsn = Whitespace and newlines (non-optional)
+pwsn <: +[ \t\n\r]
+#pws = Whitespace (no newlines, non-optional)
+pws <: +[ \t]
