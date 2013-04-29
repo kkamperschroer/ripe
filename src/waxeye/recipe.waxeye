@@ -21,26 +21,27 @@ YIELD <- YIELD_PREFIX ?wsn
          ?(ATTRIBUTE_SEPARATOR wsn)
          AMOUNT ?ws ?UNIT
 
-YIELD_PREFIX <- ( "yield"?'s' |
-                  "serve"?'s' |
-                  "make"?'s'
+YIELD_PREFIX <- ( "yield"?"s" |
+                  "serve"?"s" |
+                  "make"?"s" |
+                  "serving"?"s"
                 )
                 ?wsn
 
 COOK_TIME <- COOK_TIME_PREFIX wsn
              ?(ATTRIBUTE_SEPARATOR wsn)
-             AMOUNT ws TIME_UNITS
+             +(AMOUNT ws TIME_UNITS ?(?"," ws))
 
 COOK_TIME_PREFIX <- ( "cook" |
                       "bake"
                     ) wsn
                     ?("time")
 
-TIME_UNITS <- ( "hour"?'s' |
-                "minute"?'s' |
-                "h"?'s' |
-                "m"?'s' |
-                "min"?'s'
+TIME_UNITS <- ( "hour"?"s" |
+                "minute"?"s" |
+                "h"?"s" |
+                "m"?"s" |
+                "min"?"s"
               )
               ?wsn
 
@@ -67,71 +68,84 @@ OVERALL_TIME_PREFIX <- ( "overall" |
 
 ATTRIBUTE_SEPARATOR <= (":" | "=" | "is")
 
-INGREDIENTS_LIST <- ?("ingredient"?'s' ?"list" wsn) +(INGREDIENT pwsn)
+INGREDIENTS_LIST <- ?(INGREDIENTS_PREFIX wsn) +(INGREDIENT pwsn)
+INGREDIENTS_PREFIX <- "ingredient"?"s" ?"list" ?":"
 
 INGREDIENT <- (
-                 ( MEASUREMENT pws PRODUCT ?ws SPECIAL_DIRECTIONS ) |
-                 ( MEASUREMENT pws PRODUCT ) |
+                 ( MEASUREMENT ?ws PRODUCT ?ws SPECIAL_DIRECTIONS ) |
+                 ( MEASUREMENT ?ws PRODUCT ) |
                  ( PRODUCT ?ws SPECIAL_DIRECTIONS ) |
                  ( PRODUCT )
               )
 
 MEASUREMENT <- (
-                  ( AMOUNT pws UNIT ) |
-                  ( AMOUNT ?ws SPECIFIER pws UNIT )
+                  ( AMOUNT ?ws SPECIFIER pws UNIT pws ) |
+                  ( AMOUNT pws UNIT pws ) |
+                  ( AMOUNT )
                )
 
 AMOUNT <- NUMBER_OR_FRACTION
-UNIT <- ( "cup"?'s' |
-          "cp"?'s' |
-          "c"?'s' |
-          "teaspoon"?'s' |
-          "tsp"?'s' |
-          "tablespoon"?'s' |
-          "tb"?'s' |
-          "lb"?'s' |
-          "pound"?'s' |
-          "oz"?'s' |
-          "fluid oz"?'s' |
-          "fl oz"?'s' |
-          "fl ounce"?'s' |
-          "ounce"?'s' |
-          "fluid ounce"?'s' |
-          "gallon"?'s' |
-          "gal"?'s' |
-          "pinch"?'s' |
-          "dash"?'s' |
-          "dollup"?'s' |
-          "qt"?'s' |
-          "quarts"?'s' |
-          "pint"?'s' |
-          "pnt"?'s' |
-          "pt"?'s' |
-          "qrt"?'s' |
-          "jar"?'s' |
-          "$"?'s' |
-          "handful"?'s' |
-          "serving"?'s' |
-          "people"?'s' |
-          "person"?'s' |
-          "can"?'s'
+UNIT <- ( "cup"?"s" |
+          "can"?"s" |
+          "cp"?"s" |
+          "c"?"s" |
+          "teaspoon"?"s" |
+          "tsp"?"s" |
+          "tablespoon"?"s" |
+          "tb"?"s" |
+          "lb"?"s" |
+          "pound"?"s" |
+          "oz"?"s" |
+          "fluid oz"?"s" |
+          "fl oz"?"s" |
+          "fl ounce"?"s" |
+          "ounce"?"s" |
+          "fluid ounce"?"s" |
+          "gallon"?"s" |
+          "gal"?"s" |
+          "pinch"?"s" |
+          "dash"?'es' |
+          "dollup"?"s" |
+          "qt"?"s" |
+          "quart"?"s" |
+          "pint"?"s" |
+          "pnt"?"s" |
+          "pt"?"s" |
+          "qrt"?"s" |
+          "jar"?"s" |
+          "inch"?"es" |
+          "handful"?"s" |
+          "large" |
+          "serving"?"s" |
+          "people"?"s" |
+          "person"?"s"
         )
 
-SPECIFIER <- ?"(" AMOUNT (ws|'-') UNIT ?")"
+SPECIFIER <- ?"(" ?GENERALIZER ws AMOUNT (ws|'-') UNIT ?")"
+GENERALIZER <- (
+                  ( "a" ) |
+                  ( "about" )
+               )
         
+# I know some of the valid values here aren't acutal numbers, but oh well.
 NUMBER_OR_FRACTION <= +[0-9]' '+[0-9]'/'+[0-9] |
                       +[0-9] |
                       +[0-9]'/'+[0-9] |
                       +[0-9]'.'+[0-9]
 
 SPECIAL_DIRECTIONS <- (
+                         ( SPECIFIER ?ws SPECIAL_DIRECTIONS ) |
+                         ( SPECIFIER ) |
                          ( [,.-] ?ws WORDS ) |
                          ( '(' ?ws WORDS ?ws ')' )
                       )
 #SPECIAL_DIRECTIONS <- [,.-(] ?ws WORDS ?(ws ")")
                       
 PRODUCT <- WORDS_NO_BREAK
-DIRECTIONS <- ?("direction"?'s' wsn) +(WORDS wsn)
+
+DIRECTIONS <- ?DIRECTIONS_HEADER wsn DIRECTIONS_TEXT
+DIRECTIONS_HEADER <- "direction"?"s"?':' wsn
+DIRECTIONS_TEXT <- +(WORDS wsn)
 
 #wsn = Whitespace and newlines
 wsn <: *[ \t\n\r]

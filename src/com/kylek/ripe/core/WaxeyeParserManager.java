@@ -6,6 +6,8 @@ package com.kylek.ripe.core;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.waxeye.input.InputBuffer;
 import org.waxeye.parser.ParseError;
@@ -168,8 +170,22 @@ public class WaxeyeParserManager {
 
    // Get the directions out of the recipe
    private String getDirections(IAST<Type> directionsChild){
-      // Grab the text from the node
-      return getText(directionsChild);
+      // Cycle through the children, looking for DIRECTIONS_TEXT
+      List<IAST<Type>> children = directionsChild.getChildren();
+      IAST<Type> curChild;
+      for (int i=0; i<children.size(); i++){
+         curChild = children.get(i);
+         Type curChildType = curChild.getType();
+         curChildType = curChild.getType();
+         if (curChildType == Type.DIRECTIONS_TEXT){
+            // Grab the text and return it
+            return getText(curChild);
+         }
+         // The only other child is the directions header,
+         // which we don't want to include, so ignore it.
+      }
+      // Shouldn't get here!
+      return "Error parsing directions!";
    }
 
    // Get the title out of the recipe
@@ -324,7 +340,11 @@ public class WaxeyeParserManager {
          curIngredient = ingredients.get(i);
          if (curIngredient.getType() == Type.INGREDIENT){
             // Now get the actual ingredient from this child.
-            ingList.addIngredient(getMeasurementAndIngredient(curIngredient));
+            MeasurementAndIngredient measAndIng =
+               getMeasurementAndIngredient(curIngredient);
+            if (measAndIng != null){
+               ingList.addIngredient(measAndIng);
+            }
          }
       }
       return ingList;
@@ -369,7 +389,15 @@ public class WaxeyeParserManager {
             measAndIng.setMeasurement(getMeasurement(curChild));
          }
          else if (curChildType == Type.PRODUCT){
-            measAndIng.setIngredient(getIngredient(curChild));
+            Ingredient retIng = getIngredient(curChild);
+            // It's possible it's null, if the "ingredient" is something
+            // like "Directions" or "Ingredients"
+            if (retIng != null){
+               measAndIng.setIngredient(retIng);
+            }else{
+               // This likely isn't a real ingredient, so ignore it.
+               return null;
+            }
          }else if (curChildType == Type.SPECIAL_DIRECTIONS){
             measAndIng.getIngredient().setSpecialDirections(getText(curChild));
          }
@@ -447,7 +475,11 @@ public class WaxeyeParserManager {
          Type curChildType = curChild.getType();
 
          if (curChildType == Type.WORDS_NO_BREAK){
-            ing.setName(getText(curChild));
+            String curName = getText(curChild);
+            if (shouldIgnoreIngredient(curName)){
+               return null; // We don't want this so called ingredient.
+            }
+            ing.setName(curName);
          }
       }
 
@@ -456,5 +488,28 @@ public class WaxeyeParserManager {
 
       // Return our built ingredient
       return ing;
+   }
+
+   // A method to check if this "ingredient" matches something we want to
+   // ignore.
+   private boolean shouldIgnoreIngredient(String curIng){
+      final String ingredientsPattern =
+         "[I|i]ngriedient(s)?(:)? (List(:)?)?";
+      final String directionsPattern =
+         "[D|d]irection(s)?(:)?";
+
+      Pattern pattern = Pattern.compile(ingredientsPattern);
+      Matcher matcher = pattern.matcher(curIng);
+      if (matcher.find()){
+         return true; // We should ignore this "ingredient"
+      }
+      pattern = Pattern.compile(directionsPattern);
+      matcher = pattern.matcher(curIng);
+      if (matcher.find()){
+         return true; // Again, we should ignore this.
+      }
+
+      // Ok, it seems legitimate. Let it through.
+      return false;
    }
 }

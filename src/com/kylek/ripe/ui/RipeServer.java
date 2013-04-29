@@ -117,7 +117,7 @@ public class RipeServer extends NanoHTTPD
 	                    "<h3>" + cur.getName() + "</h3>\n";
 	                
 	                // The number of servings
-	                if (cur.getYield().getValue() > 0)
+	                if (cur.getYield() != null && cur.getYield().getValue() > 0)
 	                {
 	                    msg += "<u>Serves:</u> " + cur.getYield().getValue() + "<br/>";
 	                }
@@ -377,7 +377,7 @@ public class RipeServer extends NanoHTTPD
             System.err.println( "Couldn't start server:\n" + ioe );
             System.exit( -1 );
         }
-        System.out.println( "Listening on port 8080. Hit Enter to stop.\n" );
+        System.out.println( "Listening on port 8778. Hit Enter to stop.\n" );
         try
         {
             System.in.read(); 
