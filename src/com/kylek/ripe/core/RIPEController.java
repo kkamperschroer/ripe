@@ -86,6 +86,8 @@ public class RIPEController {
       {
          try {
             r = mRecipeParser.getParsedRecipe();
+            // Useful for debugging.
+            System.out.println(r.toString());
          } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

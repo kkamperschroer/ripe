@@ -38,6 +38,9 @@ public class WaxeyeParserManager {
    // A string that represents our error message
    private String mErrorMessage;
 
+   // A bool to determine if we should do Amazon lookups or not
+   private boolean mDoAmazonLookups;
+
    ////////////////////////////////////////
    // Constructors
    ////////////////////////////////////////
@@ -49,15 +52,21 @@ public class WaxeyeParserManager {
       mResults = null;
       mPreviousSuccess = false;
       mErrorMessage = "";
+      mDoAmazonLookups = true;
    }
 
    ////////////////////////////////////////
    // Setters and getters
    ////////////////////////////////////////
 
+   // Set the Amazon lookups flag
+   public void setAmazonLookupsEnabled(boolean doAmazonLookups){
+      mDoAmazonLookups = doAmazonLookups;
+   }
+
    // Get the error message
    public String getErrorMessage() { return mErrorMessage; }
-   
+
    ////////////////////////////////////////
    // Other methods
    ////////////////////////////////////////
@@ -105,7 +114,7 @@ public class WaxeyeParserManager {
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
-         System.out.println(mResults.toString());
+    	 // System.out.println(mResults.toString());
          mErrorMessage = "";
          mPreviousSuccess = true;
          return mPreviousSuccess;
@@ -165,7 +174,7 @@ public class WaxeyeParserManager {
       final int endIdx = iAST.getPosition().getEndIndex();
 
       // Now return the information from the parsed string
-      return mInputString.substring(startIdx, endIdx);
+      return mInputString.substring(startIdx, endIdx).trim();
    }
 
    // Get the directions out of the recipe
@@ -483,9 +492,12 @@ public class WaxeyeParserManager {
          }
       }
 
-      // Get the product from Amazon, if we can
-      ing.setAmazonUrl(AmazonScraper.getProductUrl(ing.getName()));
-
+      // Don't do lookups if it's not wanted
+      if (mDoAmazonLookups){
+         // Get the product from Amazon, if we can
+         ing.setAmazonUrl(AmazonScraper.getProductUrl(ing.getName()));
+      }
+      
       // Return our built ingredient
       return ing;
    }
