@@ -96,7 +96,7 @@ public class WaxeyeParserManager {
                                 "</font>\n";
 
                // Now we need to add a line to get to the correct column
-               for (int i=1; i<error.getColumn(); i++){
+               for (int i=0; i<error.getColumn(); i++){
                   mErrorMessage += " ";
                }
 

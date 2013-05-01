@@ -4,7 +4,7 @@
 RECIPE <- wsn TITLE wsn ATTRIBUTES wsn INGREDIENTS_LIST wsn DIRECTIONS wsn
 
 TITLE <- WORDS
-WORDS <= +[A-Za-z0-9:;_!?.,()/ -°½¼]
+WORDS <= +[A-Za-z0-9:;_!?.,()/ -°½¼é]
 WORDS_NO_BREAK <= +[A-Za-z_!?/ ]
 
 ATTRIBUTES <- +ATTRIBUTE
@@ -19,6 +19,7 @@ ATTRIBUTE <- ( YIELD |
 
 YIELD <- YIELD_PREFIX ?wsn
          ?(ATTRIBUTE_SEPARATOR wsn)
+         ?(YIELD_PREFIX wsn)
          AMOUNT ?ws ?UNIT
 
 YIELD_PREFIX <- ( "yield"?"s" |
@@ -52,7 +53,8 @@ PREP_TIME <- PREP_TIME_PREFIX wsn
 PREP_TIME_PREFIX <- ( "prep" |
                       "preparation" |
                       "hands-on" |
-                      "hands on"
+                      "hands on" |
+                      "active"
                     ) wsn
                     ?("time")
 
@@ -86,6 +88,7 @@ MEASUREMENT <- (
                )
 
 AMOUNT <- NUMBER_OR_FRACTION
+
 UNIT <- ( "cup"?"s" |
           "can"?"s" |
           "cp"?"s" |
@@ -131,7 +134,8 @@ GENERALIZER <- (
                )
         
 # I know some of the valid values here aren't acutal numbers, but oh well.
-NUMBER_OR_FRACTION <= +[0-9]' '+[0-9]'/'+[0-9] |
+NUMBER_OR_FRACTION <= +[0-9]" and "+[0-9]'/'+[0-9] |
+                      +[0-9]' '+[0-9]'/'+[0-9] |
                       +[0-9] |
                       +[0-9]'/'+[0-9] |
                       +[0-9]'.'+[0-9]
@@ -147,7 +151,10 @@ SPECIAL_DIRECTIONS <- (
 PRODUCT <- WORDS_NO_BREAK
 
 DIRECTIONS <- ?DIRECTIONS_HEADER wsn DIRECTIONS_TEXT
-DIRECTIONS_HEADER <- "direction"?"s"?':' wsn
+DIRECTIONS_HEADER <- (
+                        "direction"?"s"?':' |
+                        "preparation"?':'
+                     ) wsn
 DIRECTIONS_TEXT <- +(WORDS wsn)
 
 #wsn = Whitespace and newlines
