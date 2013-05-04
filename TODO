@@ -1,4 +1,3 @@
-- Support "2 1/2 plus 1/4 cup olive oil" measurements
 - Pretty things up with CSS
 - Continue parsing new recipes, adding each to the unit tests
 - Edit recipe page
