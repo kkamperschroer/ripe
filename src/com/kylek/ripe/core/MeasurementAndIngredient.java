@@ -1,49 +1,56 @@
 /**
-(C) Kyle Kamperschroer 2013
- */
+   (C) Kyle Kamperschroer 2013
+*/
 
 package com.kylek.ripe.core;
 
 public class MeasurementAndIngredient {
 
-    /////////////////////////////////////
-    // Members
-    /////////////////////////////////////
+   /////////////////////////////////////
+   // Members
+   /////////////////////////////////////
 
-    // The measurement
-    private Measurement mMeasurement;
+   // The measurement
+   private Measurement mMeasurement;
 
-    // The ingredient
-    private Ingredient mIngredient;
+   // The (optional) second measurement
+   private Measurement mMeasurement2;
 
-    /////////////////////////////////////
-    // Constructors
-    /////////////////////////////////////
+   // The ingredient
+   private Ingredient mIngredient;
 
-    // Only id (required)
-    public MeasurementAndIngredient()
-    {
-        mMeasurement = null;
-        mIngredient = null;
-    }
+   /////////////////////////////////////
+   // Constructors
+   /////////////////////////////////////
 
-    // All members
-    public MeasurementAndIngredient(Measurement measurement,
-                                    Ingredient ingredient)
-    {
-        mMeasurement = measurement;
-        mIngredient = ingredient;
-    }
+   // Only id (required)
+   public MeasurementAndIngredient(){
+      mMeasurement = null;
+      mMeasurement2 = null;
+      mIngredient = null;
+   }
 
-    /////////////////////////////////////
-    // Setters and getters
-    /////////////////////////////////////
+   // All members
+   public MeasurementAndIngredient(Measurement measurement,
+                                   Measurement measurement2,
+                                   Ingredient ingredient){
+      mMeasurement = measurement;
+      mMeasurement2 = measurement2;
+      mIngredient = ingredient;
+   }
 
-    public Measurement getMeasurement() { return mMeasurement; }
-    public Ingredient getIngredient() { return mIngredient; }
+   /////////////////////////////////////
+   // Setters and getters
+   /////////////////////////////////////
 
-    public void setMeasurement(Measurement measurement)
-    { mMeasurement = measurement; }
-    public void setIngredient(Ingredient ingredient)
-    { mIngredient = ingredient; }
+   public Measurement getMeasurement() { return mMeasurement; }
+   public Measurement getMeasurement2() { return mMeasurement2; }
+   public Ingredient getIngredient() { return mIngredient; }
+
+   public void setMeasurement(Measurement measurement)
+      { mMeasurement = measurement; }
+   public void setMeasurement2(Measurement measurement)
+      { mMeasurement2 = measurement; }
+   public void setIngredient(Ingredient ingredient)
+      { mIngredient = ingredient; }
 }

@@ -180,7 +180,7 @@ public class WaxeyeParserManagerTest {
          }
 
          String curRecToString = curRec.toString();
-         System.out.println(curRecToString + "\n-----Comparing to...");
+         System.out.println(curRecToString + "\n-----Comparing to the following expected recipe:");
          System.out.println(recipes[i][1]);
          
          // Now assert the recipes toString is equal to the expected.

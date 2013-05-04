@@ -144,17 +144,30 @@ public class RipeServer extends NanoHTTPD
 	                {
 	                    MeasurementAndIngredient curIng = meaIngs.get(i);
 	                    Measurement mea = curIng.getMeasurement();
+                            Measurement mea2 = curIng.getMeasurement2();
 	                    Ingredient ing = curIng.getIngredient();
 
                             if (mea != null){
                                if (!mea.getAmount().equals("")){
                                   msg += mea.getAmount() + " ";
                                }
+                               if (!mea.getSpecifier().equals("")){
+                                  msg += mea.getSpecifier() + " ";
+                               }
                                if (!mea.getUnit().equals("")){
                                   msg += mea.getUnit() + " ";
                                }
-                               if (!mea.getSpecifier().equals("")){
-                                  msg += mea.getSpecifier() + " ";
+                            }
+                            if (mea2 != null){
+                               msg += " plus ";
+                               if (!mea2.getAmount().equals("")){
+                                  msg += mea2.getAmount() + " ";
+                               }
+                               if (!mea2.getSpecifier().equals("")){
+                                  msg += mea2.getSpecifier() + " ";
+                               }
+                               if (!mea2.getUnit().equals("")){
+                                  msg += mea2.getUnit() + " ";
                                }
                             }
                                

@@ -74,7 +74,9 @@ INGREDIENTS_LIST <- ?(INGREDIENTS_PREFIX wsn) +(INGREDIENT pwsn)
 INGREDIENTS_PREFIX <- "ingredient"?"s" ?"list" ?":"
 
 INGREDIENT <- (
+                 ( MEASUREMENT ?ws ?MEASUREMENT_SEPARATOR ?ws MEASUREMENT ?ws PRODUCT ?ws SPECIAL_DIRECTIONS ) |
                  ( MEASUREMENT ?ws PRODUCT ?ws SPECIAL_DIRECTIONS ) |
+                 ( MEASUREMENT ?ws ?MEASUREMENT_SEPARATOR ?ws MEASUREMENT ?ws PRODUCT ) |
                  ( MEASUREMENT ?ws PRODUCT ) |
                  ( PRODUCT ?ws SPECIAL_DIRECTIONS ) |
                  ( PRODUCT )
@@ -86,6 +88,11 @@ MEASUREMENT <- (
                   ( AMOUNT pws UNIT pws ) |
                   ( AMOUNT )
                )
+
+MEASUREMENT_SEPARATOR <- (
+                            "and" |
+                            "plus"
+                         )
 
 AMOUNT <- NUMBER_OR_FRACTION
 

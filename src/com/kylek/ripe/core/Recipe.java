@@ -110,10 +110,12 @@ public class Recipe {
 
       MeasurementAndIngredient curMeasAndIng;
       Measurement curMeas;
+      Measurement curMeas2;
       Ingredient curIng;
       for (int i=0; i<measAndIngs.size(); i++){
          curMeasAndIng = measAndIngs.get(i);
          curMeas = curMeasAndIng.getMeasurement();
+         curMeas2 = curMeasAndIng.getMeasurement2();
          curIng = curMeasAndIng.getIngredient();
          str += i + ") ";
          if (curMeas != null){
@@ -122,6 +124,13 @@ public class Recipe {
                curMeas.getAmount() + " " +
                curMeas.getSpecifier() + " " +
                curMeas.getUnit();
+         }
+         if (curMeas2 != null){
+            str +=
+               "Measurment 2 = " +
+               curMeas2.getAmount() + " " +
+               curMeas2.getSpecifier() + " " +
+               curMeas2.getUnit();
          }
          if (curIng != null){
             str +=

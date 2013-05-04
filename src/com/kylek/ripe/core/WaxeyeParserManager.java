@@ -114,7 +114,7 @@ public class WaxeyeParserManager {
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
-    	 // System.out.println(mResults.toString());
+    	 System.out.println(mResults.toString());
          mErrorMessage = "";
          mPreviousSuccess = true;
          return mPreviousSuccess;
@@ -388,6 +388,8 @@ public class WaxeyeParserManager {
       // Get the children of our current node
       List<IAST<Type>> children = measurementAndIngredientChild.getChildren();
 
+      boolean measurementHit = false;
+      
       // Iterate through!
       IAST<Type> curChild;
       for (int i=0; i<children.size(); i++){
@@ -395,7 +397,13 @@ public class WaxeyeParserManager {
          Type curChildType = curChild.getType();
 
          if (curChildType == Type.MEASUREMENT){
-            measAndIng.setMeasurement(getMeasurement(curChild));
+            if (!measurementHit){
+               measAndIng.setMeasurement(getMeasurement(curChild));
+               measurementHit = true;
+            }
+            else{
+               measAndIng.setMeasurement2(getMeasurement(curChild));
+            }
          }
          else if (curChildType == Type.PRODUCT){
             Ingredient retIng = getIngredient(curChild);
@@ -443,7 +451,7 @@ public class WaxeyeParserManager {
       // With certain children being optional, it's likely best
       // to iterate through, dealing with each type we see instead
       // of making assumptions about positioning.
-
+      
       IAST<Type> curChild;
       for (int i=0; i<children.size(); i++){
          curChild = children.get(i);
