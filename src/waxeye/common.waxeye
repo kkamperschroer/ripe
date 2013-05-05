@@ -1,0 +1,58 @@
+# Common waxeye definitions for use with Waxeye Parser Generator
+# (C) Kyle Kamperschroer 2013
+
+#wsn = Whitespace and newlines
+wsn <: *[ \t\n\r]
+#ws = Whitespace (no newlines)
+ws <: *[ \t]
+#pwsn = Whitespace and newlines (non-optional)
+pwsn <: +[ \t\n\r]
+#pws = Whitespace (no newlines, non-optional)
+pws <: +[ \t]
+
+WORDS <= +[A-Za-z0-9:;_!?.,()/ -°½¼é]
+WORDS_NO_BREAK <= +[A-Za-z_!?/ ]
+AMOUNT <- NUMBER_OR_FRACTION
+NUMBER_OR_FRACTION <= +[0-9]" and "+[0-9]'/'+[0-9] |
+                      +[0-9]' '+[0-9]'/'+[0-9] |
+                      +[0-9] |
+                      +[0-9]'/'+[0-9] |
+                      +[0-9]'.'+[0-9]
+
+UNIT <- ( "cup"?"s" |
+          "can"?"s" |
+          "cp"?"s" |
+          "container"?"s" |
+          "teaspoon"?"s" |
+          "tsp"?"s" |
+          "tablespoon"?"s" |
+          "tb"?"s" |
+          "lb"?"s" |
+          "pound"?"s" |
+          "oz"?"s" |
+          "fluid oz"?"s" |
+          "fl oz"?"s" |
+          "fl ounce"?"s" |
+          "ounce"?"s" |
+          "fluid ounce"?"s" |
+          "gallon"?"s" |
+          "gal"?"s" |
+          "pinch"?"s" |
+          "dash"?'es' |
+          "dollup"?"s" |
+          "qt"?"s" |
+          "quart"?"s" |
+          "pint"?"s" |
+          "pnt"?"s" |
+          "pt"?"s" |
+          "qrt"?"s" |
+          "jar"?"s" |
+          "inch"?"es" |
+          "package"?"es" |
+          "handful"?"s" |
+          "large" |
+          "serving"?"s" |
+          "people"?"s" |
+          "person"?"s" |
+          "c"?"s"
+        )

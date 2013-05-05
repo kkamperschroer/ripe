@@ -168,14 +168,18 @@ public class WaxeyeParserManagerTest {
          System.out.println("Testing recipe " + i);
          
          // Assert the recipe parses correctly
-         assertTrue(wpm.parseString(recipes[i][0]));
+         final boolean result = wpm.parseString(recipes[i][0]);
+         if (!result){
+        	 System.out.println(wpm.getErrorMessage());
+         }
+         assertTrue(result);
 
          // Build the recipe doesn't fail
          try {
             curRec = wpm.getParsedRecipe();
          } catch (Exception e) {
             System.err.println("Error parsing recipe tree");
-            System.err.println(e.toString());
+            e.printStackTrace();
             assertTrue(false);
          }
 

@@ -1,0 +1,67 @@
+# Attributes grammar for use with Waxeye Parser Generator
+# (C) Kyle Kamperschroer 2013
+
+#import common.waxeye
+
+ATTRIBUTES <- +ATTRIBUTE
+ATTRIBUTE <- ( YIELD |
+               COOK_TIME |
+               PREP_TIME |
+               OVERALL_TIME
+             )
+             ?( +[|,- ] |
+                wsn
+              )
+
+YIELD <- YIELD_PREFIX ?wsn
+         ?(ATTRIBUTE_SEPARATOR wsn)
+         ?(YIELD_PREFIX wsn)
+         AMOUNT ?ws ?UNIT
+
+YIELD_PREFIX <- ( "yield"?"s" |
+                  "serve"?"s" |
+                  "make"?"s" |
+                  "serving"?"s"
+                )
+                ?wsn
+
+COOK_TIME <- COOK_TIME_PREFIX wsn
+             ?(ATTRIBUTE_SEPARATOR wsn)
+             +(AMOUNT ws TIME_UNITS ?(?"," ws))
+
+COOK_TIME_PREFIX <- ( "cook" |
+                      "bake"
+                    ) wsn
+                    ?("time")
+
+TIME_UNITS <- ( "hour"?"s" |
+                "minute"?"s" |
+                "h"?"s" |
+                "m"?"s" |
+                "min"?"s"
+              )
+              ?wsn
+
+PREP_TIME <- PREP_TIME_PREFIX wsn
+             ?(ATTRIBUTE_SEPARATOR wsn)
+             AMOUNT ws TIME_UNITS
+
+PREP_TIME_PREFIX <- ( "prep" |
+                      "preparation" |
+                      "hands-on" |
+                      "hands on" |
+                      "active"
+                    ) wsn
+                    ?("time")
+
+OVERALL_TIME <- OVERALL_TIME_PREFIX wsn
+                ?(ATTRIBUTE_SEPARATOR wsn)
+                AMOUNT ws TIME_UNITS
+
+OVERALL_TIME_PREFIX <- ( "overall" |
+                         "total" |
+                         "ready in"
+                       ) wsn
+                       ?("time")
+
+ATTRIBUTE_SEPARATOR <= (":" | "=" | "is")

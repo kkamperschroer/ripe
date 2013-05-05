@@ -14,6 +14,18 @@ import java.util.regex.Matcher;
 public class RecipeSplitter {
 
    ////////////////////////////////////////
+   // Constants
+   ////////////////////////////////////////
+
+   // Some regex
+   private static final String DIRECTIONS_BREAK_REGEX =
+      "((direction(s)?)|(prep(aration)?(s)?))(:)?";
+   private static final String INGREDIENTS_BREAK_REGEX =
+      "(ingredient(s)?( list)?(:)?)";
+   private static final String DOUBLE_NEWLINE_REGEX = "\\n\\n";
+   private static final String LINE_BEGINS_WITH_NUM_REGEX = "^[0-9]";
+   
+   ////////////////////////////////////////
    // Members
    ////////////////////////////////////////
 
@@ -93,8 +105,8 @@ public class RecipeSplitter {
       //    3) A line that begins with a number (an amount)
       
       // First, look for the word "ingredients" or "ingredient"
-      String ingredientsBreakRegex = "([I|i]ngredient(s)? ([L|l]ist)?(:)?)|(\\n\\n)";
-      Pattern ingredientsBreakPattern = Pattern.compile(ingredientsBreakRegex);
+      Pattern ingredientsBreakPattern =
+         Pattern.compile(INGREDIENTS_BREAK_REGEX, Pattern.CASE_INSENSITIVE);
       Matcher matcher = ingredientsBreakPattern.matcher(inputRecipe);
 
       // Let's see if we have a match!
@@ -117,10 +129,32 @@ public class RecipeSplitter {
          return inputRecipe;
       }
 
+      // Now try to find a double newline
+      ingredientsBreakPattern = Pattern.compile(DOUBLE_NEWLINE_REGEX);
+      matcher = ingredientsBreakPattern.matcher(inputRecipe);
+
+      // See if we have a match
+      if (matcher.find()){
+         // Cool, let's get the match results.
+         MatchResult matchResult = matcher.toMatchResult();
+         matchStart = matchResult.start();
+         matchEnd = matchResult.end();
+
+         // The attributes section will be up to the match start
+         mAttributes = inputRecipe.substring(0, matchStart).trim();
+
+         // Now shave the input recipe to start after the end of the match,
+         // so we are cutting out the actual break, such as "Ingredients"
+         inputRecipe = inputRecipe.substring(matchEnd).trim();
+
+         // Now return our attributes section
+         return inputRecipe;
+      }
+
       // Crap, no match. Try to find a line that starts with a number and
       // call that the beginning of the ingredients list.
-      String numRegex = "^[0-9]";
-      ingredientsBreakPattern = Pattern.compile(numRegex, Pattern.MULTILINE);
+      ingredientsBreakPattern =
+         Pattern.compile(LINE_BEGINS_WITH_NUM_REGEX, Pattern.MULTILINE);
       matcher = ingredientsBreakPattern.matcher(inputRecipe);
 
       // See if we have a match!
@@ -154,9 +188,8 @@ public class RecipeSplitter {
       //    2) 2 newline characters back to back, creating a visual break
 
       // First, look for the word "direction" or "directions" or "preparation"
-      String directionsBreakRegex =
-         "(([D|d]irection(s)?)|([P|p]rep(aration)?(s)?)(:)?)|(\\n\\n)";
-      Pattern directionsBreakPattern = Pattern.compile(directionsBreakRegex);
+      Pattern directionsBreakPattern =
+         Pattern.compile(DIRECTIONS_BREAK_REGEX, Pattern.CASE_INSENSITIVE);
       Matcher matcher = directionsBreakPattern.matcher(inputRecipe);
 
       // Let's see if we have a match!
@@ -178,6 +211,26 @@ public class RecipeSplitter {
          // Now return our shaved input recipe.
          return inputRecipe;
       }
+
+      // Well, let's look for a double newline
+      directionsBreakPattern = Pattern.compile(DOUBLE_NEWLINE_REGEX);
+      matcher = directionsBreakPattern.matcher(inputRecipe);
+      if (matcher.find()){
+         // Cool, let's get the match results.
+         MatchResult matchResult = matcher.toMatchResult();
+         matchStart = matchResult.start();
+         matchEnd = matchResult.end();
+
+         // The ingredients list section will be up to the match start
+         mIngredientsList = inputRecipe.substring(0, matchStart).trim();
+
+         // Now shave the input recipe to start after the end of the match,
+         // so we are cutting out the actual break, such as "Directions"
+         inputRecipe = inputRecipe.substring(matchEnd).trim();
+
+         // Now return our shaved input recipe.
+         return inputRecipe;
+      }      
       
       // Well, this isn't good. Failed to find a break again. Calling the
       // recipe invalid!

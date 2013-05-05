@@ -9,16 +9,12 @@ package com.kylek.ripe.waxeye;
  *
  * @author Waxeye Parser Generator
  */
-public enum Type
+public enum AttributesType
 {
     _Empty,
     _Char,
     _Pos,
     _Neg,
-    RECIPE,
-    TITLE,
-    WORDS,
-    WORDS_NO_BREAK,
     ATTRIBUTES,
     ATTRIBUTE,
     YIELD,
@@ -31,23 +27,13 @@ public enum Type
     OVERALL_TIME,
     OVERALL_TIME_PREFIX,
     ATTRIBUTE_SEPARATOR,
-    INGREDIENTS_LIST,
-    INGREDIENTS_PREFIX,
-    INGREDIENT,
-    MEASUREMENT,
-    MEASUREMENT_SEPARATOR,
-    AMOUNT,
-    UNIT,
-    SPECIFIER,
-    GENERALIZER,
-    NUMBER_OR_FRACTION,
-    SPECIAL_DIRECTIONS,
-    PRODUCT,
-    DIRECTIONS,
-    DIRECTIONS_HEADER,
-    DIRECTIONS_TEXT,
     Wsn,
     Ws,
     Pwsn,
-    Pws
+    Pws,
+    WORDS,
+    WORDS_NO_BREAK,
+    AMOUNT,
+    NUMBER_OR_FRACTION,
+    UNIT
 }

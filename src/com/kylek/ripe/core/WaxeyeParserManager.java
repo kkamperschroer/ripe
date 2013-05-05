@@ -23,14 +23,29 @@ public class WaxeyeParserManager {
    // Members
    ////////////////////////////////////////
 
-   // Our waxeye parser, generated from the grammar
-   private Parser mParser;
+   // Our recipe splitter, responsible for high level separation
+   private RecipeSplitter mRecipeSplitter;
+   
+   // Our attributes parser, generated from the attributes grammar
+   private AttributesParser mAttributesParser;
 
-   // Our parse result tree that we can iterate through
-   private ParseResult<Type> mResults;
+   // Our ingredients list parser, generated from the ingredients list grammar
+   private IngredientsListParser mIngredientsListParser;
+
+   // Our attributes parse result tree that we can iterate through
+   private ParseResult<AttributesType> mAttributesResults;
+
+   // Our ingredients list parse result tree that we can iterate through
+   private ParseResult<IngredientsListType> mIngredientsListResults;
 
    // The input string we need to pull pieces out of
    private String mInputString;
+
+   // The attributes string we need to pull pieces out of
+   private String mAttributesString;
+
+   // The ingredients list string we need to pull pieces out of
+   private String mIngredientsListString;
 
    // A bool to determine if the last parse was successful
    private boolean mPreviousSuccess;
@@ -47,9 +62,12 @@ public class WaxeyeParserManager {
 
    // Default constructor
    public WaxeyeParserManager(){
-      mParser = new Parser();
+      mRecipeSplitter = new RecipeSplitter();
+      mAttributesParser = new AttributesParser();
+      mIngredientsListParser = new IngredientsListParser();
       mInputString = "";
-      mResults = null;
+      mAttributesResults = null;
+      mIngredientsListResults = null;
       mPreviousSuccess = false;
       mErrorMessage = "";
       mDoAmazonLookups = true;
@@ -73,52 +91,98 @@ public class WaxeyeParserManager {
 
    // A method for parsing
    public boolean parseString(String input){
+      // Save off the input string
       mInputString = input;
-      InputBuffer inputBuffer = new InputBuffer(input.toCharArray());
-      mResults = mParser.parse(inputBuffer);
-      ParseError error = mResults.getError();
+
+      // Start by splitting up the input string
+      try{
+         mRecipeSplitter.splitRecipe(input);
+      }catch (Exception e){
+         // There was an issue splitting!
+         System.out.println("Split error!");
+         // TODO
+         mPreviousSuccess = false;
+         mErrorMessage = "There was an error splitting the recipe into" +
+            " meaningful sections. Did you format the input recipe appropriately?";
+         return mPreviousSuccess;
+      }
+
+      // Start by taking care of the attributes list
+      mAttributesString = mRecipeSplitter.getAttributes();
+      InputBuffer inputBuffer =
+         new InputBuffer(mAttributesString.toCharArray());
+      mAttributesResults = mAttributesParser.parse(inputBuffer);
+
+      ParseError error = mAttributesResults.getError();
       if (error != null){
          // Get an error message ready
-         mErrorMessage = "Parse Error:<br/><br/><pre>";
-         
-         // Cycle through some of the input string
-         Scanner scanner = new Scanner(input);
-         int count = 1; // Waxeye starts at 1
-         int errLine = error.getLine();
-         mErrorMessage += "<font color=\"gray\">\n";
-         while (scanner.hasNextLine()) {
-            String curLine = scanner.nextLine();
-            if (count == errLine){
-               // We want this line in red
-               mErrorMessage += "</font>" +
-                                "<font color=\"red\">" +
-                                curLine +
-                                "</font>\n";
-
-               // Now we need to add a line to get to the correct column
-               for (int i=0; i<error.getColumn(); i++){
-                  mErrorMessage += " ";
-               }
-
-               mErrorMessage += "^ should be \"" +
-                                error.getNT() +
-                                "\"\n<font color=\"gray\">\n";
-            }
-            else{
-               mErrorMessage += curLine + "\n";
-            }
-            count++;
-         }
-         mErrorMessage += "</pre>";
-         
+         mErrorMessage = generateErrorMessage(error, mAttributesString);
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
-    	 System.out.println(mResults.toString());
+    	 System.out.println(mAttributesResults.toString());
          mErrorMessage = "";
          mPreviousSuccess = true;
-         return mPreviousSuccess;
       }
+
+      // Now we need to take care of the ingredients list parsing
+      mIngredientsListString = mRecipeSplitter.getIngredientsList();
+      inputBuffer =
+         new InputBuffer(mIngredientsListString.toCharArray());
+      mIngredientsListResults = mIngredientsListParser.parse(inputBuffer);
+
+      // Check if there is any error
+      error = mIngredientsListResults.getError();
+      if (error != null){
+         // Get an error message ready
+         mErrorMessage = generateErrorMessage(error, mIngredientsListString);
+         mPreviousSuccess = false;
+         return mPreviousSuccess;
+      }else{
+    	 System.out.println(mAttributesResults.toString());
+         mErrorMessage = "";
+         mPreviousSuccess = true;
+      }
+
+      // Looks good
+      return mPreviousSuccess;
+   }
+
+   // A method for getting an error message
+   private String generateErrorMessage(ParseError error, String input){
+      String err = "Parse Error:<br/><br/><pre>";
+         
+      // Cycle through some of the input string)
+      Scanner scanner = new Scanner(input);
+      int count = 1; // Waxeye starts at 1
+      int errLine = error.getLine();
+      err += "<font color=\"gray\">\n";
+      while (scanner.hasNextLine()) {
+         String curLine = scanner.nextLine();
+         if (count == errLine){
+            // We want this line in red
+            err += "</font>" +
+               "<font color=\"red\">" +
+               curLine +
+               "</font>\n";
+
+            // Now we need to add a line to get to the correct column
+            for (int i=0; i<error.getColumn(); i++){
+               err += " ";
+            }
+
+            err += "^ should be \"" +
+               error.getNT() +
+               "\"\n<font color=\"gray\">\n";
+         }
+         else{
+            err += curLine + "\n";
+         }
+         count++;
+      }
+      err += "</pre>";
+      scanner.close();
+      return err;
    }
 
    // A method for getting out the built recipe object
@@ -131,87 +195,55 @@ public class WaxeyeParserManager {
       // Build the return recipe object
       Recipe retRecipe = new Recipe();
 
+      // The splitter already has found our title and directions
+      retRecipe.setName(mRecipeSplitter.getTitle());
+      retRecipe.setDirections(mRecipeSplitter.getDirections());
+      
       // Navigate through the tree and build the Recipe.
-      IAST<Type> root = mResults.getAST();
+      IAST<AttributesType> attributesRoot =
+         mAttributesResults.getAST();
+      IAST<IngredientsListType> ingredientsListRoot =
+         mIngredientsListResults.getAST();
 
-      // Get all of the children
-      List<IAST<Type>> children = root.getChildren();
+      // Update the recipes attributes (retRecipe passed by ref)
+      getAttributes(attributesRoot, retRecipe);
 
-      // So now we have our children. Iterate through them, taking
-      // care of each type as we see it.
-      IAST<Type> curChild;
-      for (int i=0; i<children.size(); i++){
-         curChild = children.get(i);
-         Type curType = curChild.getType();
-
-         // Determine which high level type this is
-         if (curType == Type.TITLE){
-            retRecipe.setName(getTitle(curChild));
-         }
-         else if (curType == Type.ATTRIBUTES){
-            // In the following call, retRecipe is passed by reference,
-            // and updated by the method.
-            getAttributes(curChild, retRecipe);
-         }
-         else if (curType == Type.INGREDIENTS_LIST){
-            // In the following call, retRecipe is passed by reference,
-            // and updated by the method.
-            retRecipe.setIngredients(getIngredientsList(curChild));
-         }
-         else if (curType == Type.DIRECTIONS){
-            retRecipe.setDirections(getDirections(curChild));
-         }
-      }
-
+      // Update the recipes ingredients list
+      retRecipe.setIngredients(getIngredientsList(ingredientsListRoot));
+      
       // Return the built recipe
       return retRecipe;
    }
 
    // Get the title out of the parse
-   private String getText(IAST<Type> iAST){
+   private String getAttributesText(IAST<AttributesType> iAST){
+      // Get the start and end indices
+      final int startIdx = iAST.getPosition().getStartIndex();
+      final int endIdx = iAST.getPosition().getEndIndex();
+
+      // Now return the information from the parsed attributes
+      return mAttributesString.substring(startIdx, endIdx).trim();
+   }
+
+   // Get the title out of the parse
+   private String getIngredientsListText(IAST<IngredientsListType> iAST){
       // Get the start and end indices
       final int startIdx = iAST.getPosition().getStartIndex();
       final int endIdx = iAST.getPosition().getEndIndex();
 
       // Now return the information from the parsed string
-      return mInputString.substring(startIdx, endIdx).trim();
-   }
-
-   // Get the directions out of the recipe
-   private String getDirections(IAST<Type> directionsChild){
-      // Cycle through the children, looking for DIRECTIONS_TEXT
-      List<IAST<Type>> children = directionsChild.getChildren();
-      IAST<Type> curChild;
-      for (int i=0; i<children.size(); i++){
-         curChild = children.get(i);
-         Type curChildType = curChild.getType();
-         curChildType = curChild.getType();
-         if (curChildType == Type.DIRECTIONS_TEXT){
-            // Grab the text and return it
-            return getText(curChild);
-         }
-         // The only other child is the directions header,
-         // which we don't want to include, so ignore it.
-      }
-      // Shouldn't get here!
-      return "Error parsing directions!";
-   }
-
-   // Get the title out of the recipe
-   private String getTitle(IAST<Type> titleChild){
-      // Grab the text from the node
-      return getText(titleChild);
+      return mIngredientsListString.substring(startIdx, endIdx).trim();
    }
 
    // Get the attributes out of the list and update the recipe
-   private void getAttributes(IAST<Type> attributesChild,
+   private void getAttributes(IAST<AttributesType> attributesChild,
                               Recipe recipe){
       // Cycle though the attributes, getting each one out
-      List<IAST<Type>> curAttributesChildren = attributesChild.getChildren();
-      List<IAST<Type>> attributesChildrensChildren;
-      IAST<Type> curAttributesChild;
-      IAST<Type> theActualAttributesAst;
-      Type theActualAttributesType;
+      List<IAST<AttributesType>> curAttributesChildren = attributesChild.getChildren();
+      List<IAST<AttributesType>> attributesChildrensChildren;
+      IAST<AttributesType> curAttributesChild;
+      IAST<AttributesType> theActualAttributesAst;
+      AttributesType theActualAttributesType;
       // Iterate through the children
       for (int i=0; i<curAttributesChildren.size(); i++){
          curAttributesChild = curAttributesChildren.get(i);
@@ -223,20 +255,20 @@ public class WaxeyeParserManager {
          theActualAttributesType = theActualAttributesAst.getType();
 
          // Do whatever is necessary for this type
-         if (theActualAttributesType == Type.YIELD){
+         if (theActualAttributesType == AttributesType.YIELD){
             recipe.setYield(getYield(theActualAttributesAst));
-         } else if (theActualAttributesType == Type.COOK_TIME){
+         } else if (theActualAttributesType == AttributesType.COOK_TIME){
             recipe.setCookTime(getCookTime(theActualAttributesAst));
-         } else if (theActualAttributesType == Type.PREP_TIME){
+         } else if (theActualAttributesType == AttributesType.PREP_TIME){
             recipe.setPrepTime(getPrepTime(theActualAttributesAst));
-         } else if (theActualAttributesType == Type.OVERALL_TIME){
+         } else if (theActualAttributesType == AttributesType.OVERALL_TIME){
             recipe.setOverallTime(getOverallTime(theActualAttributesAst));
          }
       }
    }
 
    // Get the yield information out of the current piece
-   private Yield getYield(IAST<Type> yieldChild){
+   private Yield getYield(IAST<AttributesType> yieldChild){
       // Yield tree looks like this for the phrase "Serves: 10 persons"
       // YIELD
       // - YIELD_PREFIX
@@ -252,20 +284,20 @@ public class WaxeyeParserManager {
       Yield yield = new Yield();
 
       // Get the yield children
-      List<IAST<Type>> yieldChildren = yieldChild.getChildren();
+      List<IAST<AttributesType>> yieldChildren = yieldChild.getChildren();
 
       // Iterate through the children
-      IAST<Type> curChild;
+      IAST<AttributesType> curChild;
       for (int i=0; i<yieldChildren.size(); i++){
          curChild = yieldChildren.get(i);
-         Type curType = curChild.getType();
-         if (curType == Type.AMOUNT){
-            String amountStr = getText(curChild);
+         AttributesType curType = curChild.getType();
+         if (curType == AttributesType.AMOUNT){
+            String amountStr = getAttributesText(curChild);
             double amountDbl = Double.parseDouble(amountStr);
             yield.setValue(amountDbl);
          }
-         else if (curType == Type.UNIT){
-            yield.setUnit(getText(curChild));
+         else if (curType == AttributesType.UNIT){
+            yield.setUnit(getAttributesText(curChild));
          }
       }
 
@@ -274,7 +306,7 @@ public class WaxeyeParserManager {
    }
 
    // Get the cook time out of the current piece
-   private String getCookTime(IAST<Type> cookTimeChild){
+   private String getCookTime(IAST<AttributesType> cookTimeChild){
       // Cook time tree looks like this for "Cook time: 20 Minutes"
       // COOK_TIME
       // - COOK_TIME_PREFIX
@@ -285,33 +317,33 @@ public class WaxeyeParserManager {
       // --- 20
       // - TIME_UNITS
       // -- Minutes
-      List<IAST<Type>> cookTimeChildren = cookTimeChild.getChildren();
+      List<IAST<AttributesType>> cookTimeChildren = cookTimeChild.getChildren();
 
       // Ignore the prefix. All we want is the concatenation of amount and units
       assert(cookTimeChildren.size() >= 4);
-      String cookTime = getText(cookTimeChildren.get(2));
-      cookTime += " " + getText(cookTimeChildren.get(3));
+      String cookTime = getAttributesText(cookTimeChildren.get(2));
+      cookTime += " " + getAttributesText(cookTimeChildren.get(3));
 
       // Return our built time
       return cookTime;
    }
 
    // Get the prep time out of the current piece
-   private String getPrepTime(IAST<Type> prepTimeChild){
+   private String getPrepTime(IAST<AttributesType> prepTimeChild){
       // The tree for prep is the same as cook, so use the same
       // method
       return getCookTime(prepTimeChild);
    }
 
    // Get the overall time out of the current piece
-   private String getOverallTime(IAST<Type> overallTimeChild){
+   private String getOverallTime(IAST<AttributesType> overallTimeChild){
       // The tree for overall is the same as cook, so use the
       // same method.
       return getCookTime(overallTimeChild);
    }
 
    // Get the ingredients list and update the given recipe
-   private IngredientsList getIngredientsList(IAST<Type> ingredientsListChild){
+   private IngredientsList getIngredientsList(IAST<IngredientsListType> ingredientsListChild){
       // The ingredients list tree looks something like this:
       // - INGREDIENTS_LIST
       // -- INGREDIENT
@@ -340,14 +372,14 @@ public class WaxeyeParserManager {
       IngredientsList ingList = new IngredientsList();
       
       // Let's go through each ingredient, getting each part
-      List<IAST<Type>> ingredients = ingredientsListChild.getChildren();
+      List<IAST<IngredientsListType>> ingredients = ingredientsListChild.getChildren();
 
       // Iterate through, grabbing the ingredient for each
       // building up our list.
-      IAST<Type> curIngredient;
+      IAST<IngredientsListType> curIngredient;
       for (int i=0; i<ingredients.size(); i++){
          curIngredient = ingredients.get(i);
-         if (curIngredient.getType() == Type.INGREDIENT){
+         if (curIngredient.getType() == IngredientsListType.INGREDIENT){
             // Now get the actual ingredient from this child.
             MeasurementAndIngredient measAndIng =
                getMeasurementAndIngredient(curIngredient);
@@ -361,7 +393,7 @@ public class WaxeyeParserManager {
 
    // A method for grabbing a MeasurementAndIngredient from a given child.
    private MeasurementAndIngredient getMeasurementAndIngredient(
-      IAST<Type> measurementAndIngredientChild){
+      IAST<IngredientsListType> measurementAndIngredientChild){
       // Just for reference, here is what our tree is at this point:
       // - INGREDIENT
       // -- MEASUREMENT
@@ -386,17 +418,17 @@ public class WaxeyeParserManager {
       MeasurementAndIngredient measAndIng = new MeasurementAndIngredient();
       
       // Get the children of our current node
-      List<IAST<Type>> children = measurementAndIngredientChild.getChildren();
+      List<IAST<IngredientsListType>> children = measurementAndIngredientChild.getChildren();
 
       boolean measurementHit = false;
       
       // Iterate through!
-      IAST<Type> curChild;
+      IAST<IngredientsListType> curChild;
       for (int i=0; i<children.size(); i++){
          curChild = children.get(i);
-         Type curChildType = curChild.getType();
+         IngredientsListType curChildType = curChild.getType();
 
-         if (curChildType == Type.MEASUREMENT){
+         if (curChildType == IngredientsListType.MEASUREMENT){
             if (!measurementHit){
                measAndIng.setMeasurement(getMeasurement(curChild));
                measurementHit = true;
@@ -405,7 +437,7 @@ public class WaxeyeParserManager {
                measAndIng.setMeasurement2(getMeasurement(curChild));
             }
          }
-         else if (curChildType == Type.PRODUCT){
+         else if (curChildType == IngredientsListType.PRODUCT){
             Ingredient retIng = getIngredient(curChild);
             // It's possible it's null, if the "ingredient" is something
             // like "Directions" or "Ingredients"
@@ -415,8 +447,8 @@ public class WaxeyeParserManager {
                // This likely isn't a real ingredient, so ignore it.
                return null;
             }
-         }else if (curChildType == Type.SPECIAL_DIRECTIONS){
-            measAndIng.getIngredient().setSpecialDirections(getText(curChild));
+         }else if (curChildType == IngredientsListType.SPECIAL_DIRECTIONS){
+            measAndIng.getIngredient().setSpecialDirections(getIngredientsListText(curChild));
          }
       }
 
@@ -425,7 +457,7 @@ public class WaxeyeParserManager {
    }
 
    // A method for getting the measurement from a given child
-   private Measurement getMeasurement(IAST<Type> measurementChild){
+   private Measurement getMeasurement(IAST<IngredientsListType> measurementChild){
       // At this point, our tree looks something like this:
       // - MEASUREMENT
       // -- AMOUNT
@@ -446,25 +478,25 @@ public class WaxeyeParserManager {
       Measurement meas = new Measurement();
 
       // Get our children
-      List<IAST<Type>> children = measurementChild.getChildren();
+      List<IAST<IngredientsListType>> children = measurementChild.getChildren();
 
       // With certain children being optional, it's likely best
       // to iterate through, dealing with each type we see instead
       // of making assumptions about positioning.
       
-      IAST<Type> curChild;
+      IAST<IngredientsListType> curChild;
       for (int i=0; i<children.size(); i++){
          curChild = children.get(i);
-         Type curChildType = curChild.getType();
+         IngredientsListType curChildType = curChild.getType();
 
-         if (curChildType == Type.AMOUNT){
-            meas.setAmount(getText(curChild));
+         if (curChildType == IngredientsListType.AMOUNT){
+            meas.setAmount(getIngredientsListText(curChild));
          }
-         else if (curChildType == Type.SPECIFIER){
-            meas.setSpecifier(getText(curChild));
+         else if (curChildType == IngredientsListType.SPECIFIER){
+            meas.setSpecifier(getIngredientsListText(curChild));
          }
-         else if (curChildType == Type.UNIT){
-            meas.setUnit(getText(curChild));
+         else if (curChildType == IngredientsListType.UNIT){
+            meas.setUnit(getIngredientsListText(curChild));
          }
       }
 
@@ -473,7 +505,7 @@ public class WaxeyeParserManager {
    }
 
    // A method for getting the product/ingredient from a child
-   private Ingredient getIngredient(IAST<Type> ingredientChild){
+   private Ingredient getIngredient(IAST<IngredientsListType> ingredientChild){
       // At this point, our tree looks something like this:
       // - PRODUCT
       // -- WORDS
@@ -483,16 +515,16 @@ public class WaxeyeParserManager {
       Ingredient ing = new Ingredient();
 
       // Get all of the children
-      List<IAST<Type>> children = ingredientChild.getChildren();
+      List<IAST<IngredientsListType>> children = ingredientChild.getChildren();
 
       // Iterate through the children
-      IAST<Type> curChild;
+      IAST<IngredientsListType> curChild;
       for (int i=0; i<children.size(); i++){
          curChild = children.get(i);
-         Type curChildType = curChild.getType();
+         IngredientsListType curChildType = curChild.getType();
 
-         if (curChildType == Type.WORDS_NO_BREAK){
-            String curName = getText(curChild);
+         if (curChildType == IngredientsListType.WORDS_NO_BREAK){
+            String curName = getIngredientsListText(curChild);
             if (shouldIgnoreIngredient(curName)){
                return null; // We don't want this so called ingredient.
             }
