@@ -40,7 +40,7 @@ public class RipeServer extends NanoHTTPD
     // Setters and getters
     ////////////////////////////////////
 
-    // Node for now
+    // None for now
 
     ////////////////////////////////////
     // Other methods
