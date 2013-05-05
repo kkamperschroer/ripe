@@ -47,31 +47,27 @@ public class TestDriver {
 **/
                                                                                                                         
    public static void main(String[] args){
+
+      /**
       // Get our WaxeyeParserManager
       WaxeyeParserManager wpm = new WaxeyeParserManager();
 
       final boolean success = wpm.parseString(TEST_RECIPE);
+      **/
       
-      Recipe builtRecipe;
+      RecipeSplitter recSplit = new RecipeSplitter();
+      
       try {
-         builtRecipe = wpm.getParsedRecipe();
+         recSplit.splitRecipe(TEST_RECIPE);
       } catch (Exception e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
       }
 
-      if (success){
-         System.out.println("Recipe parsed successfully!");
-      }else{
-         System.out.println("Recipe did NOT parse successfully.");
-      }
+      System.out.println("--Title:\n" + recSplit.getTitle() + "\n" +
+                         "--Attributes:\n" + recSplit.getAttributes() + "\n" +
+                         "--Ingredients List:\n" + recSplit.getIngredientsList() + "\n" +
+                         "--Directions:\n" + recSplit.getDirections());
 
-      // Try out the scaper
-      String input[] = { "spaghetti sauce",
-                         "milk",
-                         "shredded mozzarella cheese"};
-      for (int i=0; i<input.length; i++){
-         System.out.println(input[i] + ": " + AmazonScraper.getProductUrl(input[i]));
-      }
    }	
 }
