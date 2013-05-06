@@ -33,6 +33,7 @@ public enum AttributesType
     Pws,
     WORDS,
     WORDS_NO_BREAK,
+    WORDS_NO_PARENS,
     AMOUNT,
     NUMBER_OR_FRACTION,
     UNIT

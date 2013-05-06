@@ -12,6 +12,8 @@ pws <: +[ \t]
 
 WORDS <= +[A-Za-z0-9:;_!?.,()/ -°½¼é]
 WORDS_NO_BREAK <= +[A-Za-z_!?/ ]
+WORDS_NO_PARENS <= +[A-Za-z0-9:;_!?.,/ -]
+
 AMOUNT <- NUMBER_OR_FRACTION
 NUMBER_OR_FRACTION <= +[0-9]" and "+[0-9]'/'+[0-9] |
                       +[0-9]' '+[0-9]'/'+[0-9] |

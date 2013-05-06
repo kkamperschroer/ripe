@@ -188,6 +188,9 @@ public class RipeServer extends NanoHTTPD
 	                    }
 	                    if (!ing.getSpecialDirections().equals(""))
 	                    {
+                               if (ing.getSpecialDirections().charAt(0) != ','){
+                                  msg += " ";
+                               }
 	                        msg += ing.getSpecialDirections();
 	                    }
 	                    msg += "<br/>";

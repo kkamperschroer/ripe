@@ -150,6 +150,52 @@ public class WaxeyeParserManagerTest {
          "3.	With metal tongs, char each tortilla half over the open flame of a gas stove burner for about 1 minute, until lightly puffed.\n" +
          "4.	Pour about 1/2 inch enchilada sauce in the bottom of a medium baking dish, and arrange 6 tortillas in a single layer. Top with 1/2 the chicken, 1/3 cheese, 1/2 the sour cream, and 1/3 of the remaining enchilada sauce. Repeat. Coat remaining tortillas thoroughly with remaining enchilada sauce, and arrange on top of the layers. Sprinkle with remaining cheese, and top with any remaining enchilada sauce\n" +
          "5.	Cover, and bake 45 minutes in the preheated oven. Cool slightly before serving."
+      },
+
+      /** Recipe 4 **/
+      {
+         /** Input string **/
+         "Pan-Seared Salmon with Pumpkin Seed-Cilantro Pesto\n" +
+         "yield: Makes 4 servings\n" +
+         "active time: 25 minutes\n" +
+         "total time: 25 minutes\n" +
+         "\n" +
+         "ingredients\n" +
+         "2 1/2 teaspoons plus 1/4 cup extra-virgin olive oil, divided\n" +
+         "1/2 cup shelled pumpkin seeds (pepitas)\n" +
+         "1/2 cup (tightly packed) cilantro leaves and stems\n" +
+         "1/2 teaspoon cracked coriander seeds\n" +
+         "1/2 garlic clove, coarsely chopped\n" +
+         "1 tablespoon (or more) fresh lime juice\n" +
+         "Kosher salt and freshly ground black pepper\n" +
+         "4 6-ounce salmon fillets (preferably wild)\n" +
+         "1 lime, cut into 4 wedges\n" +
+         "\n" +
+         "preparation\n" +
+         "Heat 1 1/2 teaspoons oil in a large nonstick skillet over medium-high heat. Add pumpkin seeds; sauté until beginning to brown and pop, about 2 minutes. Transfer seeds to paper towels to drain; let cool. Reserve skillet.\n" +
+         "Pulse 6 tablespoons pumpkin seeds, cilantro, coriander seeds, and garlic in a food processor until coarsely chopped. With machine running, gradually add 1 tablespoon lime juice, 1/4 cup oil, then 1/4 cup water, blending until coarse purée forms. Season pesto to taste with salt, pepper, and more lime juice, if desired.\n" +
+         "Heat remaining 1 teaspoon oil in reserved skillet over medium heat. Season salmon fillets with salt and pepper. Add to skillet and cook until just opaque in center, 3-4 minutes per side. Place fillets on plates. Spoon pesto over. Garnish with remaining pumpkin seeds. Serve with lime wedges.",
+
+         /** Expected output **/
+         "Name: Pan-Seared Salmon with Pumpkin Seed-Cilantro Pesto\n" +
+         "Yield: 4.0 servings\n" +
+         "Prep time: 25 minutes\n" +
+         "Cook time: \n" +
+         "Overall time: 25 minutes\n" +
+         "Ingredients list: \n" +
+         "0) Measurment = 2 1/2  teaspoonsMeasurment 2 = 1/4  cup    Ingredient = extra -virgin olive oil, divided\n" +
+         "1) Measurment = 1/2  cup    Ingredient = shelled pumpkin seeds (pepitas)\n" +
+         "2) Measurment = 1/2  cup    Ingredient = cilantro leaves and stems \n" +
+         "3) Measurment = 1/2  teaspoon    Ingredient = cracked coriander seeds \n" +
+         "4) Measurment = 1/2      Ingredient = garlic clove , coarsely chopped\n" +
+         "5) Measurment = 1  tablespoon    Ingredient = fresh lime juice \n" +
+         "6)     Ingredient = Kosher salt and freshly ground black pepper \n" +
+         "7) Measurment = 4 6-ounce     Ingredient = salmon fillets (preferably wild)\n" +
+         "8) Measurment = 1      Ingredient = lime , cut into 4 wedges\n" +
+         "Directions: \n" +
+         "Heat 1 1/2 teaspoons oil in a large nonstick skillet over medium-high heat. Add pumpkin seeds; sauté until beginning to brown and pop, about 2 minutes. Transfer seeds to paper towels to drain; let cool. Reserve skillet.\n" +
+         "Pulse 6 tablespoons pumpkin seeds, cilantro, coriander seeds, and garlic in a food processor until coarsely chopped. With machine running, gradually add 1 tablespoon lime juice, 1/4 cup oil, then 1/4 cup water, blending until coarse purée forms. Season pesto to taste with salt, pepper, and more lime juice, if desired.\n" +
+         "Heat remaining 1 teaspoon oil in reserved skillet over medium heat. Season salmon fillets with salt and pepper. Add to skillet and cook until just opaque in center, 3-4 minutes per side. Place fillets on plates. Spoon pesto over. Garnish with remaining pumpkin seeds. Serve with lime wedges."
       }
    };
 

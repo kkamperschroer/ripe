@@ -17,7 +17,7 @@ INGREDIENT <- (
 MEASUREMENT <- (
                   ( AMOUNT ?ws SPECIFIER pws UNIT pws ) |
                   ( AMOUNT ?ws SPECIFIER ) |
-                  ( AMOUNT pws UNIT pws ) |
+                  ( AMOUNT pws UNIT pws ?SPECIAL_DIRECTIONS) |
                   ( AMOUNT )
                )
 
@@ -38,7 +38,7 @@ SPECIAL_DIRECTIONS <- (
                          ( SPECIFIER ?ws SPECIAL_DIRECTIONS ) |
                          ( SPECIFIER ) |
                          ( [,.-] ?ws WORDS ) |
-                         ( '(' ?ws WORDS ?ws ')' )
+                         ( '(' ?ws WORDS_NO_PARENS ?ws ')' )
                       )
 #SPECIAL_DIRECTIONS <- [,.-(] ?ws WORDS ?(ws ")")
                       
