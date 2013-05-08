@@ -38,9 +38,6 @@ public class WaxeyeParserManager {
    // Our ingredients list parse result tree that we can iterate through
    private ParseResult<IngredientsListType> mIngredientsListResults;
 
-   // The input string we need to pull pieces out of
-   private String mInputString;
-
    // The attributes string we need to pull pieces out of
    private String mAttributesString;
 
@@ -65,7 +62,6 @@ public class WaxeyeParserManager {
       mRecipeSplitter = new RecipeSplitter();
       mAttributesParser = new AttributesParser();
       mIngredientsListParser = new IngredientsListParser();
-      mInputString = "";
       mAttributesResults = null;
       mIngredientsListResults = null;
       mPreviousSuccess = false;
@@ -91,8 +87,6 @@ public class WaxeyeParserManager {
 
    // A method for parsing
    public boolean parseString(String input){
-      // Save off the input string
-      mInputString = input;
 
       // Start by splitting up the input string
       try{
@@ -100,6 +94,8 @@ public class WaxeyeParserManager {
       }catch (Exception e){
          // There was an issue splitting!
          System.out.println("Split error!");
+         System.out.println(e.toString());
+         e.printStackTrace();
          // TODO
          mPreviousSuccess = false;
          mErrorMessage = "There was an error splitting the recipe into" +

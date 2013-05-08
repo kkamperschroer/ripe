@@ -336,14 +336,22 @@ public class RipeServer extends NanoHTTPD{
     
    // Add the header to our output page
    private String addHeader(String msg){
-      return msg +
-         "<html>\n" +
-         "    <head>\n" +
-         "        <title>RIPE Prototype v1</title>\n" +
-         "    </head>\n" +
+      msg += "<html>\n";
+      msg = addHead(msg);
+      msg +=
          "    <body>\n" +
+         "    <div id='ripe_header'>\n" +
          "    <h1>Kyle's Recipe Parser</h1>\n" +
-         "    <br/>\n";        
+         "    </div>\n";
+      return msg;
+   }
+
+   // Add the head section
+   private String addHead(String msg){
+      return msg +
+         "<head>\n" +
+         "    <title>RIPE: Recipe Parsing Engine</title>\n" +
+         "</head>\n";
    }
 
    // Add the footer to our output page
