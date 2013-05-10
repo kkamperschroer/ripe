@@ -1,0 +1,37 @@
+body{
+    font-family: 'Droid Sans', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+a{
+    color: #000;
+}
+
+a:hover{
+    color: #333;
+}
+
+a:visited{
+    color: #222;
+}
+
+
+#ripe_header{
+    margin: 0px 0px 20px 0px;
+}
+        
+#ripe_title{
+    font-size: 60px;
+    text-shadow: 5px 5px 5px #ddd;
+                        cursor: pointer;
+}
+
+#ripe_subtitle{
+    font-size: 20px;
+}
+
+#ripe_footer{
+    margin: 20px 0px 0px 0px;
+    font-size: 12px;
+}

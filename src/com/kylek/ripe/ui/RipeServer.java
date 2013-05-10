@@ -26,13 +26,16 @@ public class RipeServer extends NanoHTTPD{
    // A string that we will replace
    private static final String CONTENT_STR = "#{CONTENT}#";
 
+   // The web root
+   private static final String WEB_ROOT = "www";
+
    ////////////////////////////////////
    // Constructors
    ////////////////////////////////////
 
    // The default constructor
    public RipeServer() throws IOException{
-      super(PORT, new File("."));
+      super(PORT, new File(WEB_ROOT));
 
       // This will take a second
       System.out.print("Initializing RIPE...");
@@ -68,7 +71,6 @@ public class RipeServer extends NanoHTTPD{
       catch( Throwable t ) {};
    }
 
-
    // Serve up a page!
    public Response serve(
       String uri,
@@ -76,6 +78,24 @@ public class RipeServer extends NanoHTTPD{
       Properties header,
       Properties parms,
       Properties files){
+
+      System.out.println(
+         "URI: " + uri + "\n" +
+         "Method: " + method + "\n" +
+         "Header: " + header.toString() + "\n" +
+         "Parms: " + parms.toString() + "\n" +
+         "Files: " + files.toString() + "\n");
+
+      // If method is GET and one of the last 4 characters is a '.', serve
+      // up a file.
+      int dotIndex = uri.indexOf(".");
+      if (method.equals("GET") &&
+          dotIndex != -1 &&
+          uri.lastIndexOf(".") >= uri.length() - 4){
+         // Serve up a file!
+         return serveFile(uri, header, new File(WEB_ROOT), true);
+      }
+          
 
       // This string will ultimately be the entire page. We will do a find/replace
       // for the string CONTENT_STR, once we have the rest of the page rendered.
@@ -88,7 +108,8 @@ public class RipeServer extends NanoHTTPD{
 	
          // The recipe listing page
          if (requestedPage == null ||
-             requestedPage.equals("recipes")){
+             requestedPage.equals("recipes") ||
+             requestedPage.equals("/")){
             content = renderRecipes();
          }
          // The view recipe page
@@ -213,7 +234,12 @@ public class RipeServer extends NanoHTTPD{
       page +=
          "    <body>\n" +
          "        <div id='ripe_header'>\n" +
-         "            <h1>Kyle's Recipe Parser</h1>\n" +
+         "            <span id='ripe_title' onclick=\\location.href='/'\">\n" +
+         "               RIPE\n" +
+         "            </span>\n" +
+         "            <span id='ripe_subtitle'>\n" +
+         "               Kyle's Recipe Parsing Engine\n" +
+         "            </span>\n" +
          "        </div>\n" +
          "        <div id='ripe_content'>\n" +
                       CONTENT_STR + "\n" +            
@@ -230,6 +256,11 @@ public class RipeServer extends NanoHTTPD{
       return
          "    <head>\n" +
          "        <title>RIPE: Recipe Parsing Engine</title>\n" +
+         "        <link href='/stylesheets/ripe.css' rel='stylesheet' type='text/css' />\n" +
+         "        <script src='/js/jquery-1.9.1.min.js' type='text/javascript'></script>\n" +
+         "        <script src='/js/ripe.js' type='text/javascript'></script>\n" +
+         "        <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n" +
+         "        <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css' />\n" +
          "    </head>\n";
    }
 
@@ -245,7 +276,7 @@ public class RipeServer extends NanoHTTPD{
    private String renderContentHeader(String title){
       return
          "    <div id='ripe_content_header'>\n" +
-         "        <h2>" + title + "</h2>\n" +
+         "        <span id='ripe_content_title'>" + title + "</div>\n" +
          "    </div>\n";
    }
 
@@ -365,12 +396,12 @@ public class RipeServer extends NanoHTTPD{
    // Render a single attribute
    private String renderRecipeAttribute(String attrName, String attrValue){
       return 
-         "<div class='recipe_attribute'>\n" +
-         "    <div class='recipe_attribute_name'>" + attrName + "</div>\n" +
-         "    <div class='recipe_attribute_value'>\n" +
+         "<span class='recipe_attribute'>\n" +
+         "    <span class='recipe_attribute_name'>" + attrName + "</div>\n" +
+         "    <span class='recipe_attribute_value'>\n" +
                   attrValue + "\n" +
-         "    </div>\n" +
-         "</div>\n";
+         "    </span>\n" +
+         "</span>\n";
    }
 
    // Render the ingredients list
@@ -378,7 +409,7 @@ public class RipeServer extends NanoHTTPD{
       String content = "<div id='recipe_ingredients_list'>\n";
 
       // The logical "ingredients" separator
-      content += "<div class='recipe_separator'>Ingredients:</div>\n";
+      content += "<span class='recipe_separator'>Ingredients:</span>\n";
       
       // List the ingredients
       IngredientsList ings = recipe.getIngredients();
@@ -398,7 +429,7 @@ public class RipeServer extends NanoHTTPD{
 
    // Render an individual measurement and ingredient
    private String renderRecipeIngredient(MeasurementAndIngredient recipeIng){
-      String content = "<div class='recipe_ingredient'>\n";
+      String content = "<span class='recipe_ingredient'>\n";
       
       Measurement mea = recipeIng.getMeasurement();
       Measurement mea2 = recipeIng.getMeasurement2();
@@ -415,7 +446,7 @@ public class RipeServer extends NanoHTTPD{
          content += renderRecipeIngredientProduct(ing);
       }
 
-      content += "\n</div>\n"; // Closing div for recipe_ingredient
+      content += "\n</span>\n"; // Closing div for recipe_ingredient
 
       return content;
    }
@@ -478,7 +509,7 @@ public class RipeServer extends NanoHTTPD{
       String content = "<div id='recipe_directions'>\n";
 
       // The logical "Directions" separator
-      content += "<div class='recipe_separator'>Directions:</div>\n";
+      content += "<span class='recipe_separator'>Directions:</span>\n";
       
       String directions = recipe.getDirections();
 
@@ -510,7 +541,7 @@ public class RipeServer extends NanoHTTPD{
 
    // Render an individual recipe link
    private String renderEndRecipeLink(String page, String visibleText, int recId){
-      String content = "<div class='recipe_link'>\n";
+      String content = "<span class='recipe_link'>\n";
       
       content += "<a href='?page=" + page;
       if (recId >= 0){
@@ -518,7 +549,7 @@ public class RipeServer extends NanoHTTPD{
       }
       content += "'>" + visibleText + "</a>\n";
 
-      content += "</div>\n"; // The closing div of recipe_link
+      content += "</span>\n"; // The closing div of recipe_link
       return content;
    }
    
