@@ -134,50 +134,8 @@ public class RipeServer extends NanoHTTPD{
             content = renderAddRecipe();
          }
          else if(requestedPage.equals("add_recipe_go")){
-            // Check if we have any files that were uploaded
-            String upFile = files.getProperty("upfile");
-            String recipe = "";
-            if (upFile != null){
-               // Oh boy, we have an uploaded file! Attempt to
-               // read some text from it.
-               try{
-                  recipe = readFile(upFile, StandardCharsets.UTF_8);
-                  System.out.println("Got recipe from file!");
-                  System.out.println(recipe);
-               }catch (Exception e){
-                  // File seems to be bad
-                  content += "Was your file a valid text file?";
-               }
-            }
-            else
-            {
-               // Get the recipe from the post
-               recipe = parms.getProperty("raw_recipe");
-            }
-		
-            // Ask mRipe to parse the recipe
-            Recipe parsed = mRipe.parseRecipe(recipe);
-	
-            // Hopefully that worked! 
-            // Add the recipe to our db
-            boolean retVal = false;
-            if (parsed != null){
-               retVal = mRipe.addRecipe(parsed);
-            }
-	
-            if (retVal){
-               content +=
-                  "Recipe parsed successfully. Click " +
-                  "<a href='?page=view&recipe=" + (mRipe.getAllRecipes().size()-1) +
-                  "'>here</a>.";
-            }
-            else{
-               content += mRipe.getErrorMessage();
-            }
-            // Link back to the listing
-            content +=
-               "<br/><br/><br/>\n<a href='/'>Back to listing</a>\n";
-	
+            // Render the parse results page.
+            content = renderAddRecipeGo(parms, files);
          }
          else if(requestedPage.equals("edit")){
             content += "Under construction.";
@@ -283,7 +241,7 @@ public class RipeServer extends NanoHTTPD{
    private String renderContentHeader(String title){
       return
          "    <div id='ripe_content_header'>\n" +
-         "        <span id='ripe_content_title'>" + title + "</div>\n" +
+         "        <span id='ripe_content_title'>" + title + "</span>\n" +
          "    </div>\n";
    }
 
@@ -320,7 +278,7 @@ public class RipeServer extends NanoHTTPD{
 
    // Render a single recipe
    private String renderRecipe(final int recId){
-      String content = "";
+      String content = "<div id='recipe'>\n";
       if (recId < mRipe.getAllRecipes().size() &&
           recId >= 0){
 
@@ -338,6 +296,9 @@ public class RipeServer extends NanoHTTPD{
 
          // The directions section
          content += renderRecipeDirections(recipe);
+
+         // End the recipe div
+         content += "</div>\n";
          
          // Some recipe links
          content += renderEndRecipeLinks(recId);
@@ -404,11 +365,11 @@ public class RipeServer extends NanoHTTPD{
    private String renderRecipeAttribute(String attrName, String attrValue){
       return 
          "<span class='recipe_attribute'>\n" +
-         "    <span class='recipe_attribute_name'>" + attrName + "</div>\n" +
+         "    <span class='recipe_attribute_name'>" + attrName + "</span>\n" +
          "    <span class='recipe_attribute_value'>\n" +
                   attrValue + "\n" +
          "    </span>\n" +
-         "</span>\n";
+         "</span><br/>\n";
    }
 
    // Render the ingredients list
@@ -416,7 +377,7 @@ public class RipeServer extends NanoHTTPD{
       String content = "<div id='recipe_ingredients_list'>\n";
 
       // The logical "ingredients" separator
-      content += "<span class='recipe_separator'>Ingredients:</span>\n";
+      content += "<span class='recipe_separator'>Ingredients:</span><br/>\n";
       
       // List the ingredients
       IngredientsList ings = recipe.getIngredients();
@@ -453,7 +414,7 @@ public class RipeServer extends NanoHTTPD{
          content += renderRecipeIngredientProduct(ing);
       }
 
-      content += "\n</span>\n"; // Closing div for recipe_ingredient
+      content += "\n</span><br/>\n"; // Closing div for recipe_ingredient
 
       return content;
    }
@@ -516,7 +477,7 @@ public class RipeServer extends NanoHTTPD{
       String content = "<div id='recipe_directions'>\n";
 
       // The logical "Directions" separator
-      content += "<span class='recipe_separator'>Directions:</span>\n";
+      content += "<span class='recipe_separator'>Directions:</span><br/>\n";
       
       String directions = recipe.getDirections();
 
@@ -585,6 +546,57 @@ public class RipeServer extends NanoHTTPD{
       return content;
    }
 
+   // Render the add recipe go page
+   private String renderAddRecipeGo(Properties parms, Properties files){
+      String content = renderContentHeader("Parse Results");
+      
+      // Check if we have any files that were uploaded
+      String upFile = files.getProperty("upfile");
+      String recipe = "";
+      if (upFile != null){
+         // Oh boy, we have an uploaded file! Attempt to
+         // read some text from it.
+         try{
+            recipe = readFile(upFile, StandardCharsets.UTF_8);
+            System.out.println("Got recipe from file!");
+            System.out.println(recipe);
+         }catch (Exception e){
+            // File seems to be bad
+            content += "Was your file a valid text file?";
+         }
+      }
+      else
+      {
+         // Get the recipe from the post
+         recipe = parms.getProperty("raw_recipe");
+      }
+		
+      // Ask mRipe to parse the recipe
+      Recipe parsed = mRipe.parseRecipe(recipe);
+	
+      // Hopefully that worked! 
+      // Add the recipe to our db
+      boolean retVal = false;
+      if (parsed != null){
+         retVal = mRipe.addRecipe(parsed);
+      }
+	
+      if (retVal){
+         content +=
+            "Recipe parsed successfully. Click " +
+            "<a href='?page=view&recipe=" + (mRipe.getAllRecipes().size()-1) +
+            "'>here</a>.";
+      }
+      else{
+         content += mRipe.getErrorMessage();
+      }
+      // Link back to the listing
+      content +=
+         "<br/><br/><br/>\n<a href='/'>Back to listing</a>\n";
+
+      return content;
+   }
+   
    // A useful utility method for reading a String from a file
    // Credit to erickson from SO:
    // http://stackoverflow.com/questions/326390/how-to-create-a-java-string-from-the-contents-of-a-file

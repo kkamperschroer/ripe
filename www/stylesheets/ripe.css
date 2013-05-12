@@ -41,3 +41,53 @@ a:visited{
     margin: 20px 0px 0px 0px;
     font-size: 12px;
 }
+
+#recipe{
+    width: 650px;
+    outline-style: dashed;
+    outline-width: 1px;
+    outline-color: black;
+    padding: 10px;
+    margin: 15px;
+}
+
+#recipe_attributes{
+    width: auto;
+    outline-style: dotted;
+    outline-width: 1px;
+    outline-color: black;
+    padding: 10px;
+    margin: 0px 0px 10px 0px;
+}
+
+.recipe_attribute{
+    margin: 0px 15px 0px 0px;
+}
+
+.recipe_attribute_name{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.recipe_separator{
+    width: 100%;
+    margin: 10px 0px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#recipe_ingredients_list{
+    outline-style: dotted;
+    outline-width: 1px;
+    outline-color: black;
+    padding: 10px;
+    margin: 0px 0px 10px 0px;
+}
+
+#recipe_directions{
+    outline-style: dotted;
+    outline-width: 1px;
+    outline-color: black;
+    padding: 10px;
+    margin: 0px 0px 10px 0px;
+}
