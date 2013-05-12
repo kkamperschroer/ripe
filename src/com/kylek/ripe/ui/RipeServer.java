@@ -5,6 +5,12 @@ package com.kylek.ripe.ui;
 
 import java.util.*;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import com.kylek.ripe.core.*;
 
 public class RipeServer extends NanoHTTPD{
@@ -124,31 +130,30 @@ public class RipeServer extends NanoHTTPD{
             content = renderRecipe(recId);
          }
          else if(requestedPage.equals("add_recipe")){
-            // Oh boy!
-	            
-            // Headers
-            content +=
-               "<h2>Add Recipe</h2>\n" +
-               "<p>Just paste in the recipe!</p>\n";
-	
-            // Build the form
-            content +=
-               "<form action='?page=add_recipe_go' method='post'>\n" +
-               "    Recipe:\n<br/>\n" +
-               "    <textarea cols='80' rows='30' name='raw_recipe'>" +
-               "</textarea>\n<br/>\n" +
-               "    <input type='button' value='Upload from file'/>\n" +
-               "    <input type='submit' value='Parse it!'/>\n" +
-               "</form>\n";
-
-                    
-            // Link back to the listing
-            content +=
-               "<br/><br/><br/><a href='/'>Back to listing</a>\n";
+            // Oh boy! A new recipe!
+            content = renderAddRecipe();
          }
          else if(requestedPage.equals("add_recipe_go")){
-            // Get the recipe from the post
-            String recipe = parms.getProperty("raw_recipe");
+            // Check if we have any files that were uploaded
+            String upFile = files.getProperty("upfile");
+            String recipe = "";
+            if (upFile != null){
+               // Oh boy, we have an uploaded file! Attempt to
+               // read some text from it.
+               try{
+                  recipe = readFile(upFile, StandardCharsets.UTF_8);
+                  System.out.println("Got recipe from file!");
+                  System.out.println(recipe);
+               }catch (Exception e){
+                  // File seems to be bad
+                  content += "Was your file a valid text file?";
+               }
+            }
+            else
+            {
+               // Get the recipe from the post
+               recipe = parms.getProperty("raw_recipe");
+            }
 		
             // Ask mRipe to parse the recipe
             Recipe parsed = mRipe.parseRecipe(recipe);
@@ -241,6 +246,7 @@ public class RipeServer extends NanoHTTPD{
          "               Kyle's Recipe Parsing Engine\n" +
          "            </span>\n" +
          "        </div>\n" +
+         "        <hr/>\n" +
          "        <div id='ripe_content'>\n" +
                       CONTENT_STR + "\n" +            
          "        </div>\n";
@@ -267,6 +273,7 @@ public class RipeServer extends NanoHTTPD{
    // Add the footer to our output page
    private String addFooter(){
       return
+         "    <hr/>\n" +
          "    <div id='ripe_footer'>\n" +
          "        <p>(C) Kyle Kamperschroer 2013</p>\n" +
          "    </div>\n";
@@ -552,5 +559,37 @@ public class RipeServer extends NanoHTTPD{
       content += "</span>\n"; // The closing div of recipe_link
       return content;
    }
-   
+
+   // Redner the add recipe page
+   private String renderAddRecipe(){
+      // Generate the header for this page
+      String content = renderContentHeader("Add Recipe");
+
+      // Build the form
+      content +=
+         "<div id='add_recipe_form'>\n" +
+         "<form action='?page=add_recipe_go' method='post' enctype='multipart/form-data'>\n" +
+         "    Recipe:\n<br/>\n" +
+         "    <textarea cols='80' rows='30' name='raw_recipe'>" +
+         "</textarea>\n<br/>\n" +
+         "    <input type='submit' value='Parse it!'/> or \n" +
+         "    <input type='file' name='upfile' value='Upload from file'/>\n" +
+         "</form>\n" +
+         "</div>\n";
+
+                    
+      // Link back to the listing
+      content +=
+         "<br/><br/><br/><a href='/'>Back to listing</a>\n";
+      
+      return content;
+   }
+
+   // A useful utility method for reading a String from a file
+   // Credit to erickson from SO:
+   // http://stackoverflow.com/questions/326390/how-to-create-a-java-string-from-the-contents-of-a-file
+   static String readFile(String path, Charset encoding) throws IOException{
+      byte[] encoded = Files.readAllBytes(Paths.get(path));
+      return encoding.decode(ByteBuffer.wrap(encoded)).toString();
+   }
 }
