@@ -85,12 +85,14 @@ public class RipeServer extends NanoHTTPD{
       Properties parms,
       Properties files){
 
+      /**
       System.out.println(
          "URI: " + uri + "\n" +
          "Method: " + method + "\n" +
          "Header: " + header.toString() + "\n" +
          "Parms: " + parms.toString() + "\n" +
          "Files: " + files.toString() + "\n");
+      **/
 
       // If method is GET and one of the last 4 characters is a '.', serve
       // up a file.
@@ -197,13 +199,15 @@ public class RipeServer extends NanoHTTPD{
       page +=
          "    <body>\n" +
          "        <div id='ripe_header'>\n" +
-         "            <span id='ripe_title' onclick=\\location.href='/'\">\n" +
+         "            <span id='ripe_title' onclick=\"location.href='/'\">\n" +
          "               RIPE\n" +
          "            </span>\n" +
          "            <span id='ripe_subtitle'>\n" +
          "               Kyle's Recipe Parsing Engine\n" +
          "            </span>\n" +
          "        </div>\n" +
+         "        <hr/>\n" +
+                     renderNavBar() +
          "        <hr/>\n" +
          "        <div id='ripe_content'>\n" +
                       CONTENT_STR + "\n" +            
@@ -529,7 +533,7 @@ public class RipeServer extends NanoHTTPD{
       // Build the form
       content +=
          "<div id='add_recipe_form'>\n" +
-         "<form action='?page=add_recipe_go' method='post' enctype='multipart/form-data'>\n" +
+         "<form action='?page=add_recipe_go' method='post'>\n" +
          "    Recipe:\n<br/>\n" +
          "    <textarea cols='80' rows='30' name='raw_recipe'>" +
          "</textarea>\n<br/>\n" +
@@ -552,8 +556,9 @@ public class RipeServer extends NanoHTTPD{
       
       // Check if we have any files that were uploaded
       String upFile = files.getProperty("upfile");
-      String recipe = "";
-      if (upFile != null){
+      String recipe = parms.getProperty("raw_recipe");
+      if (upFile != null &&
+          !upFile.equals("")){
          // Oh boy, we have an uploaded file! Attempt to
          // read some text from it.
          try{
@@ -564,11 +569,6 @@ public class RipeServer extends NanoHTTPD{
             // File seems to be bad
             content += "Was your file a valid text file?";
          }
-      }
-      else
-      {
-         // Get the recipe from the post
-         recipe = parms.getProperty("raw_recipe");
       }
 		
       // Ask mRipe to parse the recipe
@@ -594,6 +594,30 @@ public class RipeServer extends NanoHTTPD{
       content +=
          "<br/><br/><br/>\n<a href='/'>Back to listing</a>\n";
 
+      return content;
+   }
+
+   // Render the navigation bar
+   private String renderNavBar(){
+      String content = "<div id='ripe_navbar'>\n";
+
+      // Render the links
+      content +=
+         renderNavLink("View all Recipes", "/") +
+         renderNavLink("Add Recipe", "?page=add_recipe") +
+         renderNavLink("View Your Recipes", "/");
+      
+      content += "</div>\n";
+      return content;
+   }
+
+   // Render a single nav link
+   private String renderNavLink(String linkName, String linkLocation){
+      String content =
+         "<span class='ripe_nav_link' onclick=\"location.href='" +
+         linkLocation + "'\">";
+      content += linkName;
+      content += "</span>\n";
       return content;
    }
    

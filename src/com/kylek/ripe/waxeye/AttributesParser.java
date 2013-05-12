@@ -661,6 +661,7 @@ public final class AttributesParser extends org.waxeye.parser.Parser<AttributesT
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'/'}, new char[]{}, new char[]{}), 17, false));
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 19, false));
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'.'}, new char[]{}, new char[]{}), 20, false));
+        edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 22, false));
         states.add(new State<AttributesType>(edges, true));
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 2, false));
@@ -711,7 +712,7 @@ public final class AttributesParser extends org.waxeye.parser.Parser<AttributesT
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 16, false));
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'/'}, new char[]{}, new char[]{}), 17, false));
-        states.add(new State<AttributesType>(edges, true));
+        states.add(new State<AttributesType>(edges, false));
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 18, false));
         states.add(new State<AttributesType>(edges, false));
@@ -727,6 +728,9 @@ public final class AttributesParser extends org.waxeye.parser.Parser<AttributesT
         states.add(new State<AttributesType>(edges, false));
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 21, false));
+        states.add(new State<AttributesType>(edges, true));
+        edges = new ArrayList<Edge<AttributesType>>();
+        edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 22, false));
         states.add(new State<AttributesType>(edges, true));
         automata.add(new FA<AttributesType>(AttributesType.NUMBER_OR_FRACTION, FA.PRUNE, states));
 

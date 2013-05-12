@@ -196,6 +196,56 @@ public class WaxeyeParserManagerTest {
          "Heat 1 1/2 teaspoons oil in a large nonstick skillet over medium-high heat. Add pumpkin seeds; sauté until beginning to brown and pop, about 2 minutes. Transfer seeds to paper towels to drain; let cool. Reserve skillet.\n" +
          "Pulse 6 tablespoons pumpkin seeds, cilantro, coriander seeds, and garlic in a food processor until coarsely chopped. With machine running, gradually add 1 tablespoon lime juice, 1/4 cup oil, then 1/4 cup water, blending until coarse purée forms. Season pesto to taste with salt, pepper, and more lime juice, if desired.\n" +
          "Heat remaining 1 teaspoon oil in reserved skillet over medium heat. Season salmon fillets with salt and pepper. Add to skillet and cook until just opaque in center, 3-4 minutes per side. Place fillets on plates. Spoon pesto over. Garnish with remaining pumpkin seeds. Serve with lime wedges."
+      },
+
+      /** Recipe 5 **/
+      {
+         "Mom's Chicken Cacciatore\n" +
+         "Servings: 8\n" +
+         "INGREDIENTS:\n" +
+         "2 cups all-purpose flour for coating\n" +
+         "1/2 teaspoon salt\n" +
+         "1/4 teaspoon ground black pepper\n" +
+         "1 (4 pound) chicken, cut into pieces\n" +
+         "2 tablespoons vegetable oil\n" +
+         "1 onion, chopped\n" +
+         "2 cloves garlic, minced\n" +
+         "1 green bell pepper, chopped\n" +
+         "1 (14.5 ounce) can diced tomatoes\n" +
+         "1/2 teaspoon dried oregano\n" +
+         "1/2 cup white wine\n" +
+         "2 cups fresh mushrooms, quartered\n" +
+         "salt and pepper to taste\n" +
+         "DIRECTIONS:\n" +
+         "1.	Combine the flour, salt and pepper in a plastic bag. Shake the chicken pieces in flour until coated. Heat the oil in a large skillet (one that has a cover/lid). Fry the chicken pieces until they are browned on both sides. Remove from skillet.\n" +
+         "2.	Add the onion, garlic and bell pepper to the skillet and saute until the onion is slightly browned. Return the chicken to the skillet and add the tomatoes, oregano and wine. Cover and simmer for 30 minutes over medium low heat.\n" +
+         "3.	Add the mushrooms and salt and pepper to taste. Simmer for 10 more minutes.\n",
+
+         /** Expected output **/
+
+         "Name: Mom's Chicken Cacciatore\n" +
+         "Yield: 8.0 \n" +
+         "Prep time: \n" +
+         "Cook time: \n" +
+         "Overall time: null\n" +
+         "Ingredients list: \n" +
+         "0) Measurment = 2  cups    Ingredient = all -purpose flour for coating\n" +
+         "1) Measurment = 1/2  teaspoon    Ingredient = salt \n" +
+         "2) Measurment = 1/4  teaspoon    Ingredient = ground black pepper \n" +
+         "3) Measurment = 1 (4 pound)     Ingredient = chicken , cut into pieces\n" +
+         "4) Measurment = 2  tablespoons    Ingredient = vegetable oil \n" +
+         "5) Measurment = 1      Ingredient = onion , chopped\n" +
+         "6) Measurment = 2      Ingredient = cloves garlic , minced\n" +
+         "7) Measurment = 1      Ingredient = green bell pepper , chopped\n" +
+         "8) Measurment = 1 (14.5 ounce) can    Ingredient = diced tomatoes \n" +
+         "9) Measurment = 1/2  teaspoon    Ingredient = dried oregano \n" +
+         "10) Measurment = 1/2  cup    Ingredient = white wine \n" +
+         "11) Measurment = 2  cups    Ingredient = fresh mushrooms , quartered\n" +
+         "12)     Ingredient = salt and pepper to taste \n" +
+         "Directions: \n" +
+         "1.	Combine the flour, salt and pepper in a plastic bag. Shake the chicken pieces in flour until coated. Heat the oil in a large skillet (one that has a cover/lid). Fry the chicken pieces until they are browned on both sides. Remove from skillet.\n" +
+         "2.	Add the onion, garlic and bell pepper to the skillet and saute until the onion is slightly browned. Return the chicken to the skillet and add the tomatoes, oregano and wine. Cover and simmer for 30 minutes over medium low heat.\n" +
+         "3.	Add the mushrooms and salt and pepper to taste. Simmer for 10 more minutes.\n"
       }
    };
 
@@ -234,7 +284,7 @@ public class WaxeyeParserManagerTest {
          System.out.println(recipes[i][1]);
          
          // Now assert the recipes toString is equal to the expected.
-         assertTrue(curRecToString.equals(recipes[i][1]));
+         assertTrue(curRecToString.trim().equals(recipes[i][1].trim()));
       }
    }
 }

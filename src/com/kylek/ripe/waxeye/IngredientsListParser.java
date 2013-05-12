@@ -380,6 +380,7 @@ public final class IngredientsListParser extends org.waxeye.parser.Parser<Ingred
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'/'}, new char[]{}, new char[]{}), 17, false));
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 19, false));
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'.'}, new char[]{}, new char[]{}), 20, false));
+        edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 22, false));
         states.add(new State<IngredientsListType>(edges, true));
         edges = new ArrayList<Edge<IngredientsListType>>();
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 2, false));
@@ -430,7 +431,7 @@ public final class IngredientsListParser extends org.waxeye.parser.Parser<Ingred
         edges = new ArrayList<Edge<IngredientsListType>>();
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 16, false));
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'/'}, new char[]{}, new char[]{}), 17, false));
-        states.add(new State<IngredientsListType>(edges, true));
+        states.add(new State<IngredientsListType>(edges, false));
         edges = new ArrayList<Edge<IngredientsListType>>();
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 18, false));
         states.add(new State<IngredientsListType>(edges, false));
@@ -446,6 +447,9 @@ public final class IngredientsListParser extends org.waxeye.parser.Parser<Ingred
         states.add(new State<IngredientsListType>(edges, false));
         edges = new ArrayList<Edge<IngredientsListType>>();
         edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 21, false));
+        states.add(new State<IngredientsListType>(edges, true));
+        edges = new ArrayList<Edge<IngredientsListType>>();
+        edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{}, new char[]{'0'}, new char[]{'9'}), 22, false));
         states.add(new State<IngredientsListType>(edges, true));
         automata.add(new FA<IngredientsListType>(IngredientsListType.NUMBER_OR_FRACTION, FA.PRUNE, states));
 

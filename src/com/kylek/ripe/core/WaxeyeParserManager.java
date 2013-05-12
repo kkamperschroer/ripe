@@ -112,7 +112,12 @@ public class WaxeyeParserManager {
       ParseError error = mAttributesResults.getError();
       if (error != null){
          // Get an error message ready
-         mErrorMessage = generateErrorMessage(error, mAttributesString);
+         if (mAttributesString.equals("")){
+            mErrorMessage = "<p>Unable to find the attributes of the recipe!</p>\n";
+         }
+         else{
+            mErrorMessage = generateErrorMessage(error, mAttributesString);
+         }
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
@@ -131,7 +136,12 @@ public class WaxeyeParserManager {
       error = mIngredientsListResults.getError();
       if (error != null){
          // Get an error message ready
-         mErrorMessage = generateErrorMessage(error, mIngredientsListString);
+         if (mIngredientsListString.equals("")){
+            mErrorMessage = "<p>Unable to find the ingredients list of the recipe!</p>\n";
+         }
+         else{
+            mErrorMessage = generateErrorMessage(error, mIngredientsListString);
+         }
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
