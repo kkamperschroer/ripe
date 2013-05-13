@@ -4,3 +4,6 @@
 - Validation within models
 - Possibly automatically calculate any missing times? If you have 2/3...
 - Prompt before deletion
+- Hide empty string attributes when viewing
+- Manual add recipe form
+- Does viewing the recipe show the yield units?

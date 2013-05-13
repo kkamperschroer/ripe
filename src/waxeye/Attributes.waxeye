@@ -36,9 +36,9 @@ COOK_TIME_PREFIX <- ( "cook" |
 
 TIME_UNITS <- ( "hour"?"s" |
                 "minute"?"s" |
+                "min"?"s" |
                 "h"?"s" |
-                "m"?"s" |
-                "min"?"s"
+                "m"?"s" 
               )
               ?wsn
 

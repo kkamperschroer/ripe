@@ -117,3 +117,10 @@ th{
     padding: 5px;
 }
 
+#edit_recipe_form{
+    width: 650px;
+}
+
+.small_note{
+    font-size: 10px;
+}

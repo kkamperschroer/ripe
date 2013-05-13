@@ -22,6 +22,8 @@ MEASUREMENT <- (
                )
 
 MEASUREMENT_SEPARATOR <- (
+                            "to" |
+                            "-" |
                             "and" |
                             "plus"
                          )

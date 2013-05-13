@@ -44,6 +44,7 @@ public class Recipe {
       mDirections = "";
       mPrepTime = "";
       mCookTime = "";
+      mOverallTime = "";
       mYield = null;;
    }
 
@@ -53,12 +54,14 @@ public class Recipe {
                  String directions,
                  String prepTime,
                  String cookTime,
+                 String overallTime,
                  Yield yield){
       mName = name;
       mIngredients = ingredients;
       mDirections = directions;
       mPrepTime = prepTime;
       mCookTime = cookTime;
+      mOverallTime = overallTime;
       mYield = yield;
    }
 

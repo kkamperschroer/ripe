@@ -312,7 +312,9 @@ public final class AttributesParser extends org.waxeye.parser.Parser<AttributesT
         states.add(new State<AttributesType>(edges, false));
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'U', 'u'}, new char[]{}, new char[]{}), 10, false));
-        states.add(new State<AttributesType>(edges, false));
+        edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'S', 's'}, new char[]{}, new char[]{}), 5, false));
+        edges.add(new Edge<AttributesType>(new AutomatonTransition<AttributesType>(12), 6, false));
+        states.add(new State<AttributesType>(edges, true));
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'T', 't'}, new char[]{}, new char[]{}), 11, false));
         states.add(new State<AttributesType>(edges, false));
@@ -327,14 +329,6 @@ public final class AttributesParser extends org.waxeye.parser.Parser<AttributesT
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'S', 's'}, new char[]{}, new char[]{}), 5, false));
         edges.add(new Edge<AttributesType>(new AutomatonTransition<AttributesType>(12), 6, false));
         states.add(new State<AttributesType>(edges, true));
-        edges = new ArrayList<Edge<AttributesType>>();
-        edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'S', 's'}, new char[]{}, new char[]{}), 5, false));
-        edges.add(new Edge<AttributesType>(new AutomatonTransition<AttributesType>(12), 6, false));
-        edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'I', 'i'}, new char[]{}, new char[]{}), 15, false));
-        states.add(new State<AttributesType>(edges, true));
-        edges = new ArrayList<Edge<AttributesType>>();
-        edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'N', 'n'}, new char[]{}, new char[]{}), 16, false));
-        states.add(new State<AttributesType>(edges, false));
         edges = new ArrayList<Edge<AttributesType>>();
         edges.add(new Edge<AttributesType>(new CharTransition<AttributesType>(new char[]{'S', 's'}, new char[]{}, new char[]{}), 5, false));
         edges.add(new Edge<AttributesType>(new AutomatonTransition<AttributesType>(12), 6, false));

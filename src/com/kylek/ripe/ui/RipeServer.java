@@ -85,14 +85,12 @@ public class RipeServer extends NanoHTTPD{
       Properties parms,
       Properties files){
 
-      /**
       System.out.println(
          "URI: " + uri + "\n" +
          "Method: " + method + "\n" +
          "Header: " + header.toString() + "\n" +
          "Parms: " + parms.toString() + "\n" +
          "Files: " + files.toString() + "\n");
-      **/
 
       // If method is GET and one of the last 4 characters is a '.', serve
       // up a file.
@@ -113,7 +111,16 @@ public class RipeServer extends NanoHTTPD{
       try{
          // Base the page on what is specified.
          String requestedPage = parms.getProperty("page");
-	
+
+         // Get the recipe id (if provided)
+         String recipeId = parms.getProperty("recipe");
+         int recId = -1;
+         if (recipeId != null &&
+             !recipeId.equals("")){
+            recId = Integer.parseInt(recipeId);
+         }
+
+
          // The recipe listing page
          if (requestedPage == null ||
              requestedPage.equals("recipes") ||
@@ -122,30 +129,29 @@ public class RipeServer extends NanoHTTPD{
          }
          // The view recipe page
          else if (requestedPage.equals("view")){
-            // Get the recipe id
-            String recipeId = parms.getProperty("recipe");
-            int recId = -1;
-            if (recipeId != null){
-               recId = Integer.parseInt(recipeId);
-            }
-
+            // View a specific recipe
             content = renderRecipe(recId);
          }
          else if(requestedPage.equals("add_recipe")){
             // Oh boy! A new recipe!
             content = renderAddRecipe();
          }
+         else if (requestedPage.equals("add_recipe_manual")){
+            content = renderAddRecipeManual();
+         }
          else if(requestedPage.equals("add_recipe_go")){
             // Render the parse results page.
             content = renderAddRecipeGo(parms, files);
          }
          else if(requestedPage.equals("edit")){
-            content += "Under construction.";
+            // Render the edit recipe page
+            content = renderEditRecipe(recId);
+         }
+         else if(requestedPage.equals("edit_go")){
+            content = renderEditRecipeGo(parms);
          }
          else if(requestedPage.equals("remove")){
             // Get the current recipe id
-            String recipeId = parms.getProperty("recipe");
-            int recId = -1;
             if (recipeId != null){
                recId = Integer.parseInt(recipeId);
             }
@@ -603,9 +609,9 @@ public class RipeServer extends NanoHTTPD{
 
       // Render the links
       content +=
-         renderNavLink("View all Recipes", "/") +
-         renderNavLink("Add Recipe", "?page=add_recipe") +
-         renderNavLink("View Your Recipes", "/");
+         renderNavLink("View Recipes", "/") +
+         renderNavLink("Add Text Recipe", "?page=add_recipe") +
+         renderNavLink("Add Recipe Manually", "?page=add_recipe_manual");
       
       content += "</div>\n";
       return content;
@@ -618,6 +624,169 @@ public class RipeServer extends NanoHTTPD{
          linkLocation + "'\">";
       content += linkName;
       content += "</span>\n";
+      return content;
+   }
+
+   // Render the edit recipe page
+   private String renderEditRecipe(int recId){
+      String content = renderContentHeader("Edit Recipe");
+
+      // Get the current recipe
+      if (recId < mRipe.getAllRecipes().size() &&
+          recId >= 0){
+
+         // Get our current recipe
+         Recipe recipe = mRipe.getAllRecipes().get(recId);
+
+         content += renderRecipeForm(recipe);
+      }
+      else{
+         content += "Invalid recipe ID!";
+      }
+      return content;
+   }
+
+   // Render a recipe form
+   private String renderRecipeForm(Recipe recipe){
+      if (recipe == null){
+         recipe = new Recipe();
+      }
+
+      // Build up the form
+      String content =
+         "<p class='small_note'>Just fill in what you can. All fields but title are optional.</p>\n" +
+         "<div id='edit_recipe_form'>\n" +
+         "    <form action='?page=edit_go' method='post'>\n" +
+         "        Recipe Title: <input type='text' name='recipe_name' value='" +
+         recipe.getName() + "'/>\n" +
+         renderRecipeAttributesForm(recipe) +
+         renderRecipeIngredientsListForm(recipe) +
+         renderRecipeDirectionsForm(recipe) +
+         "        <input type='submit' value='Save'/>\n" +
+         "        <input type='button' value='Cancel' id='cancel_button'/>\n" +
+         "    </form>\n" +
+         "</div>\n";
+
+      return content;
+   }
+
+   // Render the attributes portion of the form
+   private String renderRecipeAttributesForm(Recipe recipe){
+      Yield recYield = recipe.getYield();
+      if (recYield == null){
+         recYield = new Yield();
+      }
+      String content =
+         "<fieldset id='edit_recipe_form_attributes'>\n" +
+         "    <legend>Attributes</legend>\n" +
+         "    <b>Yield</b>: Amount <input type='text' name='yield_amount' value='" +
+         recYield.getValue() + "'/> Units " +
+         "<input type='text' name='yield_unit' value='" +
+         recYield.getUnit() + "'/>\n<br/>\n" +
+         "    <b>Preparation Time</b>: <input type='text' name='prep_time' value='" +
+         recipe.getPrepTime() + "'/><br/>\n" +
+         "    <b>Cook Time</b>: <input type='text' name='cook_time' value='" +
+         recipe.getCookTime() + "'/><br/>\n" +
+         "    <b>Overall Time</b>: <input type='text' name='overall_time' value='" +
+         recipe.getOverallTime() + "'/><br/>\n" +
+         "</fieldset>\n";
+      
+      return content;
+   }
+
+   // Render the ingredients list portion of the form
+   private String renderRecipeIngredientsListForm(Recipe recipe){
+      // Get the ingredients list from the recipe
+      IngredientsList objIngList = recipe.getIngredients();
+      if (objIngList == null){
+    	  objIngList = new IngredientsList();
+      }
+      Vector<MeasurementAndIngredient> vecIngList =
+         objIngList.getIngredients();
+      
+      String content =
+         "<fieldset id='edit_recipe_form_ingredients_list'>\n" +
+         "    <legend>Ingredients</legend>\n";
+
+      // Iterate through each ingredient
+
+      for (int i=0; i<vecIngList.size(); i++){
+         content += renderEditIngredient(vecIngList.get(i), i+1);
+      }
+
+      // Add an option to add another ingredient
+      content += "<a id='add_ingredient' href='#'>Add Another Ingredient</a>";
+
+      content += "</fieldset>";
+      
+      return content;
+   }
+
+   // Render an individual ingredient
+   private String renderEditIngredient(MeasurementAndIngredient measIng, int index){
+      String content = "";
+      Measurement curMeas = measIng.getMeasurement();
+      if (curMeas == null){
+         curMeas = new Measurement();
+      }
+      Measurement curMeas2 = measIng.getMeasurement2();
+      if (curMeas2 == null){
+         curMeas2 = new Measurement();
+      }
+      Ingredient curIng = measIng.getIngredient();
+         
+      content +=
+         "<fieldset class='ingredient_form'>\n" +
+         "   <legend>Ingredient " + index + "</legend>\n" +
+         "   <b>Amount</b>: <input type='text' name='amount1_" + index + "' value='" +
+         curMeas.getAmount() + "'><br/>\n" +
+         "   <b>Specifier</b>: <input type='text' name='specifier1_" + index + "' value='" +
+         curMeas.getSpecifier() + "'><br/>\n" +
+         "   <b>Unit</b>: <input type='text' name='unit1_" + index + "' value='" +
+         curMeas.getUnit() + "'><br/>\n" +
+         "   <p>Plus:</p>\n" +
+         "   <b>Amount</b>: <input type='text' name='amount2_" + index + "' value='" +
+         curMeas2.getAmount() + "'><br/>\n" +
+         "   <b>Specifier</b>: <input type='text' name='specifier2_" + index + "' value='" +
+         curMeas2.getSpecifier() + "'><br/>\n" +
+         "   <b>Unit</b>: <input type='text' name='unit2_" + index + "' value='" +
+         curMeas2.getUnit() + "'><br/>\n" +
+         "   <b>Product</b>: <input type='text' name='product_" + index + "'value='" +
+         curIng.getName() + "'><br/>\n" +
+         "   <b>Special Directions</b>: <input type='text' name='specDir_" + index + "'value='" +
+         curIng.getSpecialDirections() + "'><br/>\n" +
+         "</fieldset>\n";
+
+      return content;
+   }
+
+   // Render the recipe directions form
+   private String renderRecipeDirectionsForm(Recipe recipe){
+      String content =
+         "<fieldset id='recipe_directions'>\n" +
+         "   <legend>Directions</legend>\n" +
+         "   <textarea name='recipe_directions' cols='70' rows='15'>" +
+         recipe.getDirections() + "</textarea><br/>\n" +
+         "</fieldset>";
+      
+      return content;
+   }
+         
+   // Render the edit recipe go page
+   private String renderEditRecipeGo(Properties parms){
+      String content = renderContentHeader("Edit Results");
+      // TODO
+      return content;
+   }
+
+   // Render the form to manually add a recipe
+   private String renderAddRecipeManual(){
+      String content = renderContentHeader("Manually Add Recipe");
+
+      // Create an empty recipe
+      Recipe recipe = new Recipe();
+      content += renderRecipeForm(recipe);
+
       return content;
    }
    
