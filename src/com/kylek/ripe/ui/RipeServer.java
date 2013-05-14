@@ -657,8 +657,10 @@ public class RipeServer extends NanoHTTPD{
          "<p class='small_note'>Just fill in what you can. All fields but title are optional.</p>\n" +
          "<div id='edit_recipe_form'>\n" +
          "    <form action='?page=edit_go' method='post'>\n" +
-         "        Recipe Title: <input type='text' name='recipe_name' value='" +
-         recipe.getName() + "'/>\n" +
+         "        <span id='edit_recipe_title'>" +
+         "            <label>Recipe Title</label> <input type='text' name='recipe_name' value='" +
+         recipe.getName() + "'/>" +
+         "        </span>\n" +
          renderRecipeAttributesForm(recipe) +
          renderRecipeIngredientsListForm(recipe) +
          renderRecipeDirectionsForm(recipe) +
@@ -679,15 +681,15 @@ public class RipeServer extends NanoHTTPD{
       String content =
          "<fieldset id='edit_recipe_form_attributes'>\n" +
          "    <legend>Attributes</legend>\n" +
-         "    <b>Yield</b>: Amount <input type='text' name='yield_amount' value='" +
+         "    <label>Yield</label> Amount <input type='text' name='yield_amount' value='" +
          recYield.getValue() + "'/> Units " +
          "<input type='text' name='yield_unit' value='" +
          recYield.getUnit() + "'/>\n<br/>\n" +
-         "    <b>Preparation Time</b>: <input type='text' name='prep_time' value='" +
+         "    <label>Preparation Time</label> <input type='text' name='prep_time' value='" +
          recipe.getPrepTime() + "'/><br/>\n" +
-         "    <b>Cook Time</b>: <input type='text' name='cook_time' value='" +
+         "    <label>Cook Time</label> <input type='text' name='cook_time' value='" +
          recipe.getCookTime() + "'/><br/>\n" +
-         "    <b>Overall Time</b>: <input type='text' name='overall_time' value='" +
+         "    <label>Overall Time</label> <input type='text' name='overall_time' value='" +
          recipe.getOverallTime() + "'/><br/>\n" +
          "</fieldset>\n";
       
@@ -711,11 +713,11 @@ public class RipeServer extends NanoHTTPD{
       // Iterate through each ingredient
 
       for (int i=0; i<vecIngList.size(); i++){
-         content += renderEditIngredient(vecIngList.get(i), i+1);
+         content += renderEditIngredient(vecIngList.get(i), i);
       }
 
       // Add an option to add another ingredient
-      content += "<a id='add_ingredient' href='#'>Add Another Ingredient</a>";
+      content += "<input type='button' id='add_ingredient' value='Add Another Ingredient'/>\n";
 
       content += "</fieldset>";
       
@@ -736,25 +738,27 @@ public class RipeServer extends NanoHTTPD{
       Ingredient curIng = measIng.getIngredient();
          
       content +=
-         "<fieldset class='ingredient_form'>\n" +
-         "   <legend>Ingredient " + index + "</legend>\n" +
-         "   <b>Amount</b>: <input type='text' name='amount1_" + index + "' value='" +
+         "<fieldset class='ingredient_form' id='ingredient" + index + "'>\n" +
+         "   <legend>Ingredient " + (index + 1) + "</legend>\n" +
+         "   <label>Amount</label> <input type='text' name='amount1[]' value='" +
          curMeas.getAmount() + "'><br/>\n" +
-         "   <b>Specifier</b>: <input type='text' name='specifier1_" + index + "' value='" +
+         "   <label>Specifier</label> <input type='text' name='specifier1[]' value='" +
          curMeas.getSpecifier() + "'><br/>\n" +
-         "   <b>Unit</b>: <input type='text' name='unit1_" + index + "' value='" +
+         "   <label>Unit</label> <input type='text' name='unit1[]' value='" +
          curMeas.getUnit() + "'><br/>\n" +
-         "   <p>Plus:</p>\n" +
-         "   <b>Amount</b>: <input type='text' name='amount2_" + index + "' value='" +
+         "      <p id='ing_plus'>Plus (optional second measurement)</p>\n" +
+         "      <label>Amount</label> <input type='text' name='amount2[]' value='" +
          curMeas2.getAmount() + "'><br/>\n" +
-         "   <b>Specifier</b>: <input type='text' name='specifier2_" + index + "' value='" +
+         "      <label>Specifier</label> <input type='text' name='specifier2[]' value='" +
          curMeas2.getSpecifier() + "'><br/>\n" +
-         "   <b>Unit</b>: <input type='text' name='unit2_" + index + "' value='" +
+         "      <label>Unit</label> <input type='text' name='unit2[]' value='" +
          curMeas2.getUnit() + "'><br/>\n" +
-         "   <b>Product</b>: <input type='text' name='product_" + index + "'value='" +
+         "      <label>Product</label> <input type='text' name='product[]'value='" +
          curIng.getName() + "'><br/>\n" +
-         "   <b>Special Directions</b>: <input type='text' name='specDir_" + index + "'value='" +
+         "   <label>Special Directions</label> <input type='text' name='specDir[]'value='" +
          curIng.getSpecialDirections() + "'><br/>\n" +
+         "   <input type='button' class='remove_ingredient' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
+         "<br/>\n" +
          "</fieldset>\n";
 
       return content;

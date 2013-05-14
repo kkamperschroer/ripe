@@ -124,3 +124,21 @@ th{
 .small_note{
     font-size: 10px;
 }
+
+#ing_plus{
+    float: left;
+    width: 150px;
+    text-align: right;
+    margin: 0px;
+}
+
+#edit_recipe_form_attributes{
+    float: left;
+    margin: 15px 0px;
+    padding: 5px;
+}
+
+#edit_recipe_title{
+    margin: 10px 0px;
+    padding: 5px;
+}

@@ -1,9 +1,9 @@
 - Pretty things up with CSS
 - Continue parsing new recipes, adding each to the unit tests
-- Edit recipe page
 - Validation within models
 - Possibly automatically calculate any missing times? If you have 2/3...
 - Prompt before deletion
 - Hide empty string attributes when viewing
-- Manual add recipe form
-- Does viewing the recipe show the yield units?
+- Fix the weird js removing of ingredients and adding
+- Get the big ugly form aligned properly
+- Tooltips for the form to explain all the strange parts
