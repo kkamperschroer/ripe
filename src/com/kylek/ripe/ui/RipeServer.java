@@ -654,12 +654,15 @@ public class RipeServer extends NanoHTTPD{
 
       // Build up the form
       String content =
-         "<p class='small_note'>Just fill in what you can. All fields but title are optional.</p>\n" +
          "<div id='edit_recipe_form'>\n" +
          "    <form action='?page=edit_go' method='post'>\n" +
          "        <span id='edit_recipe_title'>" +
-         "            <label>Recipe Title</label> <input type='text' name='recipe_name' value='" +
+         "            <fieldset id='edit_recipe_form_basic'>\n" +
+         "                <legend>Basic</legend>\n" +
+         "                    <label>Recipe Title<span class='label_desc'>What is your recipe called?</span></label> <input type='text' name='recipe_name' value='" +
          recipe.getName() + "'/>" +
+         "                </legend>\n" +
+         "            </fieldset>\n" +
          "        </span>\n" +
          renderRecipeAttributesForm(recipe) +
          renderRecipeIngredientsListForm(recipe) +
@@ -681,16 +684,16 @@ public class RipeServer extends NanoHTTPD{
       String content =
          "<fieldset id='edit_recipe_form_attributes'>\n" +
          "    <legend>Attributes</legend>\n" +
-         "    <label>Yield</label> Amount <input type='text' name='yield_amount' value='" +
-         recYield.getValue() + "'/> Units " +
-         "<input type='text' name='yield_unit' value='" +
-         recYield.getUnit() + "'/>\n<br/>\n" +
-         "    <label>Preparation Time</label> <input type='text' name='prep_time' value='" +
-         recipe.getPrepTime() + "'/><br/>\n" +
-         "    <label>Cook Time</label> <input type='text' name='cook_time' value='" +
-         recipe.getCookTime() + "'/><br/>\n" +
-         "    <label>Overall Time</label> <input type='text' name='overall_time' value='" +
-         recipe.getOverallTime() + "'/><br/>\n" +
+         "    <label>Yield Amount<span class='label_desc'>A number or decimal</span></label> <input type='text' name='yield_amount' value='" +
+         recYield.getValue() + "'/>" +
+         "    <label>Yield Units<span class='label_desc'>Servings, cups, etc.</span></label> <input type='text' name='yield_unit' value='" +
+         recYield.getUnit() + "'/>\n" +
+         "    <label>Preparation Time<span class='label_desc'>E.G. 25 minutes</span></label> <input type='text' name='prep_time' value='" +
+         recipe.getPrepTime() + "'/>\n" +
+         "    <label>Cook Time<span class='label_desc'>E.G. 35 m</span></label> <input type='text' name='cook_time' value='" +
+         recipe.getCookTime() + "'/>\n" +
+         "    <label>Overall Time<span class='label_desc'>E.G. 1 hr</span></label> <input type='text' name='overall_time' value='" +
+         recipe.getOverallTime() + "'/>\n" +
          "</fieldset>\n";
       
       return content;
@@ -740,25 +743,24 @@ public class RipeServer extends NanoHTTPD{
       content +=
          "<fieldset class='ingredient_form' id='ingredient" + index + "'>\n" +
          "   <legend>Ingredient " + (index + 1) + "</legend>\n" +
-         "   <label>Amount</label> <input type='text' name='amount1[]' value='" +
-         curMeas.getAmount() + "'><br/>\n" +
-         "   <label>Specifier</label> <input type='text' name='specifier1[]' value='" +
-         curMeas.getSpecifier() + "'><br/>\n" +
-         "   <label>Unit</label> <input type='text' name='unit1[]' value='" +
-         curMeas.getUnit() + "'><br/>\n" +
-         "      <p id='ing_plus'>Plus (optional second measurement)</p>\n" +
-         "      <label>Amount</label> <input type='text' name='amount2[]' value='" +
-         curMeas2.getAmount() + "'><br/>\n" +
-         "      <label>Specifier</label> <input type='text' name='specifier2[]' value='" +
-         curMeas2.getSpecifier() + "'><br/>\n" +
-         "      <label>Unit</label> <input type='text' name='unit2[]' value='" +
-         curMeas2.getUnit() + "'><br/>\n" +
-         "      <label>Product</label> <input type='text' name='product[]'value='" +
-         curIng.getName() + "'><br/>\n" +
-         "   <label>Special Directions</label> <input type='text' name='specDir[]'value='" +
-         curIng.getSpecialDirections() + "'><br/>\n" +
+         "   <label>Amount<span class='label_desc'>Number or fraction</span></label> <input type='text' name='amount1[]' value='" +
+         curMeas.getAmount() + "'>\n" +
+         "   <label>Specifier<span class='label_desc'>E.G. (14oz)</span></label> <input type='text' name='specifier1[]' value='" +
+         curMeas.getSpecifier() + "'>\n" +
+         "   <label>Unit<span class='label_desc'>Can, jar, tsp, etc.</span></label> <input type='text' name='unit1[]' value='" +
+         curMeas.getUnit() + "'>\n" +
+         "      <label>Amount<span class='label_desc'>Optional 2nd amount</span></label> <input type='text' name='amount2[]' value='" +
+         curMeas2.getAmount() + "'>\n" +
+         "      <label>Specifier<span class='label_desc'>Optional 2nd specifier</span></label> <input type='text' name='specifier2[]' value='" +
+         curMeas2.getSpecifier() + "'>\n" +
+         "      <label>Unit<span class='label_desc'>Optional 2nd unit</span></label> <input type='text' name='unit2[]' value='" +
+         curMeas2.getUnit() + "'>\n" +
+         "      <label>Product<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input type='text' name='product[]'value='" +
+         curIng.getName() + "'>\n" +
+         "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input type='text' name='specDir[]'value='" +
+         curIng.getSpecialDirections() + "'>\n" +
          "   <input type='button' class='remove_ingredient' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
-         "<br/>\n" +
+         "\n" +
          "</fieldset>\n";
 
       return content;
@@ -770,7 +772,7 @@ public class RipeServer extends NanoHTTPD{
          "<fieldset id='recipe_directions'>\n" +
          "   <legend>Directions</legend>\n" +
          "   <textarea name='recipe_directions' cols='70' rows='15'>" +
-         recipe.getDirections() + "</textarea><br/>\n" +
+         recipe.getDirections() + "</textarea>\n" +
          "</fieldset>";
       
       return content;

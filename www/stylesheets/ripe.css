@@ -118,27 +118,38 @@ th{
 }
 
 #edit_recipe_form{
-    width: 650px;
-}
-
-.small_note{
-    font-size: 10px;
-}
-
-#ing_plus{
-    float: left;
-    width: 150px;
-    text-align: right;
-    margin: 0px;
-}
-
-#edit_recipe_form_attributes{
-    float: left;
-    margin: 15px 0px;
-    padding: 5px;
+    width: 450px;
+    margin: 0;
+    padding: 10px;
 }
 
 #edit_recipe_title{
     margin: 10px 0px;
     padding: 5px;
+}
+
+label{
+    display: block;
+    font-weight: bold;
+    text-align: right;
+    width: 140px;
+    float: left;
+    font-size: 12px;
+}
+
+input{
+    float: left;
+    padding: 4px 2px;
+    font-size: 12px;
+    width: 200px;
+    margin: 2px 0 10px 10px;
+}
+
+.label_desc{
+    color: #444;
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    text-align: right;
+    width: 140px;
 }
