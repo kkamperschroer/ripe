@@ -274,7 +274,7 @@ public class RipeServer extends NanoHTTPD{
             "<tr>\n" +
             "   <td><a href=\"?page=view&recipe=" + i + "\">" + cur.getName() + "</a></td>\n" +
             "   <td><a href=\"/?page=edit&recipe=" + i + "\">Edit</a>\n" +
-            "   <td><a class='remove_rec' href=\"/?page=remove&recipe=" + i + "\">X</a>\n" +
+            "   <td><a class='remove_rec' href=\"/?page=remove&recipe=" + i + "\">Remove</a>\n" +
             "</tr>\n";
       }
 	
@@ -416,7 +416,10 @@ public class RipeServer extends NanoHTTPD{
       if (mea != null){
          content += renderRecipeIngredientMeasurement(mea);
       }
-      if (mea2 != null){
+      if (mea2 != null &&
+          !mea2.getAmount().equals("") &&
+          !mea2.getSpecifier().equals("") &&
+          !mea2.getUnit().equals("")){
          content += " plus " +
             renderRecipeIngredientMeasurement(mea2);
       }

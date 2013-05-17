@@ -2,5 +2,7 @@
 - Continue parsing new recipes, adding each to the unit tests
 - Validation within models
 - Possibly automatically calculate any missing times? If you have 2/3...
-- Prompt before deletion
 - Hide empty string attributes when viewing
+- Window next to input box with info on supported formats
+- Add a tips pain with things like "get rid of special symbols (R)
+   (C), etc)
