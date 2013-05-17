@@ -274,7 +274,7 @@ public class RipeServer extends NanoHTTPD{
             "<tr>\n" +
             "   <td><a href=\"?page=view&recipe=" + i + "\">" + cur.getName() + "</a></td>\n" +
             "   <td><a href=\"/?page=edit&recipe=" + i + "\">Edit</a>\n" +
-            "   <td><a href=\"/?page=remove&recipe=" + i + "\">X</a>\n" +
+            "   <td><a class='remove_rec' href=\"/?page=remove&recipe=" + i + "\">X</a>\n" +
             "</tr>\n";
       }
 	

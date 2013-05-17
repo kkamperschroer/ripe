@@ -104,4 +104,15 @@ $(function() { // Doc ready
     // the page
     $(".remove_ingredient").click(removeIngredient);
 
+
+    // We want to prompt before a user removes a recipe
+    $("a.remove_rec").click(function(event){
+        var link = this;
+        event.preventDefault();
+
+        if (confirm("Are you sure you want to delete this recipe?")){
+            window.location = link.href;
+        }
+    });
+    
 });
