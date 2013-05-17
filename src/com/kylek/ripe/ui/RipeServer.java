@@ -866,7 +866,7 @@ public class RipeServer extends NanoHTTPD{
          ing.setName(product);
          String specDir = parms.getProperty("specDir_" + i);
          ing.setSpecialDirections(specDir);
-
+         
          // Cool, now build the MeasurementAndIngredient and add it to the vector
          measAndIngs.add(new MeasurementAndIngredient(meas1, meas2, ing));
 

@@ -50,9 +50,6 @@ public class WaxeyeParserManager {
    // A string that represents our error message
    private String mErrorMessage;
 
-   // A bool to determine if we should do Amazon lookups or not
-   private boolean mDoAmazonLookups;
-
    ////////////////////////////////////////
    // Constructors
    ////////////////////////////////////////
@@ -66,17 +63,11 @@ public class WaxeyeParserManager {
       mIngredientsListResults = null;
       mPreviousSuccess = false;
       mErrorMessage = "";
-      mDoAmazonLookups = true;
    }
 
    ////////////////////////////////////////
    // Setters and getters
    ////////////////////////////////////////
-
-   // Set the Amazon lookups flag
-   public void setAmazonLookupsEnabled(boolean doAmazonLookups){
-      mDoAmazonLookups = doAmazonLookups;
-   }
 
    // Get the error message
    public String getErrorMessage() { return mErrorMessage; }
@@ -536,12 +527,6 @@ public class WaxeyeParserManager {
             }
             ing.setName(curName);
          }
-      }
-
-      // Don't do lookups if it's not wanted
-      if (mDoAmazonLookups){
-         // Get the product from Amazon, if we can
-         ing.setAmazonUrl(AmazonScraper.getProductUrl(ing.getName()));
       }
       
       // Return our built ingredient

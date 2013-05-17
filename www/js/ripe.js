@@ -63,7 +63,7 @@ $(function() { // Doc ready
         var newElem = oldElem.clone().attr('id', 'ingredient_' + newNum).fadeIn('slow');
 
         // Update some of the portions of the new element
-        newElem.children(":text").attr("value", "");
+        newElem.children(":text").val("");
         newElem.children("legend").text("Ingredient " + (newNum+1));
 
         // Update each of the input field names

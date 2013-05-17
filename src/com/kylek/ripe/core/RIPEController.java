@@ -5,6 +5,7 @@
 package com.kylek.ripe.core;
 
 import java.util.List;
+import java.util.Vector;
 
 public class RIPEController {
 
@@ -99,9 +100,6 @@ public class RIPEController {
             // TODO Auto-generated catch block
             e.printStackTrace();
          }
-
-         // Attempt to map products to each ingredient
-         setProductsForRecipe(r);
       }
         
       return r;
@@ -118,6 +116,9 @@ public class RIPEController {
    //// Private methods ////
 
    private void addRecipeToDb(Recipe newRecipe){
+      // Set the Amazon products for this recipe
+      setProductsForRecipe(newRecipe);
+      
       // Attempt to add the recipe to our db
       mDb.storeRecipe(newRecipe);
 
@@ -136,7 +137,12 @@ public class RIPEController {
 
    // Use the Amazon scrapper to set products for our recipe
    private void setProductsForRecipe(Recipe r){
-      // todo
+      // Iterate through each ingredient
+      Vector<MeasurementAndIngredient> ingsList = r.getIngredients().getIngredients();
+      for (int i=0; i<ingsList.size(); i++){
+         Ingredient curIng = ingsList.get(i).getIngredient();
+         curIng.setAmazonUrl(AmazonScraper.getProductUrl(curIng.getName()));
+      }
    }
    
 }

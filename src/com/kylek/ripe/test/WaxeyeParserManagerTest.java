@@ -227,7 +227,7 @@ public class WaxeyeParserManagerTest {
          "Yield: 8.0 \n" +
          "Prep time: \n" +
          "Cook time: \n" +
-         "Overall time: null\n" +
+         "Overall time: \n" +
          "Ingredients list: \n" +
          "0) Measurment = 2  cups    Ingredient = all -purpose flour for coating\n" +
          "1) Measurment = 1/2  teaspoon    Ingredient = salt \n" +
@@ -254,9 +254,6 @@ public class WaxeyeParserManagerTest {
    public void testRecipes(){
       // Create the parser
       WaxeyeParserManager wpm = new WaxeyeParserManager();
-
-      // We don't want to do Amazon lookups this time
-      wpm.setAmazonLookupsEnabled(false);
 
       // Loop through, parsing each and validating the strings (char by char)
       Recipe curRec = null;
