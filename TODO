@@ -1,9 +1,6 @@
-- Pretty things up with CSS
+- Pretty things up with CSS more?
 - Continue parsing new recipes, adding each to the unit tests
 - Validation within models
 - Possibly automatically calculate any missing times? If you have 2/3...
 - Prompt before deletion
 - Hide empty string attributes when viewing
-- Fix the weird js removing of ingredients and adding
-- Get the big ugly form aligned properly
-- Tooltips for the form to explain all the strange parts
