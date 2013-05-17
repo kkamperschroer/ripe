@@ -1,6 +1,6 @@
 /**
-(C) Kyle Kamperschroer 2013
- */
+   (C) Kyle Kamperschroer 2013
+*/
 
 package com.kylek.ripe.core;
 
@@ -8,51 +8,47 @@ import java.util.Vector;
 
 public class IngredientsList {
 
-    /////////////////////////////////////
-    // Members
-    /////////////////////////////////////
+   /////////////////////////////////////
+   // Members
+   /////////////////////////////////////
 
-    // The vector of measurements and ingredients
-    private Vector<MeasurementAndIngredient> mIngredients;
+   // The vector of measurements and ingredients
+   private Vector<MeasurementAndIngredient> mIngredients;
 
-    /////////////////////////////////////
-    // Constructors
-    /////////////////////////////////////
+   /////////////////////////////////////
+   // Constructors
+   /////////////////////////////////////
 
-    // Default constructor
-    public IngredientsList()
-    {
-        mIngredients = new Vector<MeasurementAndIngredient>();
-    }
+   // Default constructor
+   public IngredientsList(){
+      mIngredients = new Vector<MeasurementAndIngredient>();
+   }
 
-    // All members
-    public IngredientsList(Vector<MeasurementAndIngredient> ingredients)
-    {
-        mIngredients = ingredients;
-    }
+   // All members
+   public IngredientsList(Vector<MeasurementAndIngredient> ingredients){
+      mIngredients = ingredients;
+   }
 
-    /////////////////////////////////////
-    // Setters and getters
-    /////////////////////////////////////
+   /////////////////////////////////////
+   // Setters and getters
+   /////////////////////////////////////
 
-    public Vector<MeasurementAndIngredient> getIngredients()
-    { return mIngredients; }
+   public Vector<MeasurementAndIngredient> getIngredients()
+      { return mIngredients; }
 
-    public void setIngredients(Vector<MeasurementAndIngredient> ingredients)
-    { mIngredients = ingredients; }
+   public void setIngredients(Vector<MeasurementAndIngredient> ingredients)
+      { mIngredients = ingredients; }
 
-    /////////////////////////////////////
-    // Other methods
-    /////////////////////////////////////
+   /////////////////////////////////////
+   // Other methods
+   /////////////////////////////////////
 
-    public boolean addIngredient(MeasurementAndIngredient ingredient)
-    {
-        if (mIngredients.contains(ingredient))
-        {
-            assert false; // Caller is mistaken! Fix it!
-            return false;
-        }
-        // else
-        return mIngredients.add(ingredient);
-    }
+   public boolean addIngredient(MeasurementAndIngredient ingredient){
+      if (mIngredients.contains(ingredient)){
+         assert false; // Caller is mistaken! Fix it!
+         return false;
+      }
+      // else
+      return mIngredients.add(ingredient);
+   }
 }

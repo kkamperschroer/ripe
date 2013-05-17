@@ -638,7 +638,7 @@ public class RipeServer extends NanoHTTPD{
          // Get our current recipe
          Recipe recipe = mRipe.getAllRecipes().get(recId);
 
-         content += renderRecipeForm(recipe);
+         content += renderRecipeForm(recipe, recId);
       }
       else{
          content += "Invalid recipe ID!";
@@ -647,7 +647,7 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Render a recipe form
-   private String renderRecipeForm(Recipe recipe){
+   private String renderRecipeForm(Recipe recipe, int recId){
       if (recipe == null){
          recipe = new Recipe();
       }
@@ -659,8 +659,8 @@ public class RipeServer extends NanoHTTPD{
          "        <span id='edit_recipe_title'>" +
          "            <fieldset id='edit_recipe_form_basic'>\n" +
          "                <legend>Basic</legend>\n" +
-         "                    <label>Recipe Title<span class='label_desc'>What is your recipe called?</span></label> <input type='text' name='recipe_name' value='" +
-         recipe.getName() + "'/>" +
+         "                    <label>Recipe Title<span class='label_desc'>What is your recipe called?</span></label> <input type='text' name='recipe_name' value=\"" +
+         recipe.getName() + "\"/>" +
          "                </legend>\n" +
          "            </fieldset>\n" +
          "        </span>\n" +
@@ -669,6 +669,8 @@ public class RipeServer extends NanoHTTPD{
          renderRecipeDirectionsForm(recipe) +
          "        <input type='submit' value='Save'/>\n" +
          "        <input type='button' value='Cancel' id='cancel_button'/>\n" +
+         // A hidden field with the current recipe id (bad as far as security goes)
+         "        <input type='hidden' id='recipe_id' name='recipe_id' value='" + recId + "'/>\n" +
          "    </form>\n" +
          "</div>\n";
 
@@ -719,12 +721,14 @@ public class RipeServer extends NanoHTTPD{
       // We want at least 1 ingredient form to be shown
       if (totalIngs == 0){
          content += renderEditIngredient(null, 0);
+         // Update totalIngs so it's visible in the hidden field
+         totalIngs = 1;
       }
-      // else
-      for (int i=0; i<totalIngs; i++){
-         content += renderEditIngredient(vecIngList.get(i), i);
+      else{
+         for (int i=0; i<totalIngs; i++){
+            content += renderEditIngredient(vecIngList.get(i), i);
+         }
       }
-
       // Add an option to add another ingredient
       content += "<input type='button' id='add_ingredient' value='Add Another Ingredient'/>\n";
 
@@ -797,13 +801,105 @@ public class RipeServer extends NanoHTTPD{
    private String renderEditRecipeGo(Properties parms){
       String content = renderContentHeader("Edit Results");
 
-      Recipe editedRecipe = new Recipe();
+      // Now determine the recipe's id, and save it
+      int recId = Integer.parseInt(parms.getProperty("recipe_id"));
 
-      Set<String> propKeys = parms.stringPropertyNames();
-      for (String curKey : propKeys){
-         System.out.println(curKey + "=" + parms.getProperty(curKey));
+      // TODO --> This is a serious security issue. Hidden field, really?
+      //          Should be good enough for a demo, however.
+      // Update the recipe based on the recipe id
+      if (recId > mRipe.getAllRecipes().size()){
+         content += "<p>Recipe ID was found to be invalid.</p>\n";
+         // Don't bother trying.
+         return content;
       }
-      // TODO
+
+      // Check if this recipe's id is -1. If so, it's new!
+      Recipe editedRecipe;
+      if (recId == -1){
+         editedRecipe = new Recipe();
+      }else{
+         // Get our recipe from our list of recipes based on it's id
+         editedRecipe = mRipe.getAllRecipes().get(recId);
+      }
+
+      // Start by populating the title
+      editedRecipe.setName(parms.getProperty("recipe_name"));
+
+      // Set the different times
+      editedRecipe.setPrepTime(parms.getProperty("prep_time"));
+      editedRecipe.setCookTime(parms.getProperty("cook_time"));
+      editedRecipe.setOverallTime(parms.getProperty("overall_time"));
+
+      // Set the yield values
+      String yieldAmt = parms.getProperty("yield_amount");
+      String yieldUnit = parms.getProperty("yield_unit");
+      Yield newYield = new Yield(Double.parseDouble(yieldAmt), yieldUnit);
+      editedRecipe.setYield(newYield);
+
+      // Determine the number of ingredients using the total_ingredients
+      // TODO: If the user changed it to a non-int, what happens?
+      int totalIngs = Integer.parseInt(parms.getProperty("total_ingredients"));
+      IngredientsList ingList = new IngredientsList();
+      Vector<MeasurementAndIngredient> measAndIngs =
+         new Vector<MeasurementAndIngredient>();
+
+      // Now populate the new vector of measurements and ingredients
+      for (int i=0; i<totalIngs; i++){
+         Measurement meas1 = new Measurement();
+         Measurement meas2 = new Measurement();
+         Ingredient ing = new Ingredient();
+
+         // Populate each piece
+         String amount1 = parms.getProperty("amount1_" + i);
+         meas1.setAmount(amount1);
+         String specifier1 = parms.getProperty("specifier1_" + i);
+         meas1.setSpecifier(specifier1);
+         String unit1 = parms.getProperty("unit1_" + i); 
+         meas1.setUnit(unit1);
+         String amount2 = parms.getProperty("amount2_" + i);
+         meas2.setAmount(amount2);
+         String specifier2 = parms.getProperty("specifier2_" + i); 
+         meas2.setSpecifier(specifier2);
+         String unit2 = parms.getProperty("unit2_" + i);
+         meas2.setUnit(unit2);
+         String product = parms.getProperty("product_" + i);
+         ing.setName(product);
+         String specDir = parms.getProperty("specDir_" + i);
+         ing.setSpecialDirections(specDir);
+
+         // Cool, now build the MeasurementAndIngredient and add it to the vector
+         measAndIngs.add(new MeasurementAndIngredient(meas1, meas2, ing));
+
+         // Debug message
+         System.out.println("Ingredient " + i + ": " + amount1 + " " +
+                            specifier1 + " " + unit1 + " " + amount2 + " " +
+                            specifier2 + " " + unit2 + " " + product + " " +
+                            specDir);
+      }
+
+      // Set the ingredients list value
+      ingList.setIngredients(measAndIngs);
+
+      // Set it as part of the recipe
+      editedRecipe.setIngredients(ingList);
+      
+      // Set the directions
+      editedRecipe.setDirections(parms.getProperty("recipe_directions"));
+
+      // If recId was -1, this is a new recipe
+      if (recId == -1){
+         mRipe.addRecipe(editedRecipe);
+      }
+      else{
+         // Update this recipe in our database
+         mRipe.updateRecipe(editedRecipe);
+      }
+
+      content += renderContentHeader("Success") +
+         "<p>Click " +
+         "<a href='?page=view&recipe=" + (mRipe.getAllRecipes().size()-1) +
+         "'>here</a>" +
+         " to view the recipe!</p>\n";
       return content;
    }
 
@@ -813,7 +909,7 @@ public class RipeServer extends NanoHTTPD{
 
       // Create an empty recipe
       Recipe recipe = new Recipe();
-      content += renderRecipeForm(recipe);
+      content += renderRecipeForm(recipe, -1);
 
       return content;
    }

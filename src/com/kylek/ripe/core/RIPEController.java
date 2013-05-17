@@ -59,6 +59,13 @@ public class RIPEController {
       return true;
    }
 
+   // Update a recipe
+   public void updateRecipe(Recipe r){
+      // If this is the same object, it will
+      // update it.
+      addRecipeToDb(r);
+   }
+
    // Remove a recipe
    public boolean removeRecipe(Recipe r){
       if (!mRecipes.contains(r))
