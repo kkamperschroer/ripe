@@ -714,13 +714,22 @@ public class RipeServer extends NanoHTTPD{
          "    <legend>Ingredients</legend>\n";
 
       // Iterate through each ingredient
+      int totalIngs = vecIngList.size();
 
-      for (int i=0; i<vecIngList.size(); i++){
+      // We want at least 1 ingredient form to be shown
+      if (totalIngs == 0){
+         content += renderEditIngredient(null, 0);
+      }
+      // else
+      for (int i=0; i<totalIngs; i++){
          content += renderEditIngredient(vecIngList.get(i), i);
       }
 
       // Add an option to add another ingredient
       content += "<input type='button' id='add_ingredient' value='Add Another Ingredient'/>\n";
+
+      // Add a hidden field which will contain our total count
+      content += "<input type='hidden' id='hidden_total_ingredients' name='total_ingredients' value='" + totalIngs + "'/>\n";
 
       content += "</fieldset>";
       
@@ -730,6 +739,9 @@ public class RipeServer extends NanoHTTPD{
    // Render an individual ingredient
    private String renderEditIngredient(MeasurementAndIngredient measIng, int index){
       String content = "";
+      if (measIng == null){
+         measIng = new MeasurementAndIngredient();
+      }
       Measurement curMeas = measIng.getMeasurement();
       if (curMeas == null){
          curMeas = new Measurement();
@@ -739,25 +751,28 @@ public class RipeServer extends NanoHTTPD{
          curMeas2 = new Measurement();
       }
       Ingredient curIng = measIng.getIngredient();
+      if (curIng == null){
+         curIng = new Ingredient();
+      }
          
       content +=
-         "<fieldset class='ingredient_form' id='ingredient" + index + "'>\n" +
+         "<fieldset class='ingredient_form' id='ingredient_" + index + "'>\n" +
          "   <legend>Ingredient " + (index + 1) + "</legend>\n" +
-         "   <label>Amount<span class='label_desc'>Number or fraction</span></label> <input type='text' name='amount1[]' value='" +
+         "   <label>Amount<span class='label_desc'>Number or fraction</span></label> <input type='text' name='amount1_" + index + "' value='" +
          curMeas.getAmount() + "'>\n" +
-         "   <label>Specifier<span class='label_desc'>E.G. (14oz)</span></label> <input type='text' name='specifier1[]' value='" +
+         "   <label>Specifier<span class='label_desc'>E.G. (14oz)</span></label> <input type='text' name='specifier1_" + index + "' value='" +
          curMeas.getSpecifier() + "'>\n" +
-         "   <label>Unit<span class='label_desc'>Can, jar, tsp, etc.</span></label> <input type='text' name='unit1[]' value='" +
+         "   <label>Unit<span class='label_desc'>Can, jar, tsp, etc.</span></label> <input type='text' name='unit1_" + index + "' value='" +
          curMeas.getUnit() + "'>\n" +
-         "      <label>Amount<span class='label_desc'>Optional 2nd amount</span></label> <input type='text' name='amount2[]' value='" +
+         "      <label>Amount<span class='label_desc'>Optional 2nd amount</span></label> <input type='text' name='amount2_" + index + "' value='" +
          curMeas2.getAmount() + "'>\n" +
-         "      <label>Specifier<span class='label_desc'>Optional 2nd specifier</span></label> <input type='text' name='specifier2[]' value='" +
+         "      <label>Specifier<span class='label_desc'>Optional 2nd specifier</span></label> <input type='text' name='specifier2_" + index + "' value='" +
          curMeas2.getSpecifier() + "'>\n" +
-         "      <label>Unit<span class='label_desc'>Optional 2nd unit</span></label> <input type='text' name='unit2[]' value='" +
+         "      <label>Unit<span class='label_desc'>Optional 2nd unit</span></label> <input type='text' name='unit2_" + index + "' value='" +
          curMeas2.getUnit() + "'>\n" +
-         "      <label>Product<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input type='text' name='product[]'value='" +
+         "      <label>Product<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input type='text' name='product_" + index + "'value='" +
          curIng.getName() + "'>\n" +
-         "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input type='text' name='specDir[]'value='" +
+         "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input type='text' name='specDir_" + index + "'value='" +
          curIng.getSpecialDirections() + "'>\n" +
          "   <input type='button' class='remove_ingredient' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
          "\n" +
@@ -781,6 +796,13 @@ public class RipeServer extends NanoHTTPD{
    // Render the edit recipe go page
    private String renderEditRecipeGo(Properties parms){
       String content = renderContentHeader("Edit Results");
+
+      Recipe editedRecipe = new Recipe();
+
+      Set<String> propKeys = parms.stringPropertyNames();
+      for (String curKey : propKeys){
+         System.out.println(curKey + "=" + parms.getProperty(curKey));
+      }
       // TODO
       return content;
    }
