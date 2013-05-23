@@ -57,4 +57,4 @@ UNIT <- ( "cup"?"s" |
           "people"?"s" |
           "person"?"s" |
           "c"?"s"
-        )
+        ) ?"."

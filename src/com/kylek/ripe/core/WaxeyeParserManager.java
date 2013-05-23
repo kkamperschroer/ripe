@@ -316,13 +316,23 @@ public class WaxeyeParserManager {
       // -- Minutes
       List<IAST<AttributesType>> cookTimeChildren = cookTimeChild.getChildren();
 
-      // Ignore the prefix. All we want is the concatenation of amount and units
-      assert(cookTimeChildren.size() >= 4);
-      String cookTime = getAttributesText(cookTimeChildren.get(2));
-      cookTime += " " + getAttributesText(cookTimeChildren.get(3));
+      IAST<AttributesType> curChild;
+      String cookTime = "";
+      for (int i=0; i<cookTimeChildren.size(); i++){
+         // Get the current child
+         curChild = cookTimeChildren.get(i);
+         AttributesType curType = curChild.getType();
+         // We are ignoring the prefix. It's not important
+         if (curType == AttributesType.AMOUNT){
+            cookTime += " " + getAttributesText(curChild);
+         }
+         else if (curType == AttributesType.TIME_UNITS){
+            cookTime += " " + getAttributesText(curChild);
+         }
+      }
 
       // Return our built time
-      return cookTime;
+      return cookTime.trim();
    }
 
    // Get the prep time out of the current piece
