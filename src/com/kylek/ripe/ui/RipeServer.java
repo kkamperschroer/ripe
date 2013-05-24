@@ -193,7 +193,9 @@ public class RipeServer extends NanoHTTPD{
 
       page = page.replace(CONTENT_STR, content);
       
-      return new NanoHTTPD.Response( HTTP_OK, MIME_HTML, page );
+      NanoHTTPD.Response response = new NanoHTTPD.Response( HTTP_OK, MIME_HTML, page );
+      response.addHeader("set-cookie", "SID=TODO_SID");
+      return response;
    }
 
    //// Private methods ////

@@ -11,7 +11,7 @@ public class Recipe {
    /////////////////////////////////////
    // Members
    /////////////////////////////////////
-    
+
    // The recipe name
    private String mName;
 
