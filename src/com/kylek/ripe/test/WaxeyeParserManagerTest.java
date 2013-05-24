@@ -135,7 +135,7 @@ public class WaxeyeParserManagerTest {
          "Name: Quick and Easy Green Chile Chicken Enchilada Casserole\n" +
          "Yield: 8.0 \n" +
          "Prep time: 30 Minutes\n" +
-         "Cook time: 1 Hour\n" +
+         "Cook time: 1 Hour 30 Minutes\n" +
          "Overall time: 2 Hours\n" +
          "Ingredients list: \n" +
          "0) Measurment = 4      Ingredient = skinless , boneless chicken breast halves\n" +
