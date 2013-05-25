@@ -204,7 +204,17 @@ public class RipeServer extends NanoHTTPD{
          else if (requestedPage.equals("view")){
             // View a specific recipe
             if (loggedIn){
-               content = renderUserRecipe(user, recId);
+               content = renderUserRecipe(user, recId, true);
+            }
+            else{
+               content = renderPublicRecipe(userId, recId);
+            }
+         }
+         // The view public recipe page
+         else if (requestedPage.equals("view_public")){
+            // Check if this is our recipe
+            if (user == mRipe.getUserWithId(userId)){
+               content = renderUserRecipe(user, recId, true);
             }
             else{
                content = renderPublicRecipe(userId, recId);
@@ -426,7 +436,7 @@ public class RipeServer extends NanoHTTPD{
 
    // Render the content for viewing all recipes
    private String renderUserRecipes(User user){
-      String content = renderContentHeader("Listing Recipes");
+      String content = renderContentHeader("Listing Your Recipes");
 	
       // Build a table of our recipes
       content += 
@@ -494,7 +504,7 @@ public class RipeServer extends NanoHTTPD{
          // Add this row
          content +=
             "    <tr>\n" +
-            "        <td><a href=\"?page=view&recipe=" +
+            "        <td><a href=\"?page=view_public&recipe=" +
                             curRecId +
                             "&user=" +
                             curUserId +
@@ -513,14 +523,26 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Render a single recipe
-   private String renderUserRecipe(User user, final int recId){
+   private String renderUserRecipe(User user, final int recId, boolean ownedByUser){
       String content = "<div id='recipe'>\n";
       if (recId < user.getRecipes().size() &&
           recId >= 0){
 
          // Get our current recipe
          Recipe recipe = user.getRecipes().get(recId);
-	
+
+         if (!ownedByUser){
+            if (!recipe.isPublic()){
+               // Render an error
+               content +=
+                  "<p>Error: That recipe is private</p>" +
+                  "</div>\n";
+
+               // Don't display the rest of the recipe.
+               return content;
+            }
+         }
+         
          // The recipe name
          content += renderContentHeader(recipe.getName());
 
@@ -537,19 +559,27 @@ public class RipeServer extends NanoHTTPD{
          content += "</div>\n";
          
          // Some recipe links
-         content += renderEndRecipeLinks(recId);
+         content += renderEndRecipeLinks(recId, ownedByUser);
       }
       else{
-         content += "<p>Invalid recipe: " + recId + "</p>\n";
+         content += "<p>Invalid recipe: " + recId + "</p>\n" +
+            "</div>\n";
       }
       return content;
    }
 
    // Render a single public recipe
    private String renderPublicRecipe(int userId, int recId){
-      String content = renderContentHeader("TODO, KYLE!");
+      // Get the user for this id
+      User user = mRipe.getUserWithId(userId);
+      if (user == null){
+         return
+            renderContentHeader("Error") +
+            "<p>Invalid user id</p>\n";
+      }
 
-      return content;
+      // Now get the recipe
+      return renderUserRecipe(user, recId, false);
    }
 
    // Render the attributes section of the recipe
@@ -737,14 +767,16 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Render some links that we want under the recipes page
-   private String renderEndRecipeLinks(int recId){
+   private String renderEndRecipeLinks(int recId, boolean ownedByUser){
       String content = "<div id='recipe_links'>\n";
 
-      // Link to the edit content for this recipe
-      content += renderEndRecipeLink("edit", "Edit", recId);
+      if (ownedByUser){
+         // Link to the edit content for this recipe
+         content += renderEndRecipeLink("edit", "Edit", recId);
 
-      // Link to the remove page for this recipe
-      content += renderEndRecipeLink("remove", "Remove", recId);
+         // Link to the remove page for this recipe
+         content += renderEndRecipeLink("remove", "Remove", recId);
+      }
 	
       // Link back to the listing
       content += renderEndRecipeLink("/", "Back to Listing", -1);
@@ -953,8 +985,11 @@ public class RipeServer extends NanoHTTPD{
          renderRecipeAttributesForm(recipe) +
          renderRecipeIngredientsListForm(recipe) +
          renderRecipeDirectionsForm(recipe) +
+         renderPublicCheckbox(recipe) +
+         "        <div id='ripe_form_submit_buttons'>\n" +
          "        <input class='formatted_input' type='submit' value='Save'/>\n" +
          "        <input class='formatted_input' type='button' value='Cancel' id='cancel_button'/>\n" +
+         "        </div>\n" +
          // A hidden field with the current recipe id (bad as far as security goes)
          "        <input type='hidden' id='recipe_id' name='recipe_id' value='" + recId + "'/>\n" +
          "    </form>\n" +
@@ -1082,6 +1117,19 @@ public class RipeServer extends NanoHTTPD{
       
       return content;
    }
+
+   // Render the checkbox for "public?" or not
+   private String renderPublicCheckbox(Recipe recipe){
+      String content =
+         "<input type='checkbox' name='public' "; ///>Public?\n";         
+      if (recipe.isPublic()){
+         content += "checked='true'";
+      }
+
+      content += "/>Public?\n";
+
+      return content;
+   }
          
    // Render the edit recipe go page
    private String renderEditRecipeGo(User user, Properties parms){
@@ -1171,6 +1219,15 @@ public class RipeServer extends NanoHTTPD{
       
       // Set the directions
       editedRecipe.setDirections(parms.getProperty("recipe_directions"));
+
+      // Determine if this is public or not
+      String isPublic = parms.getProperty("public");
+      if (isPublic == null ||
+          isPublic.equals("")){
+         editedRecipe.setIsPublic(false);
+      }else{
+         editedRecipe.setIsPublic(true);
+      }
 
       // If recId was -1, this is a new recipe
       if (recId == -1){

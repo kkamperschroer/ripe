@@ -126,6 +126,15 @@ public class RIPEController {
       addUserToDb(user);
    }
 
+   // Get a user with a specific ID
+   public User getUserWithId(int userId){
+      if (userId >= mUsers.size() ||
+          userId < 0){
+         return null;
+      }
+      return mUsers.get(userId);
+   }
+
    // Remove a user
    public boolean removeUser(User user){
       if (!mUsers.contains(user)){
