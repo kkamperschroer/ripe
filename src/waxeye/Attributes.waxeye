@@ -44,7 +44,7 @@ TIME_UNITS <- ( "hour"?"s" |
 
 PREP_TIME <- PREP_TIME_PREFIX wsn
              ?(ATTRIBUTE_SEPARATOR wsn)
-             AMOUNT ws TIME_UNITS
+             +(AMOUNT ws TIME_UNITS ?(?"," ws))
 
 PREP_TIME_PREFIX <- ( "prep" |
                       "preparation" |
@@ -56,7 +56,7 @@ PREP_TIME_PREFIX <- ( "prep" |
 
 OVERALL_TIME <- OVERALL_TIME_PREFIX wsn
                 ?(ATTRIBUTE_SEPARATOR wsn)
-                AMOUNT ws TIME_UNITS
+                +(AMOUNT ws TIME_UNITS ?(?"," ws))
 
 OVERALL_TIME_PREFIX <- ( "overall" |
                          "total" |

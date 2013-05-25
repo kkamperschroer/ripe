@@ -788,17 +788,18 @@ public class RipeServer extends NanoHTTPD{
       return content;
    }
 
-   // Redner the add recipe page
+   // Render the add recipe page
    private String renderAddRecipe(User user){
       // Generate the header for this page
       String content = renderContentHeader("Add Recipe");
 
       // Build the form
       content +=
+         "<div id='add_recipe_form_wrapper'>\n" +
          "<div id='add_recipe_form'>\n" +
          "<form action='?page=add_recipe_go' method='post'>\n" +
          "    Recipe:\n<br/>\n" +
-         "    <textarea cols='80' rows='30' name='raw_recipe'>" +
+         "    <textarea cols='60' rows='30' name='raw_recipe'>" +
          "</textarea>\n<br/>\n" +
          "    <input type='checkbox' name='public'/>Public?<br/>\n" +
          "    <input type='submit' value='Parse it!'/>\n" +
@@ -806,11 +807,47 @@ public class RipeServer extends NanoHTTPD{
          "</form>\n" +
          "</div>\n";
 
+      content += renderParsingTips();
                     
+      content += "</div>\n";
+
       // Link back to the listing
       content +=
          "<br/><br/><br/><a href='/'>Back to listing</a>\n";
       
+      return content;
+   }
+
+   // Render a small dialog with parsing tips and suggestions
+   private String renderParsingTips(){
+      String content =
+         "<div id='parsing_tips'>\n" +
+         "  <span id='tip_header'>Tips</span>\n" +
+         "  <div id='tip_contents'>\n" +
+         "      <span class='tip_subheader'>For best results, try to format your recipe like this:\n</span>" +
+         "<pre>" +
+         "Example Recipe Title\n" +
+         "\n" +
+         "Prep time: 20 minutes\n" +
+         "Cook time: 50 minutes\n" +
+         "Overall time: 1 hour 10 minutes\n" +
+         "\n" +
+         "Ingredients:\n" +
+         "1 cup example ingredient one, minced\n" +
+         "2 jars (12 oz) example ingredient two, diced\n" +
+         "\n" +
+         "Directions:\n" +
+         "- Mix example ingredient one and two\n" +
+         "- Cook at 350 degrees\n" +
+         "</pre>\n" +
+         "Other tips\n" +
+         "<ul>\n" +
+         "   <li>Try to avoid special characters, such as ©</li>\n" +
+         "   <li>For now, only standard English characters accepted.</li>\n" +
+         "</ul>\n" +
+         "   </div>\n" +
+         "</div>\n";
+       
       return content;
    }
 
@@ -838,20 +875,20 @@ public class RipeServer extends NanoHTTPD{
       // Ask mRipe to parse the recipe
       Recipe parsed = mRipe.parseRecipe(recipe);
 
-      // Set public/private
-      String publicEnabled = parms.getProperty("public");
-      if (publicEnabled != null &&
-          publicEnabled.equals("on")){
-         parsed.setIsPublic(true);
-      }
-      else{
-         parsed.setIsPublic(false);
-      }
-      
       // Hopefully that worked! 
       // Add the recipe to our db
       boolean retVal = false;
       if (parsed != null){
+         // Set public/private
+         String publicEnabled = parms.getProperty("public");
+         if (publicEnabled != null &&
+             publicEnabled.equals("on")){
+            parsed.setIsPublic(true);
+         }
+         else{
+            parsed.setIsPublic(false);
+         }
+      
          retVal = mRipe.addRecipeForUser(parsed, user);
       }
 	
@@ -978,7 +1015,6 @@ public class RipeServer extends NanoHTTPD{
          renderPublicCheckbox(recipe) +
          "        <div id='ripe_form_submit_buttons'>\n" +
          "        <input class='formatted_input' type='submit' value='Save'/>\n" +
-         "        <input class='formatted_input' type='button' value='Cancel' id='cancel_button'/>\n" +
          "        </div>\n" +
          // A hidden field with the current recipe id (bad as far as security goes)
          "        <input type='hidden' id='recipe_id' name='recipe_id' value='" + recId + "'/>\n" +

@@ -161,3 +161,38 @@ label{
     right: 5px;
     text-align: right;
 }
+
+#parsing_tips{
+    width: 350px;
+    font-size: 12px;
+    outline-style: dashed;
+    outline-width: 1px;
+    outline-color: black;
+    background-color: #fff;
+    float: left;
+    margin: 23px 5px 0px 0px;
+    padding: 5px;
+}
+
+#add_recipe_form{
+    width: 525px;
+    float: left;
+}
+
+#add_recipe_form_wrapper{
+    overflow: hidden;
+}
+
+#tip_header{
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+pre{
+    outline-width: 1px;
+    outline-color: black;
+    outline-style: solid;
+    background-color: #fefefe;
+    margin: 5px;
+    padding: 5px;
+}
