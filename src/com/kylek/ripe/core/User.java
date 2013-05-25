@@ -65,5 +65,28 @@ class User {
    // Other methods
    ////////////////////////////////////////
 
-   // None for now.
+   // Add a single recipe
+   public boolean addRecipe(Recipe r){
+      // Recipes must be unique, so first check to see if it exists
+      for (int i=0; i<mRecipes.size(); i++){
+         if (mRecipes.get(i).getName().equals(r.getName())){
+            return false;
+         }
+      }
+
+      // All is good, add the recipe
+      mRecipes.add(r);
+      return true;
+   }
+
+   // Remove a recipe at a specific index
+   public boolean removeRecipe(int index){
+      if (index < mRecipes.size()){
+         return false;
+      }
+      
+      // Remove the recipe
+      mRecipes.remove(index);
+      return true;
+   }
 }

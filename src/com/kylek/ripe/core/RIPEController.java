@@ -4,6 +4,8 @@
 
 package com.kylek.ripe.core;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Vector;
 
@@ -14,13 +16,16 @@ public class RIPEController {
    ////////////////////////////////////////
 
    // Our database manager
-    private DBManager mDb;
+   private DBManager mDb;
 
    // Our parser
    private WaxeyeParserManager mRecipeParser;
 
-   // The list of recipes
-   private List<Recipe> mRecipes;
+   // The list of user
+   private List<User> mUsers;
+
+   // The user session manager
+   private SessionManager mSessionManager;
 
    ////////////////////////////////////////
    // Constructors
@@ -33,8 +38,21 @@ public class RIPEController {
       // Setup the recipe parser
       mRecipeParser = new WaxeyeParserManager();
 
-      // Get all of the recipes
-      mRecipes = mDb.getAllRecipes();
+      // Get all of the users
+      mUsers = mDb.getAllUsers();
+
+      // Start up the session manager
+      mSessionManager = new SessionManager();
+
+      // Populate the session id's for the session manager so
+      // everything is persistent across system restarts.
+      User curUser;
+      for (int i=0; i<mUsers.size(); i++){
+         curUser = mUsers.get(i);
+         mSessionManager.setUserSessionId(
+            curUser.getUsername(),
+            curUser.getSessionId());
+      }
    }
 
    ////////////////////////////////////////
@@ -47,41 +65,108 @@ public class RIPEController {
    // Other methods
    ////////////////////////////////////////
 
-   // Add a new recipe
-   public boolean addRecipe(Recipe r){
-      // TODO - Fix check - Can't just look at object equality
-      if (mRecipes.contains(r))
-         return false;
+   // Add a new user
+   public boolean addUser(String username, String rawPassword){
+      // To start, verify the username is unique
+      for (int i=0; i<mUsers.size(); i++){
+         if (mUsers.get(i).getUsername().equals(username)){
+            // This username is taken
+            return false;
+         }
+      }
+      // This username is available, so continue.
+      
+      // Create a new user object
+      User newUser = new User();
 
-      // Add it.
-      addRecipeToDb(r);
+      // Set the username
+      newUser.setUsername(username);
 
-      // Looks good!
+      // Set the password
+      newUser.setPassword(hashPassword(rawPassword));
+
+      // Generate a new session id for this user (updates the object)
+      mSessionManager.generateSessionId(newUser);
+
+      // Save the user in the database
+      addUserToDb(newUser);
+      
+      // All is fine and dandy
       return true;
    }
+   
+   // Add a new recipe for a user
+   public boolean addRecipeForUser(Recipe recipe, User user){
+      // Add it to this user
+      boolean retVal = user.addRecipe(recipe);
 
-   // Update a recipe
-   public void updateRecipe(Recipe r){
-      // If this is the same object, it will
-      // update it.
-      addRecipeToDb(r);
+      // Update this user in the db
+      updateUser(user);
+      
+      // Everything worked out
+      return retVal;
    }
 
-   // Remove a recipe
-   public boolean removeRecipe(Recipe r){
-      if (!mRecipes.contains(r))
+   // Remove a recipe for a user
+   public boolean removeRecipeWithIdForUser(int recipeId, User user){
+      // Remove this users recipe
+      boolean retVal = user.removeRecipe(recipeId);
+
+      // Update this user in the db
+      updateUser(user);
+      
+      // Everything worked
+      return retVal;
+   }
+
+   // Update a user
+   public void updateUser(User user){
+      // Add = update in db4o, if objects are equal.
+      addUserToDb(user);
+   }
+
+   // Remove a user
+   public boolean removeUser(User user){
+      if (!mUsers.contains(user)){
          return false;
+      }
 
       // Remove it
-      removeRecipeFromDb(r);
+      removeUserFromDb(user);
 
       // Looks good!
       return true;
    }
 
-   // Get all of the recipes
-   public List<Recipe> getAllRecipes(){
-      return mRecipes;
+   // Get the user object for a given username
+   public User getUserForUsername(String username){
+      // Iterate through our users, looking for one with the same username
+      User curUser = null;
+      for (int i=0; i<mUsers.size(); i++){
+         curUser = mUsers.get(i);
+         if (curUser.getUsername().equals(username)){
+            return curUser;
+         }
+      }
+
+      // Didn't find the user you were looking for!
+      return null;
+   }
+
+   // Validate a user's current session id with one provided
+   public boolean isUserSessionIdValid(User user){
+      return (mSessionManager.getUserPreviousSessionId(
+                 user.getUsername()).equals(
+                    user.getSessionId()));
+   }
+
+   // Update a user's session id
+   public void updateUserSession(User user){
+      // Update the session
+      mSessionManager.generateSessionId(user);
+
+      // Save off this user
+      updateUser(user);
    }
 
    // Parse a plain text recipe
@@ -101,7 +186,7 @@ public class RIPEController {
             e.printStackTrace();
          }
       }
-        
+
       return r;
    }
 
@@ -115,28 +200,25 @@ public class RIPEController {
 
    //// Private methods ////
 
-   private void addRecipeToDb(Recipe newRecipe){
-      // Set the Amazon products for this recipe
-      setProductsForRecipe(newRecipe);
-      
-      // Attempt to add the recipe to our db
-      mDb.storeRecipe(newRecipe);
+   private void addUserToDb(User newUser){
+      // Attempt to add the user to our db
+      mDb.storeUser(newUser);
 
-      // Refresh our list
-      mRecipes = mDb.getAllRecipes();
+      // Refresh our list of users
+      mUsers = mDb.getAllUsers();
    }
 
-   // Remove the recipe from the DB
-   private void removeRecipeFromDb(Recipe r){
+   // Remove the user from the DB
+   private void removeUserFromDb(User user){
       // Attempt to remove the recipe from our db
-      mDb.removeRecipe(r);
+      mDb.removeUser(user);
 
       // Refresh our list of recipes
-      mRecipes = mDb.getAllRecipes();
+      mUsers = mDb.getAllUsers();
    }
 
    // Use the Amazon scrapper to set products for our recipe
-   private void setProductsForRecipe(Recipe r){
+   public void setProductsForRecipe(Recipe r){
       // Iterate through each ingredient
       Vector<MeasurementAndIngredient> ingsList = r.getIngredients().getIngredients();
       for (int i=0; i<ingsList.size(); i++){
@@ -144,5 +226,22 @@ public class RIPEController {
          curIng.setAmazonUrl(AmazonScraper.getProductUrl(curIng.getName()));
       }
    }
-   
+
+   // Hash a given password
+   private String hashPassword(String rawPassword){
+      // Hash the rawPassword
+      try{
+         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+         byte[] passBytes = (rawPassword + "silly open source salting").getBytes();
+         byte[] passHash = sha256.digest(passBytes);
+
+         // Return our new hash
+         return new String(passHash);
+
+      }catch(NoSuchAlgorithmException e){
+         // Uhhh, crap. Just use raw password, I guess?
+         System.err.println("Serious problem. Couldn't use SHA-256.");
+         return rawPassword;
+      }
+   }
 }
