@@ -89,7 +89,8 @@ public class User {
 
    // Remove a recipe at a specific index
    public boolean removeRecipe(int index){
-      if (index < mRecipes.size()){
+      if (index >= mRecipes.size() ||
+          index < 0){
          return false;
       }
       
