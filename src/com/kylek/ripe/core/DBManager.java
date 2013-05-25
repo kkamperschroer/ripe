@@ -17,6 +17,9 @@ public class DBManager {
    // The database reference
    private ObjectContainer mDb;
 
+   // The depth for update and activations
+   private static final int DEPTH = 100;
+
    /////////////////////////////////////
    // Constructors
    /////////////////////////////////////
@@ -24,6 +27,10 @@ public class DBManager {
    // The one and only constructor.
    public DBManager(String fileLocation){
       mDb = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), fileLocation);
+
+      // Set the update depth to be high (we don't care about performance)
+      mDb.ext().configure().objectClass(User.class).updateDepth(DEPTH);
+      mDb.ext().configure().objectClass(User.class).minimumActivationDepth(DEPTH);
    }
 
    /////////////////////////////////////

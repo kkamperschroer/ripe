@@ -137,7 +137,7 @@ label{
     font-size: 12px;
 }
 
-input{
+.formatted_input{
     float: left;
     padding: 4px 2px;
     font-size: 12px;

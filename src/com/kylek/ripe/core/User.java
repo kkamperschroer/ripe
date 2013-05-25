@@ -24,6 +24,9 @@ public class User {
    // A vector of this user's recipes
    private Vector<Recipe> mRecipes;
 
+   // Is this user an administrator?
+   private boolean mIsAdmin;
+
    ////////////////////////////////////////
    // Constructor
    ////////////////////////////////////////
@@ -34,17 +37,20 @@ public class User {
       mPassword = "";
       mSessionId = "";
       mRecipes = new Vector<Recipe>();
+      mIsAdmin = false;
    }
 
    // Constructor with params
    public User(String username,
                String password,
                String sessionId,
-               Vector<Recipe> recipes){
+               Vector<Recipe> recipes,
+               boolean isAdmin){
       mUsername = username;
       mPassword = password;
       mSessionId = sessionId;
       mRecipes = recipes;
+      mIsAdmin = isAdmin;
    }
 
    ////////////////////////////////////////
@@ -55,11 +61,13 @@ public class User {
    public String getPassword() { return mPassword; }
    public String getSessionId() { return mSessionId; }
    public Vector<Recipe> getRecipes() { return mRecipes; }
+   public boolean isAdmin() { return mIsAdmin; }
 
    public void setUsername(String username) { mUsername = username; }
    public void setPassword(String password) { mPassword = password; }
    public void setSessionId(String sessionId) { mSessionId = sessionId; }
    public void setRecipes(Vector<Recipe> recipes) { mRecipes = recipes; }
+   public void setIsAdmin(boolean isAdmin) { mIsAdmin = isAdmin; }
 
    ////////////////////////////////////////
    // Other methods

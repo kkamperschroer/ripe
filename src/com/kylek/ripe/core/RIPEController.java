@@ -6,6 +6,7 @@ package com.kylek.ripe.core;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Vector;
 
@@ -167,6 +168,31 @@ public class RIPEController {
 
       // Save off this user
       updateUser(user);
+   }
+
+   // Get all of the public recipes in the system
+   public Vector<SimpleEntry<Recipe,User>> getAllPublicRecipes(){
+      // Our return structure
+      Vector<SimpleEntry<Recipe,User>> recipeListing = new Vector<SimpleEntry<Recipe,User>>();
+      User curUser;
+      
+      for (int i=0; i<mUsers.size(); i++){
+         curUser = mUsers.get(i);
+         // Get all of the recipes for this user
+         Vector<Recipe> userRecipes = curUser.getRecipes();
+
+         // Iterate through, getting the public recipes
+         Recipe curRecipe;
+         
+         for (int j=0; j<userRecipes.size(); j++){
+            curRecipe = userRecipes.get(j);
+            if (curRecipe.isPublic()){
+               recipeListing.add(new SimpleEntry<Recipe, User>(curRecipe, curUser));
+            }
+         }
+      }
+
+      return recipeListing;
    }
 
    // Parse a plain text recipe

@@ -4,6 +4,7 @@
 package com.kylek.ripe.ui;
 
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -24,7 +25,7 @@ public class RipeServer extends NanoHTTPD{
 
    // The db file loc (BAD KYLE!)
    private static final String mDbLoc =
-      "/media/Warehouse/Dropbox/School/Eclipse/workspace/ripe_v1_java/ripeDB.db";
+      "./ripeDB.db";
 
    // A constant for the port we will be using
    private static final int PORT = 8778;
@@ -111,13 +112,15 @@ public class RipeServer extends NanoHTTPD{
          if (cookieVal != null &&
              !cookieVal.equals(""))
          {
-            // Split the cookies on semicolons
-            String[] cookies = cookieVal.split(";");
+            // Split the cookies on commas
+            String[] cookies = cookieVal.split(",");
             String username = null;
             String sessionId = null;
             for (int i=0; i<cookies.length; i++){
+               System.out.println("cookies[" + i + "] = " + cookies[i]);
+
                // Split the current string on '='
-               String[] curCookie = cookies[i].split("=");
+               String[] curCookie = cookies[i].trim().split("=");
 
                // Ignore this cookie if it's not 2 pieces
                if (curCookie.length == 2){
@@ -133,6 +136,7 @@ public class RipeServer extends NanoHTTPD{
             // If either username or session id are null, user
             // is not logged in
             if (username != null && sessionId != null){
+               System.out.println(username + " made a request with sid " + sessionId);
                // Last step in validation. See if the session id is valid.
                user = mRipe.getUserForUsername(username);
                if (user != null &&
@@ -322,12 +326,18 @@ public class RipeServer extends NanoHTTPD{
          else if (requestedPage.equals("logout")){
             if (loggedIn){
                content = renderLogout();
+               // Null out the user
+               user = null;
+               loggedIn = false;
             }
             else{
                content =
                   "<p>You can't log out if you aren't " +
                   "<a href='?page=login'>logged in</a>.</p>\n";
             }
+         }
+         else if (requestedPage.equals("list_public_recipes")){
+            content += renderPublicRecipes();
          }
          else{
             content += "<p>Unknown page: " + requestedPage + "</p>\n";
@@ -345,9 +355,10 @@ public class RipeServer extends NanoHTTPD{
       NanoHTTPD.Response response = new NanoHTTPD.Response( HTTP_OK, MIME_HTML, page );
       // Render appropriate session stuff if logged in
       if (loggedIn){
+         System.out.println(user.getUsername() + " is logged in with sid " + user.getSessionId());
          response.addHeader("set-cookie",
                             "sid=" + user.getSessionId() +
-                            ";username=" + user.getUsername());
+                            ",username=" + user.getUsername());
       }
 
       return response;
@@ -419,7 +430,7 @@ public class RipeServer extends NanoHTTPD{
 	
       // Build a table of our recipes
       content += 
-         "<table border=1>\n" +
+         "<table border='1'>\n" +
          "    <tr>\n" +
          "        <th>Recipe Name</th>\n" +
          "        <th colspan=2>Modify</th>\n" +
@@ -448,7 +459,55 @@ public class RipeServer extends NanoHTTPD{
    private String renderPublicRecipes(){
       String content = renderContentHeader("Listing Public Recipes");
 
-      // TODO!
+      // Get all of the recipes from mRipe
+      Vector<SimpleEntry<Recipe,User>> publicRecipes = mRipe.getAllPublicRecipes();
+
+      // Render the table
+      content +=
+         "<table border='1'>\n" +
+         "    <tr>\n" +
+         "        <th>Recipe Name</th>\n" +
+         "        <th>Owner</th>\n" +
+         "    </tr>\n";
+
+      // Now iterate through each one
+      SimpleEntry<Recipe,User> curEntry;
+      Recipe curRecipe;
+      User curUser;
+      int curUserId = -1;
+      int curRecId = -1;
+      User prevUser = null;
+      for (int i=0; i<publicRecipes.size(); i++){
+         curEntry = publicRecipes.get(i);
+         curRecipe = curEntry.getKey();
+         curUser = curEntry.getValue();
+         curRecId++;
+
+         // Reset id's if necessary
+         if (prevUser != curUser){
+            // Reset rec counter
+            curRecId = 0;
+            // Increment user counter
+            curUserId++;
+         }
+
+         // Add this row
+         content +=
+            "    <tr>\n" +
+            "        <td><a href=\"?page=view&recipe=" +
+                            curRecId +
+                            "&user=" +
+                            curUserId +
+                         "\">" + curRecipe.getName() + "</a>" +
+            "   </td>\n" +
+            "   <td>" + curUser.getUsername() +
+            "   </td>\n" +
+            "</tr>\n";
+            
+         prevUser = curUser;
+      }
+
+      content += "</table>\n";
       
       return content;
    }
@@ -720,8 +779,9 @@ public class RipeServer extends NanoHTTPD{
          "    Recipe:\n<br/>\n" +
          "    <textarea cols='80' rows='30' name='raw_recipe'>" +
          "</textarea>\n<br/>\n" +
-         "    <input type='submit' value='Parse it!'/> or \n" +
-         "    <input type='file' name='upfile' value='Upload from file'/>\n" +
+         "    <input type='checkbox' name='public'/>Public?<br/>\n" +
+         "    <input type='submit' value='Parse it!'/>\n" +
+         "    <input type='file' name='upfile' value='or Upload from file'/>\n" +
          "</form>\n" +
          "</div>\n";
 
@@ -756,7 +816,17 @@ public class RipeServer extends NanoHTTPD{
 		
       // Ask mRipe to parse the recipe
       Recipe parsed = mRipe.parseRecipe(recipe);
-	
+
+      // Set public/private
+      String publicEnabled = parms.getProperty("public");
+      if (publicEnabled != null &&
+          publicEnabled.equals("on")){
+         parsed.setIsPublic(true);
+      }
+      else{
+         parsed.setIsPublic(false);
+      }
+      
       // Hopefully that worked! 
       // Add the recipe to our db
       boolean retVal = false;
@@ -811,11 +881,24 @@ public class RipeServer extends NanoHTTPD{
       String content = "<div id='ripe_navbar'>\n";
 
       // Render the links
-      content +=
-         renderNavLink("View Recipes", "/") +
-         renderNavLink("Add Text Recipe", "?page=add_recipe") +
-         renderNavLink("Add Recipe Manually", "?page=add_recipe_manual");
-      
+      content += renderNavLink("View All Recipes", "/?page=list_public_recipes");
+
+      if (user != null){
+         content +=
+            renderNavLink("View Your Recipes", "/") +
+            renderNavLink("Add Text Recipe", "?page=add_recipe") +
+            renderNavLink("Add Recipe Manually", "?page=add_recipe_manual");
+         if (user.isAdmin()){
+            content += renderNavLink("View Users", "/?page=list_users");
+         }
+      }
+      else{
+         content +=
+            renderNavLink("Register", "/?page=register") +
+            renderNavLink("Login", "/?page=login");
+      }
+
+
       content += "</div>\n";
       return content;
    }
@@ -862,7 +945,7 @@ public class RipeServer extends NanoHTTPD{
          "        <span id='edit_recipe_title'>" +
          "            <fieldset id='edit_recipe_form_basic'>\n" +
          "                <legend>Basic</legend>\n" +
-         "                    <label>Recipe Title<span class='label_desc'>What is your recipe called?</span></label> <input type='text' name='recipe_name' value=\"" +
+         "                    <label>Recipe Title<span class='label_desc'>What is your recipe called?</span></label> <input class='formatted_input' type='text' name='recipe_name' value=\"" +
          recipe.getName() + "\"/>" +
          "                </legend>\n" +
          "            </fieldset>\n" +
@@ -870,8 +953,8 @@ public class RipeServer extends NanoHTTPD{
          renderRecipeAttributesForm(recipe) +
          renderRecipeIngredientsListForm(recipe) +
          renderRecipeDirectionsForm(recipe) +
-         "        <input type='submit' value='Save'/>\n" +
-         "        <input type='button' value='Cancel' id='cancel_button'/>\n" +
+         "        <input class='formatted_input' type='submit' value='Save'/>\n" +
+         "        <input class='formatted_input' type='button' value='Cancel' id='cancel_button'/>\n" +
          // A hidden field with the current recipe id (bad as far as security goes)
          "        <input type='hidden' id='recipe_id' name='recipe_id' value='" + recId + "'/>\n" +
          "    </form>\n" +
@@ -889,15 +972,15 @@ public class RipeServer extends NanoHTTPD{
       String content =
          "<fieldset id='edit_recipe_form_attributes'>\n" +
          "    <legend>Attributes</legend>\n" +
-         "    <label>Yield Amount<span class='label_desc'>A number or decimal</span></label> <input type='text' name='yield_amount' value='" +
+         "    <label>Yield Amount<span class='label_desc'>A number or decimal</span></label> <input class='formatted_input' type='text' name='yield_amount' value='" +
          recYield.getValue() + "'/>" +
-         "    <label>Yield Units<span class='label_desc'>Servings, cups, etc.</span></label> <input type='text' name='yield_unit' value='" +
+         "    <label>Yield Units<span class='label_desc'>Servings, cups, etc.</span></label> <input class='formatted_input' type='text' name='yield_unit' value='" +
          recYield.getUnit() + "'/>\n" +
-         "    <label>Preparation Time<span class='label_desc'>E.G. 25 minutes</span></label> <input type='text' name='prep_time' value='" +
+         "    <label>Preparation Time<span class='label_desc'>E.G. 25 minutes</span></label> <input class='formatted_input' type='text' name='prep_time' value='" +
          recipe.getPrepTime() + "'/>\n" +
-         "    <label>Cook Time<span class='label_desc'>E.G. 35 m</span></label> <input type='text' name='cook_time' value='" +
+         "    <label>Cook Time<span class='label_desc'>E.G. 35 m</span></label> <input class='formatted_input' type='text' name='cook_time' value='" +
          recipe.getCookTime() + "'/>\n" +
-         "    <label>Overall Time<span class='label_desc'>E.G. 1 hr</span></label> <input type='text' name='overall_time' value='" +
+         "    <label>Overall Time<span class='label_desc'>E.G. 1 hr</span></label> <input class='formatted_input' type='text' name='overall_time' value='" +
          recipe.getOverallTime() + "'/>\n" +
          "</fieldset>\n";
       
@@ -933,7 +1016,7 @@ public class RipeServer extends NanoHTTPD{
          }
       }
       // Add an option to add another ingredient
-      content += "<input type='button' id='add_ingredient' value='Add Another Ingredient'/>\n";
+      content += "<input class='formatted_input' type='button' id='add_ingredient' value='Add Another Ingredient'/>\n";
 
       // Add a hidden field which will contain our total count
       content += "<input type='hidden' id='hidden_total_ingredients' name='total_ingredients' value='" + totalIngs + "'/>\n";
@@ -965,23 +1048,23 @@ public class RipeServer extends NanoHTTPD{
       content +=
          "<fieldset class='ingredient_form' id='ingredient_" + index + "'>\n" +
          "   <legend>Ingredient " + (index + 1) + "</legend>\n" +
-         "   <label>Amount<span class='label_desc'>Number or fraction</span></label> <input type='text' name='amount1_" + index + "' value='" +
+         "   <label>Amount<span class='label_desc'>Number or fraction</span></label> <input class='formatted_input' type='text' name='amount1_" + index + "' value='" +
          curMeas.getAmount() + "'>\n" +
-         "   <label>Specifier<span class='label_desc'>E.G. (14oz)</span></label> <input type='text' name='specifier1_" + index + "' value='" +
+         "   <label>Specifier<span class='label_desc'>E.G. (14oz)</span></label> <input class='formatted_input' type='text' name='specifier1_" + index + "' value='" +
          curMeas.getSpecifier() + "'>\n" +
-         "   <label>Unit<span class='label_desc'>Can, jar, tsp, etc.</span></label> <input type='text' name='unit1_" + index + "' value='" +
+         "   <label>Unit<span class='label_desc'>Can, jar, tsp, etc.</span></label> <input class='formatted_input' type='text' name='unit1_" + index + "' value='" +
          curMeas.getUnit() + "'>\n" +
-         "      <label>Amount<span class='label_desc'>Optional 2nd amount</span></label> <input type='text' name='amount2_" + index + "' value='" +
+         "      <label>Amount<span class='label_desc'>Optional 2nd amount</span></label> <input class='formatted_input' type='text' name='amount2_" + index + "' value='" +
          curMeas2.getAmount() + "'>\n" +
-         "      <label>Specifier<span class='label_desc'>Optional 2nd specifier</span></label> <input type='text' name='specifier2_" + index + "' value='" +
+         "      <label>Specifier<span class='label_desc'>Optional 2nd specifier</span></label> <input class='formatted_input' type='text' name='specifier2_" + index + "' value='" +
          curMeas2.getSpecifier() + "'>\n" +
-         "      <label>Unit<span class='label_desc'>Optional 2nd unit</span></label> <input type='text' name='unit2_" + index + "' value='" +
+         "      <label>Unit<span class='label_desc'>Optional 2nd unit</span></label> <input class='formatted_input' type='text' name='unit2_" + index + "' value='" +
          curMeas2.getUnit() + "'>\n" +
-         "      <label>Product<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input type='text' name='product_" + index + "'value='" +
+         "      <label>Product<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input class='formatted_input' type='text' name='product_" + index + "'value='" +
          curIng.getName() + "'>\n" +
-         "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input type='text' name='specDir_" + index + "'value='" +
+         "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input class='formatted_input' type='text' name='specDir_" + index + "'value='" +
          curIng.getSpecialDirections() + "'>\n" +
-         "   <input type='button' class='remove_ingredient' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
+         "   <input class='formatted_input' type='button' class='remove_ingredient' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
          "\n" +
          "</fieldset>\n";
 
@@ -1136,18 +1219,9 @@ public class RipeServer extends NanoHTTPD{
    private String renderLogin(){
       String content = renderContentHeader("Login");
 
-      content +=
-         "<div class='ripe_form'>\n" +
-         "<form action='?page=login_go' method='post'>\n" +
-         "<fieldset>\n" +
-         "    <legend>Authentication</legend>\n" +
-         "    <label>Username<span class='label_desc'>Your registered username</span></label><input type='text' name='username' />\n" +
-         "    <label>Password<span class='label_desc'>Your secure password</span></label><input type='password' name='password' />\n" +
-         "</fieldset>\n" +
-         "<input type='submit' value='Login'/>\n" +
-         "</form><br/>\n" +
-         "</div>\n";
-      
+      // Render the login form
+      content += renderLoginForm();
+
       return content;
    }
 
@@ -1205,11 +1279,11 @@ public class RipeServer extends NanoHTTPD{
          "<form action='?page=register_go' method='post'>\n" +
          "<fieldset class='register_form'>\n" +
          "   <legend>New User Registration</legend>\n" +
-         "   <label>Username<span class='label_desc'>Your desired username</span></label><input type='text' name='username' />\n" +
-         "   <label>Password<span class='label_desc'>Your password</span></label><input type='password' name='password' />\n" +
-         "   <label>Password Verification<span class='label_desc'>Re-type your password</span></label><input type='password' name='password_verify' />\n" +
+         "   <label>Username<span class='label_desc'>Your desired username</span></label><input class='formatted_input' type='text' name='username' />\n" +
+         "   <label>Password<span class='label_desc'>Your password</span></label><input class='formatted_input' type='password' name='password' />\n" +
+         "   <label>Password Verification<span class='label_desc'>Re-type your password</span></label><input class='formatted_input' type='password' name='password_verify' />\n" +
          "</fieldset>\n" +
-         "<input type='submit' value='Register'/>\n" +
+         "<input class='formatted_input' type='submit' value='Register'/>\n" +
          "</form><br/>\n" +
          "</div>\n";
 
@@ -1272,16 +1346,25 @@ public class RipeServer extends NanoHTTPD{
    private String renderLogout(){
       String content = renderContentHeader("Sign Out");
 
-      // todo
+      content += "<p>You have been logged out. Redirecting momentarily..." +
+         "<script>window.setTimeout(function() { window.location.href='/';}, 3000);</script>\n</p>\n";
       
       return content;
    }
 
    // Render the login form
    private String renderLoginForm(){
-      String content = renderContentHeader("Login");
-
-      content += "todo";
+      String content =
+         "<div class='ripe_form'>\n" +
+         "<form action='?page=login_go' method='post'>\n" +
+         "<fieldset>\n" +
+         "    <legend>Authentication</legend>\n" +
+         "    <label>Username<span class='label_desc'>Your registered username</span></label><input class='formatted_input' type='text' name='username' />\n" +
+         "    <label>Password<span class='label_desc'>Your secure password</span></label><input class='formatted_input' type='password' name='password' />\n" +
+         "</fieldset>\n" +
+         "<input class='formatted_input' type='submit' value='Login'/>\n" +
+         "</form><br/>\n" +
+         "</div>\n";
       
       return content;
    }
