@@ -135,6 +135,18 @@ public class RIPEController {
       return mUsers.get(userId);
    }
 
+   // Get the id for a specific user
+   public int getUserId(User user){
+      for (int i=0; i<mUsers.size(); i++){
+         if (mUsers.get(i) == user){
+            return i;
+         }
+      }
+      
+      // Not our user!
+      return -1;
+   }
+
    // Remove a user
    public boolean removeUser(User user){
       if (!mUsers.contains(user)){

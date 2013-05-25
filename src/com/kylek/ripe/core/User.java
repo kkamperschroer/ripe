@@ -97,4 +97,15 @@ public class User {
       mRecipes.remove(index);
       return true;
    }
+
+   // Get a recipe id from the recipe
+   public int getRecipeId(Recipe recipe){
+      for (int i=0; i<mRecipes.size(); i++){
+         if (mRecipes.get(i) == recipe){
+            return i;
+         }
+      }
+      // This isn't our recipe
+      return -1;
+   }
 }

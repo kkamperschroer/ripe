@@ -484,37 +484,23 @@ public class RipeServer extends NanoHTTPD{
       SimpleEntry<Recipe,User> curEntry;
       Recipe curRecipe;
       User curUser;
-      int curUserId = -1;
-      int curRecId = -1;
-      User prevUser = null;
       for (int i=0; i<publicRecipes.size(); i++){
          curEntry = publicRecipes.get(i);
          curRecipe = curEntry.getKey();
          curUser = curEntry.getValue();
-         curRecId++;
-
-         // Reset id's if necessary
-         if (prevUser != curUser){
-            // Reset rec counter
-            curRecId = 0;
-            // Increment user counter
-            curUserId++;
-         }
 
          // Add this row
          content +=
             "    <tr>\n" +
             "        <td><a href=\"?page=view_public&recipe=" +
-                            curRecId +
+                             curUser.getRecipeId(curRecipe) +
                             "&user=" +
-                            curUserId +
+                             mRipe.getUserId(curUser) +
                          "\">" + curRecipe.getName() + "</a>" +
             "   </td>\n" +
             "   <td>" + curUser.getUsername() +
             "   </td>\n" +
             "</tr>\n";
-            
-         prevUser = curUser;
       }
 
       content += "</table>\n";
@@ -614,17 +600,20 @@ public class RipeServer extends NanoHTTPD{
       String prepTime = recipe.getPrepTime();
       String overallTime = recipe.getOverallTime();
       
-      if (prepTime != null){
+      if (prepTime != null &&
+          !prepTime.equals("")){
          content +=
             renderRecipeAttribute("Prep Time:",
                                   prepTime);
       }
-      if (cookTime != null){
+      if (cookTime != null &&
+          !cookTime.equals("")){
          content +=
             renderRecipeAttribute("Cook Time:",
                                   cookTime);
       }
-      if (overallTime != null){
+      if (overallTime != null &&
+          !overallTime.equals("")){
          content +=
             renderRecipeAttribute("Overall Time:",
                                   overallTime);
@@ -921,7 +910,8 @@ public class RipeServer extends NanoHTTPD{
             renderNavLink("Add Text Recipe", "?page=add_recipe") +
             renderNavLink("Add Recipe Manually", "?page=add_recipe_manual");
          if (user.isAdmin()){
-            content += renderNavLink("View Users", "/?page=list_users");
+            // Disabled for now. Not necessary.
+            // content += renderNavLink("View Users", "/?page=list_users");
          }
       }
       else{
