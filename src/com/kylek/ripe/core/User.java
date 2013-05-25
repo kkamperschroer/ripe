@@ -6,7 +6,7 @@ package com.kylek.ripe.core;
 
 import java.util.Vector;
 
-class User {
+public class User {
 
    ////////////////////////////////////////
    // Members

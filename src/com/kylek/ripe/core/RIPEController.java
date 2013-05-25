@@ -153,13 +153,6 @@ public class RIPEController {
       return null;
    }
 
-   // Validate a user's current session id with one provided
-   public boolean isUserSessionIdValid(User user){
-      return (mSessionManager.getUserPreviousSessionId(
-                 user.getUsername()).equals(
-                    user.getSessionId()));
-   }
-
    // Update a user's session id
    public void updateUserSession(User user){
       // Update the session

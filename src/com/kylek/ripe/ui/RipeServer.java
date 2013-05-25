@@ -102,13 +102,65 @@ public class RipeServer extends NanoHTTPD{
          return serveFile(uri, header, new File(WEB_ROOT), true);
       }
           
+      boolean loggedIn = false;
+      User user = null;
+
+      try{
+         // Let's get the current cookie value for SID and username (if any)
+         String cookieVal = header.getProperty("cookie");
+         if (cookieVal != null &&
+             !cookieVal.equals(""))
+         {
+            // Split the cookies on semicolons
+            String[] cookies = cookieVal.split(";");
+            String username = null;
+            String sessionId = null;
+            for (int i=0; i<cookies.length; i++){
+               // Split the current string on '='
+               String[] curCookie = cookies[i].split("=");
+
+               // Ignore this cookie if it's not 2 pieces
+               if (curCookie.length == 2){
+                  if (curCookie[0] == "username"){
+                     username = curCookie[1];
+                  }
+                  else if (curCookie[0] == "sid"){
+                     sessionId = curCookie[1];
+                  }
+               }
+            }
+
+            // If either username or session id are null, user
+            // is not logged in
+            if (username != null && sessionId != null){
+               // Last step in validation. See if the session id is valid.
+               user = mRipe.getUserForUsername(username);
+               if (user.getSessionId().equals(sessionId)){
+                  // User is logged in
+                  loggedIn = true;
+
+                  // Update the user session for the next request
+                  mRipe.updateUserSession(user);
+               }
+            }
+         }
+      }catch (Exception e){
+         System.err.println(e.toString());
+         e.printStackTrace();
+         loggedIn = false;
+         user = null;
+      }
+      
+
+      // Now onto page rendering.
 
       // This string will ultimately be the entire page. We will do a find/replace
       // for the string CONTENT_STR, once we have the rest of the page rendered.
-      String page = renderPageFramework();
+      String page = renderPageFramework(user);
       String content = "";
 
       try{
+
          // Base the page on what is specified.
          String requestedPage = parms.getProperty("page");
 
@@ -120,64 +172,112 @@ public class RipeServer extends NanoHTTPD{
             recId = Integer.parseInt(recipeId);
          }
 
+         // Get the user id (if provided)
+         String userIdStr = parms.getProperty("user");
+         int userId = -1;
+         if (userIdStr != null &&
+             !userIdStr.equals("")){
+            userId = Integer.parseInt(userIdStr);
+         }
 
          // The recipe listing page
          if (requestedPage == null ||
              requestedPage.equals("recipes") ||
              requestedPage.equals("/")){
-            content = renderRecipes();
+            if (loggedIn){
+               content = renderUserRecipes(user);
+            }
+            else{
+               content = renderPublicRecipes();
+            }
          }
          // The view recipe page
          else if (requestedPage.equals("view")){
             // View a specific recipe
-            content = renderRecipe(recId);
+            if (loggedIn){
+               content = renderUserRecipe(user, recId);
+            }
+            else{
+               content = renderPublicRecipe(userId, recId);
+            }
          }
          else if(requestedPage.equals("add_recipe")){
             // Oh boy! A new recipe!
-            content = renderAddRecipe();
+            if (loggedIn){
+               content = renderAddRecipe(user);
+            }
+            else{
+               content = renderLoginNecessary();
+            }
          }
          else if (requestedPage.equals("add_recipe_manual")){
-            content = renderAddRecipeManual();
+            if (loggedIn){
+               content = renderAddRecipeManual(user);
+            }
+            else{
+               content = renderLoginNecessary();
+            }
          }
          else if(requestedPage.equals("add_recipe_go")){
             // Render the parse results page.
-            content = renderAddRecipeGo(parms, files);
+            if (loggedIn){
+               content = renderAddRecipeGo(user, parms, files);
+            }
+            else{
+               content = renderLoginNecessary();
+            }
          }
          else if(requestedPage.equals("edit")){
             // Render the edit recipe page
-            content = renderEditRecipe(recId);
+            if (loggedIn){
+               content = renderEditRecipe(user, recId);
+            }
+            else{
+               content = renderLoginNecessary();
+            }
          }
          else if(requestedPage.equals("edit_go")){
-            content = renderEditRecipeGo(parms);
+            if (loggedIn){
+               content = renderEditRecipeGo(user, parms);
+            }
+            else{
+               content = renderLoginNecessary();
+            }
          }
          else if(requestedPage.equals("remove")){
-            // Get the current recipe id
-            if (recipeId != null){
-               recId = Integer.parseInt(recipeId);
-            }
+            if (loggedIn){
+               // Get the current recipe id
+               if (recipeId != null){
+                  recId = Integer.parseInt(recipeId);
+               }
 	            
-            if (recId < mRipe.getAllRecipes().size() &&
-                recId >= 0){
-               // Remove the recipe
-               boolean retVal = mRipe.removeRecipe(mRipe.getAllRecipes().get(recId));
+               if ( (user != null) &&
+                    recId < user.getRecipes().size() &&
+                    recId >= 0){
+                  // Remove the recipe for this user
+                  boolean retVal = mRipe.removeRecipeWithIdForUser(recId,user);
 	                
-               // Display a link back to the recipes page
-               if (retVal){
+                  // Display a link back to the recipes page
+                  if (retVal){
+                     content +=
+                        "Recipe deleted!\n<br/>\n";
+                  }
+                  else{
+                     content +=
+                        "Error removing recipe!\n<br/>\n";
+                  }
+	                
+                  // Link back to the listing
                   content +=
-                     "Recipe deleted!\n<br/>\n";
+                     "<a href='/'>Back to listing</a>\n";
                }
                else{
                   content +=
-                     "Error removing recipe!\n<br/>\n";
+                     "Invalid recipe id: " + recipeId;
                }
-	                
-               // Link back to the listing
-               content +=
-                  "<a href='/'>Back to listing</a>\n";
             }
             else{
-               content +=
-                  "Invalid recipe id: " + recipeId;
+               content = renderLoginNecessary();
             }
          }
          else{
@@ -194,14 +294,20 @@ public class RipeServer extends NanoHTTPD{
       page = page.replace(CONTENT_STR, content);
       
       NanoHTTPD.Response response = new NanoHTTPD.Response( HTTP_OK, MIME_HTML, page );
-      response.addHeader("set-cookie", "SID=TODO_SID");
+      // Render appropriate session stuff if logged in
+      if (loggedIn){
+         response.addHeader("set-cookie",
+                            "sid=" + user.getSessionId() +
+                            "username=" + user.getUsername());
+      }
+
       return response;
    }
 
    //// Private methods ////
     
    // Add the header to our output page
-   private String renderPageFramework(){
+   private String renderPageFramework(User user){
       String page = "<html>\n";
       page += addHead();
       page +=
@@ -214,8 +320,9 @@ public class RipeServer extends NanoHTTPD{
          "               Kyle's Recipe Parsing Engine\n" +
          "            </span>\n" +
          "        </div>\n" +
+                      renderUserArea(user) +
          "        <hr/>\n" +
-                     renderNavBar() +
+                     renderNavBar(user) +
          "        <hr/>\n" +
          "        <div id='ripe_content'>\n" +
                       CONTENT_STR + "\n" +            
@@ -258,7 +365,7 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Render the content for viewing all recipes
-   private String renderRecipes(){
+   private String renderUserRecipes(User user){
       String content = renderContentHeader("Listing Recipes");
 	
       // Build a table of our recipes
@@ -270,8 +377,8 @@ public class RipeServer extends NanoHTTPD{
          "    </tr>\n";
 	
       // Add the recipes
-      for (int i=0; i<mRipe.getAllRecipes().size(); i++){
-         Recipe cur = mRipe.getAllRecipes().get(i);
+      for (int i=0; i<user.getRecipes().size(); i++){
+         Recipe cur = user.getRecipes().get(i);
          content +=
             "<tr>\n" +
             "   <td><a href=\"?page=view&recipe=" + i + "\">" + cur.getName() + "</a></td>\n" +
@@ -288,14 +395,23 @@ public class RipeServer extends NanoHTTPD{
       return content;
    }
 
+   // Render public recipes
+   private String renderPublicRecipes(){
+      String content = renderContentHeader("Listing Public Recipes");
+
+      // TODO!
+      
+      return content;
+   }
+
    // Render a single recipe
-   private String renderRecipe(final int recId){
+   private String renderUserRecipe(User user, final int recId){
       String content = "<div id='recipe'>\n";
-      if (recId < mRipe.getAllRecipes().size() &&
+      if (recId < user.getRecipes().size() &&
           recId >= 0){
 
          // Get our current recipe
-         Recipe recipe = mRipe.getAllRecipes().get(recId);
+         Recipe recipe = user.getRecipes().get(recId);
 	
          // The recipe name
          content += renderContentHeader(recipe.getName());
@@ -318,6 +434,13 @@ public class RipeServer extends NanoHTTPD{
       else{
          content += "<p>Invalid recipe: " + recId + "</p>\n";
       }
+      return content;
+   }
+
+   // Render a single public recipe
+   private String renderPublicRecipe(int userId, int recId){
+      String content = renderContentHeader("TODO, KYLE!");
+
       return content;
    }
 
@@ -537,7 +660,7 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Redner the add recipe page
-   private String renderAddRecipe(){
+   private String renderAddRecipe(User user){
       // Generate the header for this page
       String content = renderContentHeader("Add Recipe");
 
@@ -562,7 +685,7 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Render the add recipe go page
-   private String renderAddRecipeGo(Properties parms, Properties files){
+   private String renderAddRecipeGo(User user, Properties parms, Properties files){
       String content = renderContentHeader("Parse Results");
       
       // Check if we have any files that were uploaded
@@ -589,13 +712,13 @@ public class RipeServer extends NanoHTTPD{
       // Add the recipe to our db
       boolean retVal = false;
       if (parsed != null){
-         retVal = mRipe.addRecipe(parsed);
+         retVal = mRipe.addRecipeForUser(parsed, user);
       }
 	
       if (retVal){
          content +=
             "Recipe parsed successfully. Click " +
-            "<a href='?page=view&recipe=" + (mRipe.getAllRecipes().size()-1) +
+            "<a href='?page=view&recipe=" + (user.getRecipes().size()-1) +
             "'>here</a>.";
       }
       else{
@@ -608,8 +731,15 @@ public class RipeServer extends NanoHTTPD{
       return content;
    }
 
+   // Render the small user area
+   private String renderUserArea(User user){
+      String content = "TODO - User area\n";
+
+      return content;
+   }
+
    // Render the navigation bar
-   private String renderNavBar(){
+   private String renderNavBar(User user){
       String content = "<div id='ripe_navbar'>\n";
 
       // Render the links
@@ -633,15 +763,15 @@ public class RipeServer extends NanoHTTPD{
    }
 
    // Render the edit recipe page
-   private String renderEditRecipe(int recId){
+   private String renderEditRecipe(User user, int recId){
       String content = renderContentHeader("Edit Recipe");
 
       // Get the current recipe
-      if (recId < mRipe.getAllRecipes().size() &&
+      if (recId < user.getRecipes().size() &&
           recId >= 0){
 
          // Get our current recipe
-         Recipe recipe = mRipe.getAllRecipes().get(recId);
+         Recipe recipe = user.getRecipes().get(recId);
 
          content += renderRecipeForm(recipe, recId);
       }
@@ -803,7 +933,7 @@ public class RipeServer extends NanoHTTPD{
    }
          
    // Render the edit recipe go page
-   private String renderEditRecipeGo(Properties parms){
+   private String renderEditRecipeGo(User user, Properties parms){
       String content = renderContentHeader("Edit Results");
 
       // Now determine the recipe's id, and save it
@@ -812,7 +942,7 @@ public class RipeServer extends NanoHTTPD{
       // TODO --> This is a serious security issue. Hidden field, really?
       //          Should be good enough for a demo, however.
       // Update the recipe based on the recipe id
-      if (recId > mRipe.getAllRecipes().size()){
+      if (recId > user.getRecipes().size()){
          content += "<p>Recipe ID was found to be invalid.</p>\n";
          // Don't bother trying.
          return content;
@@ -824,7 +954,7 @@ public class RipeServer extends NanoHTTPD{
          editedRecipe = new Recipe();
       }else{
          // Get our recipe from our list of recipes based on it's id
-         editedRecipe = mRipe.getAllRecipes().get(recId);
+         editedRecipe = user.getRecipes().get(recId);
       }
 
       // Start by populating the title
@@ -893,29 +1023,53 @@ public class RipeServer extends NanoHTTPD{
 
       // If recId was -1, this is a new recipe
       if (recId == -1){
-         mRipe.addRecipe(editedRecipe);
+         mRipe.addRecipeForUser(editedRecipe, user);
+         // Update recId
+         recId = user.getRecipes().size() - 1;
       }
       else{
-         // Update this recipe in our database
-         mRipe.updateRecipe(editedRecipe);
+         // The editedRecipe is really owned within our user, so update
+         // this user in the database.
+         mRipe.updateUser(user);
       }
 
       content += renderContentHeader("Success") +
          "<p>Click " +
-         "<a href='?page=view&recipe=" + (mRipe.getAllRecipes().size()-1) +
+         "<a href='?page=view&recipe=" + recId +
          "'>here</a>" +
          " to view the recipe!</p>\n";
       return content;
    }
 
    // Render the form to manually add a recipe
-   private String renderAddRecipeManual(){
+   private String renderAddRecipeManual(User user){
       String content = renderContentHeader("Manually Add Recipe");
 
       // Create an empty recipe
       Recipe recipe = new Recipe();
       content += renderRecipeForm(recipe, -1);
 
+      return content;
+   }
+
+   // Render the login necessary screen
+   private String renderLoginNecessary(){
+      String content = renderContentHeader("Error");
+
+      // Render the error
+      content += "<p>You must be logged in to do that</p>";
+      
+      content += renderLoginForm();
+
+      return content;
+   }
+
+   // Render the login form
+   private String renderLoginForm(){
+      String content = renderContentHeader("Login");
+
+      content += "todo";
+      
       return content;
    }
    
