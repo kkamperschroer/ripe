@@ -153,6 +153,13 @@ public class RIPEController {
       return null;
    }
 
+   // Authenticate a user
+   public boolean authenticateUser(User user, String rawPassword){
+      // Hash the raw password
+      String hashPass = hashPassword(rawPassword);
+      return user.getPassword().equals(hashPass);
+   }
+
    // Update a user's session id
    public void updateUserSession(User user){
       // Update the session

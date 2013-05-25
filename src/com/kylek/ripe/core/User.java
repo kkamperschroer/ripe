@@ -33,7 +33,7 @@ public class User {
       mUsername = "";
       mPassword = "";
       mSessionId = "";
-      mRecipes = null;
+      mRecipes = new Vector<Recipe>();
    }
 
    // Constructor with params

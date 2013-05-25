@@ -33,6 +33,9 @@ public class Recipe {
    // The yield
    private Yield mYield;
 
+   // Is this recipe public or private?
+   private boolean mIsPublic;
+
    /////////////////////////////////////
    // Constructors
    /////////////////////////////////////
@@ -45,7 +48,8 @@ public class Recipe {
       mPrepTime = "";
       mCookTime = "";
       mOverallTime = "";
-      mYield = null;;
+      mYield = null;
+      mIsPublic = false;
    }
 
    // All members
@@ -55,7 +59,8 @@ public class Recipe {
                  String prepTime,
                  String cookTime,
                  String overallTime,
-                 Yield yield){
+                 Yield yield,
+                 boolean isPublic){
       mName = name;
       mIngredients = ingredients;
       mDirections = directions;
@@ -63,6 +68,7 @@ public class Recipe {
       mCookTime = cookTime;
       mOverallTime = overallTime;
       mYield = yield;
+      mIsPublic = isPublic;
    }
 
    /////////////////////////////////////
@@ -76,6 +82,7 @@ public class Recipe {
    public String getCookTime() { return mCookTime; }
    public String getOverallTime() { return mOverallTime; }
    public Yield getYield() { return mYield; }
+   public boolean isPublic() { return mIsPublic; }
 
    public void setName(String name) { mName = name; }
    public void setIngredients(IngredientsList ingredients)
@@ -85,6 +92,7 @@ public class Recipe {
    public void setCookTime(String cookTime) { mCookTime = cookTime; }
    public void setOverallTime(String overallTime) { mOverallTime = overallTime; }
    public void setYield(Yield yield) { mYield = yield; }
+   public void setIsPublic(boolean isPublic) { mIsPublic = isPublic; }
 
    /////////////////////////////////////
    // Other methods

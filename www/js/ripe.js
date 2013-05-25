@@ -114,5 +114,10 @@ $(function() { // Doc ready
             window.location = link.href;
         }
     });
+
+    $("#back_link").click(function(event){
+        event.preventDefault();
+        history.back(-1); 
+    });
     
 });

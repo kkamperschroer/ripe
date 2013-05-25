@@ -1,8 +1,7 @@
-- User accounts
+- User accounts (WIP)
 - Pretty things up with CSS more?
 -- Lower links on view recipe page
 -- Need to prompt on remove from view recipe page
-- Back to recipe after failure = browser back button
 - Continue parsing new recipes, adding each to the unit tests
 - Validation within models
 - Possibly automatically calculate any missing times? If you have 2/3...
@@ -11,3 +10,5 @@
 - Add a tips pain with things like "get rid of special symbols (R)
    (C), etc)
 - Test test test! Add a bugs report button and store them.
+- Toggle recipe publicity
+- Cancel buttons don't do anything?

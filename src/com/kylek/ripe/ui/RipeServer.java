@@ -121,11 +121,11 @@ public class RipeServer extends NanoHTTPD{
 
                // Ignore this cookie if it's not 2 pieces
                if (curCookie.length == 2){
-                  if (curCookie[0] == "username"){
-                     username = curCookie[1];
+                  if (curCookie[0].trim().equals("username")){
+                     username = curCookie[1].trim();
                   }
-                  else if (curCookie[0] == "sid"){
-                     sessionId = curCookie[1];
+                  else if (curCookie[0].trim().equals("sid")){
+                     sessionId = curCookie[1].trim();
                   }
                }
             }
@@ -135,12 +135,17 @@ public class RipeServer extends NanoHTTPD{
             if (username != null && sessionId != null){
                // Last step in validation. See if the session id is valid.
                user = mRipe.getUserForUsername(username);
-               if (user.getSessionId().equals(sessionId)){
+               if (user != null &&
+                   user.getSessionId().equals(sessionId)){
                   // User is logged in
                   loggedIn = true;
 
                   // Update the user session for the next request
                   mRipe.updateUserSession(user);
+               }
+               else{
+                  // Null out user. It failed to validate
+                  user = null;
                }
             }
          }
@@ -280,6 +285,50 @@ public class RipeServer extends NanoHTTPD{
                content = renderLoginNecessary();
             }
          }
+         else if (requestedPage.equals("login")){
+            if (!loggedIn){
+               content = renderLogin();
+            }
+            else{
+               content =
+                  "<p>You are already logged in. Did you want " +
+                  "to <a href='?page=logout'>sign out</a>?</p>\n";
+            }
+         }
+         else if (requestedPage.equals("login_go")){
+            content = renderLoginGo(parms);
+
+            // Check if it was successful
+            if (parms.getProperty("success") != null){
+               // Update user and logged in
+               loggedIn = true;
+               user = mRipe.getUserForUsername(parms.getProperty("username"));
+            }
+         }
+         else if (requestedPage.equals("register")){
+            if (!loggedIn){
+               content = renderRegister();
+            }
+            else{
+               content =
+                  "<p>You are logged in. You must " +
+                  "<a href='?page=logout'>sign out</a> in order " +
+                  "to register for a new account</p>\n";
+            }
+         }
+         else if (requestedPage.equals("register_go")){
+            content = renderRegisterGo(parms);
+         }
+         else if (requestedPage.equals("logout")){
+            if (loggedIn){
+               content = renderLogout();
+            }
+            else{
+               content =
+                  "<p>You can't log out if you aren't " +
+                  "<a href='?page=login'>logged in</a>.</p>\n";
+            }
+         }
          else{
             content += "<p>Unknown page: " + requestedPage + "</p>\n";
          }
@@ -298,7 +347,7 @@ public class RipeServer extends NanoHTTPD{
       if (loggedIn){
          response.addHeader("set-cookie",
                             "sid=" + user.getSessionId() +
-                            "username=" + user.getUsername());
+                            ";username=" + user.getUsername());
       }
 
       return response;
@@ -726,15 +775,34 @@ public class RipeServer extends NanoHTTPD{
       }
       // Link back to the listing
       content +=
-         "<br/><br/><br/>\n<a href='/'>Back to listing</a>\n";
+         "<br/><br/><br/>\n<a id='back_link' href=''>Back to form</a>\n";
 
       return content;
    }
 
    // Render the small user area
    private String renderUserArea(User user){
-      String content = "TODO - User area\n";
+      String content = "<div id='ripe_user_area'>\n";
 
+      // If user == null, they are not logged in
+      if (user == null){
+         // Render a log in and register link
+         content += "You are not logged in!";
+
+         // Log in link
+         content += "<br/>\n" +
+            " <a href='?page=login'>Log In</a> or" +
+            " <a href='?page=register'>Register</a>\n";
+      }
+      else{
+         // Cool. Render a welcome message
+         content += "Welcome, " + user.getUsername();
+
+         // Also want a sign out button
+         content += "<br/>\n<a href='?page=logout'>Log Out</a>\n";
+      }
+
+      content += "</div>\n";
       return content;
    }
 
@@ -789,7 +857,7 @@ public class RipeServer extends NanoHTTPD{
 
       // Build up the form
       String content =
-         "<div id='edit_recipe_form'>\n" +
+         "<div class='ripe_form'>\n" +
          "    <form action='?page=edit_go' method='post'>\n" +
          "        <span id='edit_recipe_title'>" +
          "            <fieldset id='edit_recipe_form_basic'>\n" +
@@ -1061,6 +1129,151 @@ public class RipeServer extends NanoHTTPD{
       
       content += renderLoginForm();
 
+      return content;
+   }
+
+   // Render the login page
+   private String renderLogin(){
+      String content = renderContentHeader("Login");
+
+      content +=
+         "<div class='ripe_form'>\n" +
+         "<form action='?page=login_go' method='post'>\n" +
+         "<fieldset>\n" +
+         "    <legend>Authentication</legend>\n" +
+         "    <label>Username<span class='label_desc'>Your registered username</span></label><input type='text' name='username' />\n" +
+         "    <label>Password<span class='label_desc'>Your secure password</span></label><input type='password' name='password' />\n" +
+         "</fieldset>\n" +
+         "<input type='submit' value='Login'/>\n" +
+         "</form><br/>\n" +
+         "</div>\n";
+      
+      return content;
+   }
+
+   // Render the login go page
+   private String renderLoginGo(Properties parms){
+      String content = renderContentHeader("Login Status");
+
+      // Get the parameters
+      String username = parms.getProperty("username");
+      String rawPassword = parms.getProperty("password");
+
+      // Check if they were provided
+      if (username == null ||
+          username.equals("") ||
+          rawPassword == null ||
+          rawPassword.equals("")){
+         content +=
+            "<p>Error! You must fill in all fields! <a id='back_link' href=''>Back</a></p>\n";
+         return content;
+      }
+
+      // Make sure there is truly a user with this account
+      User user = mRipe.getUserForUsername(username);
+
+      if (user == null){
+         content +=
+            "<p>Error! A user with that username was not found in the system. <a id='back_link' href=''>Back</a></p>\n";
+         return content;
+      }
+      
+      // Authenticate with ripe
+      boolean success = mRipe.authenticateUser(user, rawPassword);
+
+      if (success){
+         content += "<p>Login success! You will be redirected momentarily...</p>" +
+            "<script>window.setTimeout(function() { window.location.href='/';}, 3000);</script>\n</p>\n";
+
+         // Now update the user session id and return it with parms
+         mRipe.updateUserSession(user);
+         parms.setProperty("success","true");
+      }
+      else{
+         content += "<p>Error! Username did not match password! <a id='back_link' href=''>Back</a></p>\n";
+      }
+
+      return content;
+   }
+
+   // Render the register page
+   private String renderRegister(){
+      String content = renderContentHeader("Register");
+
+      content +=
+         "<div class='ripe_form'>\n" +
+         "<form action='?page=register_go' method='post'>\n" +
+         "<fieldset class='register_form'>\n" +
+         "   <legend>New User Registration</legend>\n" +
+         "   <label>Username<span class='label_desc'>Your desired username</span></label><input type='text' name='username' />\n" +
+         "   <label>Password<span class='label_desc'>Your password</span></label><input type='password' name='password' />\n" +
+         "   <label>Password Verification<span class='label_desc'>Re-type your password</span></label><input type='password' name='password_verify' />\n" +
+         "</fieldset>\n" +
+         "<input type='submit' value='Register'/>\n" +
+         "</form><br/>\n" +
+         "</div>\n";
+
+      return content;
+   }
+
+   // Render the register go page
+   private String renderRegisterGo(Properties parms){
+      String content = renderContentHeader("Register Status");
+
+      // Get the parameters
+      String username = parms.getProperty("username");
+      String password = parms.getProperty("password");
+      String password_verify = parms.getProperty("password_verify");
+
+      if (username == null ||
+          username.equals("") ||
+          password == null ||
+          password.equals("") ||
+          password_verify == null ||
+          password_verify.equals("")){
+         // All fields are necessary
+         content +=
+            "<p>Error! All field are required! <a id='back_link' href=''>Back</a></p>\n";
+         return content;
+      }
+
+      // Check if the username is taken   
+      User user = mRipe.getUserForUsername(username);
+      if (user != null){
+         // Yikes, username is taken.
+         content +=
+            "<p>Error! That username is already taken. <a id='back_link' href=''>Back</a></p>\n";
+         return content;
+      }
+
+      // Check if the passwords are equal
+      if (!password.equals(password_verify)){
+         content +=
+            "<p>Error! Passwords do not match. <a id='back_link' href=''>Back</a></p>\n";
+         return content;
+      }
+
+      // At this point everything is good. Register the user!
+      boolean success = mRipe.addUser(username, password);
+
+      if (success){
+         content +=
+            "<p>Success! You can now <a href='?page=login'>log in</a> with your new account</p>\n";
+      }
+      else{
+         content +=
+            "<p>An unexpected condition occured in which the system failed to create the account. Sorry.</p>\n";
+      }
+
+      return content;
+   }
+
+   // Render the logout page
+   private String renderLogout(){
+      String content = renderContentHeader("Sign Out");
+
+      // todo
+      
       return content;
    }
 

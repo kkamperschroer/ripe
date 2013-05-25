@@ -117,7 +117,7 @@ th{
     padding: 5px;
 }
 
-#edit_recipe_form{
+.ripe_form{
     width: 450px;
     margin: 0;
     padding: 10px;
@@ -152,4 +152,12 @@ input{
     font-weight: normal;
     text-align: right;
     width: 140px;
+}
+
+#ripe_user_area{
+    font-size: 11px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    text-align: right;
 }
