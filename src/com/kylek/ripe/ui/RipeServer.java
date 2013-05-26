@@ -761,28 +761,28 @@ public class RipeServer extends NanoHTTPD{
 
       if (ownedByUser){
          // Link to the edit content for this recipe
-         content += renderEndRecipeLink("edit", "Edit", recId);
+         content += renderEndRecipeLink("edit", "Edit", recId, "");
 
          // Link to the remove page for this recipe
-         content += renderEndRecipeLink("remove", "Remove", recId);
+         content += renderEndRecipeLink("remove", "Remove", recId, "id='remove_rec'");
       }
 	
       // Link back to the listing
-      content += renderEndRecipeLink("/", "Back to Listing", -1);
+      content += renderEndRecipeLink("/", "Back to Listing", -1, "");
 
       content += "</div>\n"; // The closing div of recipe_links
       return content;
    }
 
    // Render an individual recipe link
-   private String renderEndRecipeLink(String page, String visibleText, int recId){
+   private String renderEndRecipeLink(String page, String visibleText, int recId, String extra){
       String content = "<span class='recipe_link'>\n";
       
-      content += "<a href='?page=" + page;
+      content += "<a class='end_rec_link' href='?page=" + page;
       if (recId >= 0){
          content += "&recipe=" + recId;
       }
-      content += "'>" + visibleText + "</a>\n";
+      content += "' " + extra + ">" + visibleText + "</a>\n";
 
       content += "</span>\n"; // The closing div of recipe_link
       return content;
@@ -900,10 +900,10 @@ public class RipeServer extends NanoHTTPD{
       }
       else{
          content += mRipe.getErrorMessage();
+         // Link back to the listing
+         content +=
+            "<br/><br/><br/>\n<a id='back_link' href=''>Back to form</a>\n";
       }
-      // Link back to the listing
-      content +=
-         "<br/><br/><br/>\n<a id='back_link' href=''>Back to form</a>\n";
 
       return content;
    }
@@ -1255,6 +1255,9 @@ public class RipeServer extends NanoHTTPD{
          editedRecipe.setIsPublic(true);
       }
 
+      // Scrape from Amazon
+      mRipe.setProductsForRecipe(editedRecipe);
+      
       // If recId was -1, this is a new recipe
       if (recId == -1){
          mRipe.addRecipeForUser(editedRecipe, user);

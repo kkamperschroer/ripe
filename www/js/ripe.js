@@ -115,6 +115,17 @@ $(function() { // Doc ready
         }
     });
 
+    // Same as the last block, but for when there's only a single link with
+    // a given id. TODO -> Do this without duplicating code.
+    $("a#remove_rec").click(function(event){
+        var link = this;
+        event.preventDefault();
+
+        if (confirm("Are you sure you want to delete this recipe?")){
+            window.location = link.href;
+        }
+    });
+
     $("#back_link").click(function(event){
         event.preventDefault();
         history.back(-1); 

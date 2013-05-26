@@ -49,6 +49,10 @@ public class AmazonScraper {
 
    // A method to get a product URL, given a search string
    public static String getProductUrl(String inputProduct){
+      if (inputProduct == null){
+         return "";
+      }
+      
       // First, clean up the input string
       String product = inputProduct.replaceAll(" ", "+")
                                    .replaceAll("<", "&lt;")

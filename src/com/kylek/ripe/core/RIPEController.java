@@ -98,6 +98,9 @@ public class RIPEController {
    
    // Add a new recipe for a user
    public boolean addRecipeForUser(Recipe recipe, User user){
+      // Attempt to scrape 
+      setProductsForRecipe(recipe);
+      
       // Add it to this user
       boolean retVal = user.addRecipe(recipe);
 
