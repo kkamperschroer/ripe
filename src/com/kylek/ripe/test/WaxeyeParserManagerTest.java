@@ -37,7 +37,7 @@ public class WaxeyeParserManagerTest {
          /** Expected toString **/
 
          "Name: Baked Ziti I\n" +
-         "Yield: 10.0 \n" +
+         "Yield: 10 \n" +
          "Prep time: 35 Minutes\n" +
          "Cook time: 20 Minutes\n" +
          "Overall time: 55 Minutes\n" +
@@ -84,7 +84,7 @@ public class WaxeyeParserManagerTest {
 
          /** Expected output **/
          "Name: Shiitake Mushroom and Potato Enchiladas\n" +
-         "Yield: 4.0 \n" +
+         "Yield: 4 \n" +
          "Prep time: 30 m\n" +
          "Cook time: \n" +
          "Overall time: 45 m\n" +
@@ -133,7 +133,7 @@ public class WaxeyeParserManagerTest {
          /** Expected output **/
 
          "Name: Quick and Easy Green Chile Chicken Enchilada Casserole\n" +
-         "Yield: 8.0 \n" +
+         "Yield: 8 \n" +
          "Prep time: 30 Minutes\n" +
          "Cook time: 1 Hour 30 Minutes\n" +
          "Overall time: 2 Hours\n" +
@@ -178,7 +178,7 @@ public class WaxeyeParserManagerTest {
 
          /** Expected output **/
          "Name: Pan-Seared Salmon with Pumpkin Seed-Cilantro Pesto\n" +
-         "Yield: 4.0 servings\n" +
+         "Yield: 4 servings\n" +
          "Prep time: 25 minutes\n" +
          "Cook time: \n" +
          "Overall time: 25 minutes\n" +
@@ -224,7 +224,7 @@ public class WaxeyeParserManagerTest {
          /** Expected output **/
 
          "Name: Mom's Chicken Cacciatore\n" +
-         "Yield: 8.0 \n" +
+         "Yield: 8 \n" +
          "Prep time: \n" +
          "Cook time: \n" +
          "Overall time: \n" +
@@ -287,7 +287,7 @@ public class WaxeyeParserManagerTest {
 
          /** Expected output **/
          "Name: Wazzu Tailgate Chili\n" +
-         "Yield: 8.0 \n" +
+         "Yield: 8 \n" +
          "Prep time: 30 Minutes\n" +
          "Cook time: 12 Hours 30 Minutes\n" +
          "Overall time: 23 Hours\n" +

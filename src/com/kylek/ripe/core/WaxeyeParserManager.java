@@ -296,9 +296,7 @@ public class WaxeyeParserManager {
          curChild = yieldChildren.get(i);
          AttributesType curType = curChild.getType();
          if (curType == AttributesType.AMOUNT){
-            String amountStr = getAttributesText(curChild);
-            double amountDbl = Double.parseDouble(amountStr);
-            yield.setValue(amountDbl);
+            yield.setValue(getAttributesText(curChild));
          }
          else if (curType == AttributesType.UNIT){
             yield.setUnit(getAttributesText(curChild));

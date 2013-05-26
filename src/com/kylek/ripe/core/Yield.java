@@ -11,7 +11,7 @@ public class Yield {
    ////////////////////////////////////////
 
    // The value
-   private double mValue;
+   private String mValue;
 
    // The unit
    private String mUnit;
@@ -22,12 +22,12 @@ public class Yield {
 
    // Base constructor
    public Yield(){
-      mValue = 0.0;
+      mValue = "";
       mUnit = "";
    }
 
    // Other constructor with all members
-   public Yield(double value, String unit){
+   public Yield(String value, String unit){
       mValue = value;
       mUnit = unit;
    }
@@ -37,10 +37,10 @@ public class Yield {
    ////////////////////////////////////////
 
    // Gets
-   public double getValue() { return mValue; }
+   public String getValue() { return mValue; }
    public String getUnit() { return mUnit; }
 
    // Sets
-   public void setValue(double value) { mValue = value; }
+   public void setValue(String value) { mValue = value; }
    public void setUnit(String unit) { mUnit = unit; }
 }

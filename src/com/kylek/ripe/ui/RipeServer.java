@@ -585,21 +585,12 @@ public class RipeServer extends NanoHTTPD{
       // The number of servings
       Yield yield = recipe.getYield();
       if (yield != null){
-         double value = yield.getValue();
+         String value = yield.getValue();
          String unit = yield.getUnit();
-         String yieldStr = "";
-         if (value > 0 &&
-             value % 1.0 == 0){
-            yieldStr += (int) value;
-         }
-         else{
-            yieldStr += value;
-         }
-         yieldStr += " " + unit;
 
          content +=
             renderRecipeAttribute("Yield:",
-                                  yieldStr);
+                                  (value + " " + unit).trim());
       }
 
       // TODO : You could calculate any missing times, automatically!
@@ -1227,7 +1218,7 @@ public class RipeServer extends NanoHTTPD{
       // Set the yield values
       String yieldAmt = parms.getProperty("yield_amount");
       String yieldUnit = parms.getProperty("yield_unit");
-      Yield newYield = new Yield(Double.parseDouble(yieldAmt), yieldUnit);
+      Yield newYield = new Yield(yieldAmt, yieldUnit);
       editedRecipe.setYield(newYield);
 
       // Determine the number of ingredients using the total_ingredients
