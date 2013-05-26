@@ -46,4 +46,4 @@ SPECIAL_DIRECTIONS <- (
                       
 PRODUCT <- PRODUCT_WORDS_NO_BREAK
 
-PRODUCT_WORDS_NO_BREAK <= +[A-Za-z_!?- ]
+PRODUCT_WORDS_NO_BREAK <= +[A-Za-z_!?É® -]

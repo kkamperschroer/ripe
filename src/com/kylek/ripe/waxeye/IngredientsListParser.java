@@ -309,10 +309,10 @@ public final class IngredientsListParser extends org.waxeye.parser.Parser<Ingred
 
         states = new ArrayList<State<IngredientsListType>>();
         edges = new ArrayList<Edge<IngredientsListType>>();
-        edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'_'}, new char[]{' ', 'A', 'a'}, new char[]{'?', 'Z', 'z'}), 1, false));
+        edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'-', '?', '_', '®', 'É'}, new char[]{' ', 'A', 'a'}, new char[]{'!', 'Z', 'z'}), 1, false));
         states.add(new State<IngredientsListType>(edges, false));
         edges = new ArrayList<Edge<IngredientsListType>>();
-        edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'_'}, new char[]{' ', 'A', 'a'}, new char[]{'?', 'Z', 'z'}), 1, false));
+        edges.add(new Edge<IngredientsListType>(new CharTransition<IngredientsListType>(new char[]{'-', '?', '_', '®', 'É'}, new char[]{' ', 'A', 'a'}, new char[]{'!', 'Z', 'z'}), 1, false));
         states.add(new State<IngredientsListType>(edges, true));
         automata.add(new FA<IngredientsListType>(IngredientsListType.PRODUCT_WORDS_NO_BREAK, FA.PRUNE, states));
 

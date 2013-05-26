@@ -106,7 +106,7 @@ public class RIPEController {
 
       // Update this user in the db
       updateUser(user);
-      
+
       // Everything worked out
       return retVal;
    }

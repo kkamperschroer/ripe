@@ -246,6 +246,80 @@ public class WaxeyeParserManagerTest {
          "1.	Combine the flour, salt and pepper in a plastic bag. Shake the chicken pieces in flour until coated. Heat the oil in a large skillet (one that has a cover/lid). Fry the chicken pieces until they are browned on both sides. Remove from skillet.\n" +
          "2.	Add the onion, garlic and bell pepper to the skillet and saute until the onion is slightly browned. Return the chicken to the skillet and add the tomatoes, oregano and wine. Cover and simmer for 30 minutes over medium low heat.\n" +
          "3.	Add the mushrooms and salt and pepper to taste. Simmer for 10 more minutes.\n"
+      },
+
+      /** Recipe 6 **/
+      {
+         "Wazzu Tailgate Chili\n" +
+         "Prep Time: 30 Minutes\n" +
+         "Cook Time: 12 Hours 30 Minutes\n" +
+         "Ready In: 23 Hours\n" +
+         "Servings: 8\n" +
+         "INGREDIENTS:\n" +
+         "1 pound ground beef\n" +
+         "1 pound ground pork\n" +
+         "2 tablespoons olive oil\n" +
+         "1 large onion, chopped, divided\n" +
+         "1 green bell pepper, chopped\n" +
+         "1 habanero peppers, seeded and minced\n" +
+         "2 jalapeno pepper, seeded and minced\n" +
+         "3 cloves garlic, minced\n" +
+         "3 tablespoons chopped green onion\n" +
+         "3 (15 ounce) cans chili beans\n" +
+         "1 (14.5 ounce) can diced tomatoes\n" +
+         "1 (6 ounce) can tomato paste\n" +
+         "1 (8 ounce) can tomato sauce\n" +
+         "1 (12 ounce) bottle lager-style beer\n" +
+         "2 tablespoons cornmeal\n" +
+         "1 cup water\n" +
+         "1/4 cup chili powder\n" +
+         "1 tablespoon ground cumin\n" +
+         "1 teaspoon garlic powder\n" +
+         "1/2 teaspoon cayenne pepper\n" +
+         "1 tablespoon salt\n" +
+         "1 1/2 teaspoons ground black pepper\n" +
+         "1 cup shredded Cheddar cheese\n" +
+         "DIRECTIONS:\n" +
+         "1.	Cook ground beef and pork in a large skillet over medium-high heat until the meat is crumbly, evenly browned, and no longer pink. Drain and discard any excess grease.\n" +
+         "2.	Meanwhile, heat the olive oil in a large pot over medium heat. Stir in 3/4 of the onion and all of the green pepper, habanero pepper, jalapeno pepper, and garlic. Cook and stir until the onion has softened and turned translucent, about 5 minutes. Stir the drained meat into the onion mixture along with the green onion, chili beans, diced tomatoes, tomato paste, tomato sauce, beer, and water. Sprinkle with the cornmeal, then season with chili powder, cumin, garlic powder, cayenne pepper, salt, and black pepper.\n" +
+         "3.	Bring to a simmer over medium heat, then reduce heat to medium-low. Simmer at least 2 hours, stirring occasionally. Refrigerate overnight.\n" +
+         "4.	Reheat the chili over medium heat until it begins to simmer again. Top individual servings of chili with cheese and remaining chopped onion.\n",
+
+         /** Expected output **/
+         "Name: Wazzu Tailgate Chili\n" +
+         "Yield: 8.0 \n" +
+         "Prep time: 30 Minutes\n" +
+         "Cook time: 12 Hours 30 Minutes\n" +
+         "Overall time: 23 Hours\n" +
+         "Ingredients list: \n" +
+         "0) Measurment = 1  pound    Ingredient = ground beef\n" +
+         "1) Measurment = 1  pound    Ingredient = ground pork\n" +
+         "2) Measurment = 2  tablespoons    Ingredient = olive oil\n" +
+         "3) Measurment = 1  large    Ingredient = onion, chopped, divided\n" +
+         "4) Measurment = 1      Ingredient = green bell pepper, chopped\n" +
+         "5) Measurment = 1      Ingredient = habanero peppers, seeded and minced\n" +
+         "6) Measurment = 2      Ingredient = jalapeno pepper, seeded and minced\n" +
+         "7) Measurment = 3      Ingredient = cloves garlic, minced\n" +
+         "8) Measurment = 3  tablespoons    Ingredient = chopped green onion\n" +
+         "9) Measurment = 3 (15 ounce) cans    Ingredient = chili beans\n" +
+         "10) Measurment = 1 (14.5 ounce) can    Ingredient = diced tomatoes\n" +
+         "11) Measurment = 1 (6 ounce) can    Ingredient = tomato paste\n" +
+         "12) Measurment = 1 (8 ounce) can    Ingredient = tomato sauce\n" +
+         "13) Measurment = 1 (12 ounce)     Ingredient = bottle lager-style beer\n" +
+         "14) Measurment = 2  tablespoons    Ingredient = cornmeal\n" +
+         "15) Measurment = 1  cup    Ingredient = water\n" +
+         "16) Measurment = 1/4  cup    Ingredient = chili powder\n" +
+         "17) Measurment = 1  tablespoon    Ingredient = ground cumin\n" +
+         "18) Measurment = 1  teaspoon    Ingredient = garlic powder\n" +
+         "19) Measurment = 1/2  teaspoon    Ingredient = cayenne pepper\n" +
+         "20) Measurment = 1  tablespoon    Ingredient = salt\n" +
+         "21) Measurment = 1 1/2  teaspoons    Ingredient = ground black pepper\n" +
+         "22) Measurment = 1  cup    Ingredient = shredded Cheddar cheese\n" +
+         "Directions: \n" +
+         "1.	Cook ground beef and pork in a large skillet over medium-high heat until the meat is crumbly, evenly browned, and no longer pink. Drain and discard any excess grease.\n" +
+         "2.	Meanwhile, heat the olive oil in a large pot over medium heat. Stir in 3/4 of the onion and all of the green pepper, habanero pepper, jalapeno pepper, and garlic. Cook and stir until the onion has softened and turned translucent, about 5 minutes. Stir the drained meat into the onion mixture along with the green onion, chili beans, diced tomatoes, tomato paste, tomato sauce, beer, and water. Sprinkle with the cornmeal, then season with chili powder, cumin, garlic powder, cayenne pepper, salt, and black pepper.\n" +
+         "3.	Bring to a simmer over medium heat, then reduce heat to medium-low. Simmer at least 2 hours, stirring occasionally. Refrigerate overnight.\n" +
+         "4.	Reheat the chili over medium heat until it begins to simmer again. Top individual servings of chili with cheese and remaining chopped onion."
       }
    };
 
@@ -286,6 +360,10 @@ public class WaxeyeParserManagerTest {
          for (int j=0; j<expectedArr.length; j++){
             System.out.println("Expected:" + expectedArr[j]);
             System.out.println("Actual:  " + outputArr[j]);
+            if (!expectedArr[j].trim().equals(outputArr[j].trim())){
+            	// SET A BREAKPOINT HERE!
+            	int x = 0;
+            }
             assertTrue(expectedArr[j].trim().equals(outputArr[j].trim()));
          }
       }

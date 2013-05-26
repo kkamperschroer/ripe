@@ -897,7 +897,17 @@ public class RipeServer extends NanoHTTPD{
       // Ask mRipe to parse the recipe
       Recipe parsed = mRipe.parseRecipe(recipe);
 
-      // Hopefully that worked! 
+      if (parsed == null){
+         content += mRipe.getErrorMessage();
+         // Link back to the listing
+         content +=
+            "<br/><br/><br/>\n<a id='back_link' href=''>Back to form</a>\n";
+
+         return content;
+      }
+
+      // It parsed!
+      
       // Add the recipe to our db
       boolean retVal = false;
       if (parsed != null){
@@ -921,9 +931,8 @@ public class RipeServer extends NanoHTTPD{
             "'>here</a>.";
       }
       else{
-         content += mRipe.getErrorMessage();
-         // Link back to the listing
          content +=
+            "Recipe with that name already exists! Try a different name, please." +
             "<br/><br/><br/>\n<a id='back_link' href=''>Back to form</a>\n";
       }
 
