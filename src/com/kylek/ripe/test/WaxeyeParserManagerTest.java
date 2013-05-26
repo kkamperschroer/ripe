@@ -43,12 +43,12 @@ public class WaxeyeParserManagerTest {
          "Overall time: 55 Minutes\n" +
          "Ingredients list: \n" +
          "0) Measurment = 1  pound    Ingredient = dry ziti pasta \n" +
-         "1) Measurment = 1      Ingredient = onion , chopped\n" +
+         "1) Measurment = 1      Ingredient = onion, chopped\n" +
          "2) Measurment = 1  pound    Ingredient = lean ground beef \n" +
          "3) Measurment = 2 (26 ounce) jars    Ingredient = spaghetti sauce \n" +
-         "4) Measurment = 6  ounces    Ingredient = provolone cheese , sliced\n" +
+         "4) Measurment = 6  ounces    Ingredient = provolone cheese, sliced\n" +
          "5) Measurment = 1 1/2  cups    Ingredient = sour cream \n" +
-         "6) Measurment = 6  ounces    Ingredient = mozzarella cheese , shredded\n" +
+         "6) Measurment = 6  ounces    Ingredient = mozzarella cheese, shredded\n" +
          "7) Measurment = 2  tablespoons    Ingredient = grated Parmesan cheese \n" +
          "Directions: \n" +
          "1. Bring a large pot of lightly salted water to a boil. Add ziti pasta, and cook until al dente, about 8 minutes; drain.\n" +
@@ -91,14 +91,14 @@ public class WaxeyeParserManagerTest {
          "Ingredients list: \n" +
          "0) Measurment = 1  ounce    Ingredient = dried shiitake mushrooms (about 1 cup)\n" +
          "1) Measurment = 2  tablespoons    Ingredient = olive oil \n" +
-         "2) Measurment = 1      Ingredient = white onion , chopped\n" +
+         "2) Measurment = 1      Ingredient = white onion, chopped\n" +
          "3) Measurment = 1  large    Ingredient = russet potato (about 8 ounces), peeled and diced into 1/4-inch pieces\n" +
-         "4) Measurment = 1  cup    Ingredient = frozen corn , thawed\n" +
+         "4) Measurment = 1  cup    Ingredient = frozen corn, thawed\n" +
          "5)     Ingredient = kosher salt and black pepper \n" +
          "6) Measurment = 2  cups    Ingredient = grated Monterey Jack (about 8 ounces)\n" +
          "7) Measurment = 1 14-ounce can    Ingredient = green chili enchilada sauce (about 1 1/2 cups)\n" +
-         "8) Measurment = 8      Ingredient = corn tortillas , warmed\n" +
-         "9)     Ingredient = fresh cilantro , for serving\n" +
+         "8) Measurment = 8      Ingredient = corn tortillas, warmed\n" +
+         "9)     Ingredient = fresh cilantro, for serving\n" +
          "Directions: \n" +
          "Heat oven to 400° F. Combine the mushrooms and 2 cups boiling water in a small bowl and let sit until softened, 20 to 30 minutes. Remove the mushrooms and chop; reserve the soaking liquid.\n" +
          "Meanwhile, heat the oil in a large nonstick skillet over medium-high heat. Add the onion and potato and cook, tossing often, until the potato begins to soften, 6 to 8 minutes. Add the corn, mushrooms, 1 cup of the soaking liquid, ½ teaspoon salt, and ¼ teaspoon pepper. Reduce heat to medium and cook, stirring often, until the potatoes are tender and most of the liquid is absorbed, 6 to 8 minutes. Transfer to a large bowl and stir in 1 cup of the Monterey Jack.\n" +
@@ -138,9 +138,9 @@ public class WaxeyeParserManagerTest {
          "Cook time: 1 Hour 30 Minutes\n" +
          "Overall time: 2 Hours\n" +
          "Ingredients list: \n" +
-         "0) Measurment = 4      Ingredient = skinless , boneless chicken breast halves\n" +
+         "0) Measurment = 4      Ingredient = skinless, boneless chicken breast halves\n" +
          "1)     Ingredient = garlic salt to taste \n" +
-         "2) Measurment = 18 (6 inch)     Ingredient = corn tortillas , torn in half\n" +
+         "2) Measurment = 18 (6 inch)     Ingredient = corn tortillas, torn in half\n" +
          "3) Measurment = 1 (28 ounce) can    Ingredient = green chile enchilada sauce \n" +
          "4) Measurment = 1 (16 ounce) package    Ingredient = shredded Monterey Jack cheese \n" +
          "5) Measurment = 1 (8 ounce) container    Ingredient = reduced fat sour cream \n" +
@@ -183,15 +183,15 @@ public class WaxeyeParserManagerTest {
          "Cook time: \n" +
          "Overall time: 25 minutes\n" +
          "Ingredients list: \n" +
-         "0) Measurment = 2 1/2  teaspoonsMeasurment 2 = 1/4  cup    Ingredient = extra -virgin olive oil, divided\n" +
+         "0) Measurment = 2 1/2  teaspoonsMeasurment 2 = 1/4  cup    Ingredient = extra-virgin olive oil, divided\n" +
          "1) Measurment = 1/2  cup    Ingredient = shelled pumpkin seeds (pepitas)\n" +
          "2) Measurment = 1/2  cup    Ingredient = cilantro leaves and stems \n" +
          "3) Measurment = 1/2  teaspoon    Ingredient = cracked coriander seeds \n" +
-         "4) Measurment = 1/2      Ingredient = garlic clove , coarsely chopped\n" +
+         "4) Measurment = 1/2      Ingredient = garlic clove, coarsely chopped\n" +
          "5) Measurment = 1  tablespoon    Ingredient = fresh lime juice \n" +
          "6)     Ingredient = Kosher salt and freshly ground black pepper \n" +
          "7) Measurment = 4 6-ounce     Ingredient = salmon fillets (preferably wild)\n" +
-         "8) Measurment = 1      Ingredient = lime , cut into 4 wedges\n" +
+         "8) Measurment = 1      Ingredient = lime, cut into 4 wedges\n" +
          "Directions: \n" +
          "Heat 1 1/2 teaspoons oil in a large nonstick skillet over medium-high heat. Add pumpkin seeds; sauté until beginning to brown and pop, about 2 minutes. Transfer seeds to paper towels to drain; let cool. Reserve skillet.\n" +
          "Pulse 6 tablespoons pumpkin seeds, cilantro, coriander seeds, and garlic in a food processor until coarsely chopped. With machine running, gradually add 1 tablespoon lime juice, 1/4 cup oil, then 1/4 cup water, blending until coarse purée forms. Season pesto to taste with salt, pepper, and more lime juice, if desired.\n" +
@@ -229,18 +229,18 @@ public class WaxeyeParserManagerTest {
          "Cook time: \n" +
          "Overall time: \n" +
          "Ingredients list: \n" +
-         "0) Measurment = 2  cups    Ingredient = all -purpose flour for coating\n" +
+         "0) Measurment = 2  cups    Ingredient = all-purpose flour for coating\n" +
          "1) Measurment = 1/2  teaspoon    Ingredient = salt \n" +
          "2) Measurment = 1/4  teaspoon    Ingredient = ground black pepper \n" +
-         "3) Measurment = 1 (4 pound)     Ingredient = chicken , cut into pieces\n" +
+         "3) Measurment = 1 (4 pound)     Ingredient = chicken, cut into pieces\n" +
          "4) Measurment = 2  tablespoons    Ingredient = vegetable oil \n" +
-         "5) Measurment = 1      Ingredient = onion , chopped\n" +
-         "6) Measurment = 2      Ingredient = cloves garlic , minced\n" +
-         "7) Measurment = 1      Ingredient = green bell pepper , chopped\n" +
+         "5) Measurment = 1      Ingredient = onion, chopped\n" +
+         "6) Measurment = 2      Ingredient = cloves garlic, minced\n" +
+         "7) Measurment = 1      Ingredient = green bell pepper, chopped\n" +
          "8) Measurment = 1 (14.5 ounce) can    Ingredient = diced tomatoes \n" +
          "9) Measurment = 1/2  teaspoon    Ingredient = dried oregano \n" +
          "10) Measurment = 1/2  cup    Ingredient = white wine \n" +
-         "11) Measurment = 2  cups    Ingredient = fresh mushrooms , quartered\n" +
+         "11) Measurment = 2  cups    Ingredient = fresh mushrooms, quartered\n" +
          "12)     Ingredient = salt and pepper to taste \n" +
          "Directions: \n" +
          "1.	Combine the flour, salt and pepper in a plastic bag. Shake the chicken pieces in flour until coated. Heat the oil in a large skillet (one that has a cover/lid). Fry the chicken pieces until they are browned on both sides. Remove from skillet.\n" +
@@ -281,7 +281,13 @@ public class WaxeyeParserManagerTest {
          System.out.println(recipes[i][1]);
          
          // Now assert the recipes toString is equal to the expected.
-         assertTrue(curRecToString.trim().equals(recipes[i][1].trim()));
+         String[] expectedArr = recipes[i][1].trim().split("\n");
+         String[] outputArr = curRecToString.trim().split("\n");
+         for (int j=0; j<expectedArr.length; j++){
+            System.out.println("Expected:" + expectedArr[j]);
+            System.out.println("Actual:  " + outputArr[j]);
+            assertTrue(expectedArr[j].trim().equals(outputArr[j].trim()));
+         }
       }
    }
 }

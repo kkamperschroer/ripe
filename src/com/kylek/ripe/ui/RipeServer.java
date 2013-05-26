@@ -598,6 +598,7 @@ public class RipeServer extends NanoHTTPD{
       // The cook and prep time
       String cookTime = recipe.getCookTime();
       String prepTime = recipe.getPrepTime();
+      String coolTime = recipe.getCoolTime();
       String overallTime = recipe.getOverallTime();
       
       if (prepTime != null &&
@@ -611,6 +612,12 @@ public class RipeServer extends NanoHTTPD{
          content +=
             renderRecipeAttribute("Cook Time:",
                                   cookTime);
+      }
+      if (coolTime != null &&
+          !coolTime.equals("")){
+         content +=
+            renderRecipeAttribute("Cool Time:",
+                                   coolTime);
       }
       if (overallTime != null &&
           !overallTime.equals("")){
@@ -844,6 +851,7 @@ public class RipeServer extends NanoHTTPD{
          "<ul>\n" +
          "   <li>Try to avoid special characters, such as ©</li>\n" +
          "   <li>For now, only standard English characters accepted.</li>\n" +
+         "   <li>Put any recipe desciption at the very end</li>\n" +
          "</ul>\n" +
          "   </div>\n" +
          "</div>\n";
@@ -1041,6 +1049,8 @@ public class RipeServer extends NanoHTTPD{
          recipe.getPrepTime() + "'/>\n" +
          "    <label>Cook Time<span class='label_desc'>E.G. 35 m</span></label> <input class='formatted_input' type='text' name='cook_time' value='" +
          recipe.getCookTime() + "'/>\n" +
+         "    <label>Cool Time<span class='label_desc'>E.G. 5 min.</span></label> <input class='formatted_input' type='text' name='cool_time' value='" +
+         recipe.getCoolTime() + "'/>\n" +
          "    <label>Overall Time<span class='label_desc'>E.G. 1 hr</span></label> <input class='formatted_input' type='text' name='overall_time' value='" +
          recipe.getOverallTime() + "'/>\n" +
          "</fieldset>\n";
@@ -1188,6 +1198,7 @@ public class RipeServer extends NanoHTTPD{
       // Set the different times
       editedRecipe.setPrepTime(parms.getProperty("prep_time"));
       editedRecipe.setCookTime(parms.getProperty("cook_time"));
+      editedRecipe.setCoolTime(parms.getProperty("cool_time"));
       editedRecipe.setOverallTime(parms.getProperty("overall_time"));
 
       // Set the yield values

@@ -23,6 +23,7 @@ public enum IngredientsListType
     GENERALIZER,
     SPECIAL_DIRECTIONS,
     PRODUCT,
+    PRODUCT_WORDS_NO_BREAK,
     Wsn,
     Ws,
     Pwsn,

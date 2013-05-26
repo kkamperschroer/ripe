@@ -21,6 +21,8 @@ public enum AttributesType
     YIELD_PREFIX,
     COOK_TIME,
     COOK_TIME_PREFIX,
+    COOL_TIME,
+    COOL_TIME_PREFIX,
     TIME_UNITS,
     PREP_TIME,
     PREP_TIME_PREFIX,

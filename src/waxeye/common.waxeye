@@ -21,40 +21,44 @@ NUMBER_OR_FRACTION <= +[0-9]" and "+[0-9]'/'+[0-9] |
                       +[0-9]'.'+[0-9] |
                       +[0-9]
 
-UNIT <- ( "cup"?"s" |
-          "can"?"s" |
-          "cp"?"s" |
+UNIT <- (
+          "fluid ounce"?"s" |
+          "tablespoon"?"s" |
           "container"?"s" |
           "teaspoon"?"s" |
-          "tsp"?"s" |
-          "tablespoon"?"s" |
-          "tb"?"s" |
-          "lb"?"s" |
-          "pound"?"s" |
-          "oz"?"s" |
           "fluid oz"?"s" |
-          "fl oz"?"s" |
           "fl ounce"?"s" |
-          "ounce"?"s" |
-          "fluid ounce"?"s" |
-          "gallon"?"s" |
-          "gal"?"s" |
-          "pinch"?"s" |
-          "dash"?'es' |
-          "dollup"?"s" |
-          "qt"?"s" |
-          "quart"?"s" |
-          "pint"?"s" |
-          "pnt"?"s" |
-          "pt"?"s" |
-          "qrt"?"s" |
-          "jar"?"s" |
-          "inch"?"es" |
           "package"?"es" |
           "handful"?"s" |
-          "large" |
           "serving"?"s" |
+          "gallon"?"s" |
+          "dollup"?"s" |
           "people"?"s" |
           "person"?"s" |
+          "bunch"?"es" |
+          "stalk"?"s" |
+          "pound"?"s" |
+          "fl oz"?"s" |
+          "ounce"?"s" |
+          "pinch"?"s" |
+          "quart"?"s" |
+          "dash"?'es' |
+          "inch"?"es" |
+          "pint"?"s" |
+          "cup"?"s" |
+          "can"?"s" |
+          "tsp"?"s" |
+          "gal"?"s" |
+          "pnt"?"s" |
+          "qrt"?"s" |
+          "jar"?"s" |
+          "pkg"?"s" |
+          "cp"?"s" |
+          "tb"?"s" |
+          "lb"?"s" |
+          "oz"?"s" |
+          "qt"?"s" |
+          "pt"?"s" |
+          "large" |
           "c"?"s"
         ) ?"."

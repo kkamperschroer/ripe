@@ -113,7 +113,7 @@ public class WaxeyeParserManager {
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
-    	 System.out.println(mAttributesResults.toString());
+    	 System.out.println("\nAttributes Tree:\n" + mAttributesResults.toString());
          mErrorMessage = "";
          mPreviousSuccess = true;
       }
@@ -137,7 +137,7 @@ public class WaxeyeParserManager {
          mPreviousSuccess = false;
          return mPreviousSuccess;
       }else{
-    	 System.out.println(mAttributesResults.toString());
+    	 System.out.println("\nIngredients List Tree:\n" + mIngredientsListResults.toString());
          mErrorMessage = "";
          mPreviousSuccess = true;
       }
@@ -261,6 +261,8 @@ public class WaxeyeParserManager {
             recipe.setPrepTime(getPrepTime(theActualAttributesAst));
          } else if (theActualAttributesType == AttributesType.OVERALL_TIME){
             recipe.setOverallTime(getOverallTime(theActualAttributesAst));
+         } else if (theActualAttributesType == AttributesType.COOL_TIME){
+            recipe.setCoolTime(getCoolTime(theActualAttributesAst));
          }
       }
    }
@@ -348,6 +350,13 @@ public class WaxeyeParserManager {
       // The tree for overall is the same as cook, so use the
       // same method.
       return getCookTime(overallTimeChild);
+   }
+
+   // Get the cool time out of the current piece
+   private String getCoolTime(IAST<AttributesType> coolTimeChild){
+      // The tree for cool is the same as cook, so use the
+      // same method.
+      return getCookTime(coolTimeChild);
    }
 
    // Get the ingredients list and update the given recipe
@@ -531,7 +540,7 @@ public class WaxeyeParserManager {
          curChild = children.get(i);
          IngredientsListType curChildType = curChild.getType();
 
-         if (curChildType == IngredientsListType.WORDS_NO_BREAK){
+         if (curChildType == IngredientsListType.PRODUCT_WORDS_NO_BREAK){
             String curName = getIngredientsListText(curChild);
             if (shouldIgnoreIngredient(curName)){
                return null; // We don't want this so called ingredient.

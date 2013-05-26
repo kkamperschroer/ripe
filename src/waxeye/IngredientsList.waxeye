@@ -23,9 +23,9 @@ MEASUREMENT <- (
 
 MEASUREMENT_SEPARATOR <- (
                             "to" |
-                            "-" |
+                            "plus" |
                             "and" |
-                            "plus"
+                            "-"
                          )
 
 SPECIFIER <- ?"(" ?GENERALIZER ws AMOUNT (ws|'-') UNIT ?")"
@@ -44,4 +44,6 @@ SPECIAL_DIRECTIONS <- (
                       )
 #SPECIAL_DIRECTIONS <- [,.-(] ?ws WORDS ?(ws ")")
                       
-PRODUCT <- WORDS_NO_BREAK
+PRODUCT <- PRODUCT_WORDS_NO_BREAK
+
+PRODUCT_WORDS_NO_BREAK <= +[A-Za-z_!?- ]

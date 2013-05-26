@@ -26,6 +26,9 @@ public class Recipe {
 
    // The recipe cook time
    private String mCookTime;
+
+   // The cool time
+   private String mCoolTime;
     
    // The overall cook time
    private String mOverallTime;
@@ -43,12 +46,13 @@ public class Recipe {
    // Default constructor
    public Recipe(){
       mName = "";
-      mIngredients = null;
+      mIngredients = new IngredientsList();
       mDirections = "";
       mPrepTime = "";
       mCookTime = "";
+      mCoolTime = "";
       mOverallTime = "";
-      mYield = null;
+      mYield = new Yield();
       mIsPublic = false;
    }
 
@@ -58,6 +62,7 @@ public class Recipe {
                  String directions,
                  String prepTime,
                  String cookTime,
+                 String coolTime,
                  String overallTime,
                  Yield yield,
                  boolean isPublic){
@@ -66,6 +71,7 @@ public class Recipe {
       mDirections = directions;
       mPrepTime = prepTime;
       mCookTime = cookTime;
+      mCoolTime = coolTime;
       mOverallTime = overallTime;
       mYield = yield;
       mIsPublic = isPublic;
@@ -80,6 +86,7 @@ public class Recipe {
    public String getDirections() { return mDirections; }
    public String getPrepTime() { return mPrepTime; }
    public String getCookTime() { return mCookTime; }
+   public String getCoolTime() { return mCoolTime; }
    public String getOverallTime() { return mOverallTime; }
    public Yield getYield() { return mYield; }
    public boolean isPublic() { return mIsPublic; }
@@ -90,6 +97,7 @@ public class Recipe {
    public void setDirections(String directions) { mDirections = directions; }
    public void setPrepTime(String prepTime) { mPrepTime = prepTime; }
    public void setCookTime(String cookTime) { mCookTime = cookTime; }
+   public void setCoolTime(String coolTime) { mCoolTime = coolTime; }
    public void setOverallTime(String overallTime) { mOverallTime = overallTime; }
    public void setYield(Yield yield) { mYield = yield; }
    public void setIsPublic(boolean isPublic) { mIsPublic = isPublic; }
@@ -107,6 +115,7 @@ public class Recipe {
 
    public String toString(){
       String str = "";
+      
       str +=
          "Name: " + mName + "\n" +
          "Yield: " +  mYield.getValue() + " " + mYield.getUnit() + "\n" +
@@ -146,8 +155,18 @@ public class Recipe {
          if (curIng != null){
             str +=
                "    Ingredient = " +
-               curIng.getName() + " " +
-               curIng.getSpecialDirections() + "\n";
+               curIng.getName();
+            String specDir = curIng.getSpecialDirections();
+            if (specDir != null &&
+                !specDir.equals("")){
+               if (specDir.charAt(0) == ','){
+                  str += curIng.getSpecialDirections();
+               }
+               else{
+                  str += " " + curIng.getSpecialDirections();
+               }
+            }
+               str += "\n";
          }
       }
 

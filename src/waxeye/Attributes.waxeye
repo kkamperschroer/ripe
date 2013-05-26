@@ -7,6 +7,7 @@ ATTRIBUTES <- +ATTRIBUTE
 ATTRIBUTE <- ( YIELD |
                COOK_TIME |
                PREP_TIME |
+               COOL_TIME |
                OVERALL_TIME
              )
              ?( +[|,- ] |
@@ -29,16 +30,28 @@ COOK_TIME <- COOK_TIME_PREFIX wsn
              ?(ATTRIBUTE_SEPARATOR wsn)
              +(AMOUNT ws TIME_UNITS ?(?"," ws))
 
-COOK_TIME_PREFIX <- ( "cook" |
-                      "bake"
+COOK_TIME_PREFIX <- ( "cooking" |
+                      "cook" |
+                      "bake" |
+                      "grill"
+                    ) wsn
+                    ?("time")
+
+COOL_TIME <- COOL_TIME_PREFIX wsn
+             ?(ATTRIBUTE_SEPARATOR wsn)
+             +(AMOUNT ws TIME_UNITS ?(?"," ws))
+
+COOL_TIME_PREFIX <- ( "cooling" |
+                      "cool" |
+                      "sit"
                     ) wsn
                     ?("time")
 
 TIME_UNITS <- ( "hour"?"s" |
                 "minute"?"s" |
-                "min"?"s" |
-                "h"?"s" |
-                "m"?"s" 
+                "min"?"s"?"." |
+                "h"?"s"?"." |
+                "m"?"s"?"." 
               )
               ?wsn
 
