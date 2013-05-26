@@ -87,7 +87,10 @@ public class RecipeSplitter {
       if (firstNewline < 0)
       {
          // Hmm, this isn't a real recipe at all!
-         throw new Exception("Invalid recipe! No newline character found.");
+         throw new Exception(
+            "The system was unable to determine where the title ended and attributes " +
+            "start. Please add a linebreak or newline after the title " +
+            "of the recipe.");
       }
       mTitle = inputRecipe.substring(0, firstNewline).trim();
 
@@ -171,7 +174,11 @@ public class RecipeSplitter {
 
       // Well, this isn't good. We failed to find a break. Let's call
       // it invalid.
-      throw new Exception("Invalid recipe! Unable to find the attributes section.");
+      throw new Exception(
+         "The system was unable to determine where the attributes end and the ingredients " +
+         "list starts. Please add the word \"Ingredients\" before the " +
+         "ingredients list, or add an extra line between the two in order " +
+         "to assist in splitting.");
    }
 
    // This method is used to find the string block for the ingredients list
@@ -223,7 +230,11 @@ public class RecipeSplitter {
       
       // Well, this isn't good. Failed to find a break again. Calling the
       // recipe invalid!
-      throw new Exception("Invalid recipe! Unable to find the ingredients list.");
+      throw new Exception(
+         "The system was unable to determine where the ingredients list ends and the " +
+         "directions start. Please add the word \"Directions\" before the " +
+         "start of your directions, or add an extra line between the two " +
+         "in order to assist in splitting.");
    }
    
 }

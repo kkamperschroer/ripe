@@ -130,5 +130,81 @@ $(function() { // Doc ready
         event.preventDefault();
         history.back(-1); 
     });
+
+    $("#tip_example_rec1").click(function(event){
+        // Update the textarea value to contain this recipe
+        $("#recipe_textarea").text(
+            "Baked Ziti I\n" +
+                "Serves: 10\n" +
+                "Prep Time: 35 Minutes\n" +
+                "Cook Time: 20 Minutes\n" +
+                "Ready In: 55 Minutes\n" +
+                "1 pound dry ziti pasta\n" +
+                "1 onion, chopped\n" +
+                "1 pound lean ground beef\n" +
+                "2 (26 ounce) jars spaghetti sauce\n" +
+                "6 ounces provolone cheese, sliced\n" +
+                "1 1/2 cups sour cream\n" +
+                "6 ounces mozzarella cheese, shredded\n" +
+                "2 tablespoons grated Parmesan cheese\n" +
+                "Directions\n" +
+                "1. Bring a large pot of lightly salted water to a boil. Add ziti pasta, and cook until al dente, about 8 minutes; drain.\n" +
+                "2. In a large skillet, brown onion and ground beef over medium heat. Add spaghetti sauce, and simmer 15 minutes.\n" +
+                "3. Preheat the oven to 350 degrees F (175 degrees C). Butter a 9x13 inch baking dish. Layer as follows: 1/2 of the ziti, Provolone cheese, sour cream, 1/2 sauce mixture, remaining ziti, mozzarella cheese and remaining sauce mixture. Top with grated Parmesan cheese.\n" +
+                "4. Bake for 30 minutes in the preheated oven, or until cheeses are melted.\n"
+        );
+    });
+
+    $("#tip_example_rec2").click(function(event){
+        // Update the textarea value to contain this recipe
+        $("#recipe_textarea").text(
+            "Shiitake Mushroom and Potato Enchiladas\n" +
+                "\n" +
+                "Serves 4| Hands-On Time: 30m| Total Time: 45m\n" +
+                "\n" +
+                "Ingredients\n" +
+                "1 	 ounce 	 dried shiitake mushrooms (about 1 cup)\n" +
+                "2 	 tablespoons 	 olive oil\n" +
+                "1 	 white onion, chopped\n" +
+                "1 	 large russet potato (about 8 ounces), peeled and diced into 1/4-inch pieces\n" +
+                "1 	 cup 	 frozen corn, thawed\n" +
+                "kosher salt and black pepper\n" +
+                "2 	 cups 	 grated Monterey Jack (about 8 ounces)\n" +
+                "1 	 14-ounce can green chili enchilada sauce (about 1 1/2 cups)\n" +
+                "8 	 corn tortillas, warmed\n" +
+                "fresh cilantro, for serving\n" +
+                "\n" +
+                "Directions\n" +
+                "Heat oven to 400° F. Combine the mushrooms and 2 cups boiling water in a small bowl and let sit until softened, 20 to 30 minutes. Remove the mushrooms and chop; reserve the soaking liquid.\n" +
+                "Meanwhile, heat the oil in a large nonstick skillet over medium-high heat. Add the onion and potato and cook, tossing often, until the potato begins to soften, 6 to 8 minutes. Add the corn, mushrooms, 1 cup of the soaking liquid, ½ teaspoon salt, and ¼ teaspoon pepper. Reduce heat to medium and cook, stirring often, until the potatoes are tender and most of the liquid is absorbed, 6 to 8 minutes. Transfer to a large bowl and stir in 1 cup of the Monterey Jack.\n" +
+                "Spread ½ cup of the enchilada sauce in the bottom of a 9-by-13-inch baking dish. Dividing evenly, roll up the mushroom mixture in the tortillas and place seam-side down in the dish. Top with the remaining enchilada sauce and sprinkle with the remaining Monterey Jack. Bake until the sauce is bubbling and the Monterey Jack is melted, 12 to 15 minutes. Sprinkle with the cilantro.\n"
+        );
+    });
+
+    $("#tip_example_rec3").click(function(event){
+        // Update the textarea value to contain this recipe
+        $("#recipe_textarea").text(
+            "Quick and Easy Green Chile Chicken Enchilada Casserole\n" +
+                "\n" +
+                "Prep Time: 30 Minutes\n" +
+                "Cook Time: 1 Hour 30 Minutes\n" +
+                "Ready In: 2 Hours\n" +
+                "Servings: 8\n" +
+                "\n" +
+                "INGREDIENTS:\n" +
+                "4 skinless, boneless chicken breast halves\n" +
+                "garlic salt to taste\n" +
+                "18 (6 inch) corn tortillas, torn in half\n" +
+                "1 (28 ounce) can green chile enchilada sauce\n" +
+                "1 (16 ounce) package shredded Monterey Jack cheese\n" +
+                "1 (8 ounce) container reduced fat sour cream\n" +
+                "DIRECTIONS:\n" +
+                "1.	Preheat oven to 350 degrees F (175 degrees C). Lightly grease a medium baking dish.\n" +
+                "2.	Season chicken with garlic salt. Arrange in the prepared baking dish. Bake 45 minutes in the preheated oven, until no longer pink and juices run clear. Cool, shred, and set aside.\n" +
+                "3.	With metal tongs, char each tortilla half over the open flame of a gas stove burner for about 1 minute, until lightly puffed.\n" +
+                "4.	Pour about 1/2 inch enchilada sauce in the bottom of a medium baking dish, and arrange 6 tortillas in a single layer. Top with 1/2 the chicken, 1/3 cheese, 1/2 the sour cream, and 1/3 of the remaining enchilada sauce. Repeat. Coat remaining tortillas thoroughly with remaining enchilada sauce, and arrange on top of the layers. Sprinkle with remaining cheese, and top with any remaining enchilada sauce\n" +
+                "5.	Cover, and bake 45 minutes in the preheated oven. Cool slightly before serving.\n"
+        );
+    });
     
 });

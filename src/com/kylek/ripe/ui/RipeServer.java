@@ -815,7 +815,7 @@ public class RipeServer extends NanoHTTPD{
          "<div id='add_recipe_form'>\n" +
          "<form action='?page=add_recipe_go' method='post' accept-charset='UTF-8' enctype='multipart/form-data'>\n" +
          "    Recipe:\n<br/>\n" +
-         "    <textarea cols='60' rows='30' name='raw_recipe'>" +
+         "    <textarea id='recipe_textarea' required cols='60' rows='30' name='raw_recipe'>" +
          "</textarea>\n<br/>\n" +
          "    <input type='checkbox' name='public'/>Public?<br/>\n" +
          "    <input type='submit' value='Parse it!'/>\n" +
@@ -858,9 +858,15 @@ public class RipeServer extends NanoHTTPD{
          "</pre>\n" +
          "Other tips\n" +
          "<ul>\n" +
+         "   <li>The parser expects a specific order of title, attributes, ingredients list, and directions.</li>\n" +
          "   <li>Try to avoid special characters, such as ©</li>\n" +
          "   <li>Put any recipe desciption at the very end after the directions</li>\n" +
          "</ul>\n" +
+         "Example Recipes (click to populate)\n" +
+         "<ul>\n" +
+         "   <li><a id='tip_example_rec1' class='tip_example'>Example 1</a></li>\n" +
+         "   <li><a id='tip_example_rec2' class='tip_example'>Example 2</a></li>\n" +
+         "   <li><a id='tip_example_rec3' class='tip_example'>Example 3</a></li>\n" +
          "   </div>\n" +
          "</div>\n";
        
@@ -1020,7 +1026,7 @@ public class RipeServer extends NanoHTTPD{
          "        <span id='edit_recipe_title'>" +
          "            <fieldset id='edit_recipe_form_basic'>\n" +
          "                <legend>Basic</legend>\n" +
-         "                    <label>Recipe Title<span class='label_desc'>What is your recipe called?</span></label> <input class='formatted_input' type='text' name='recipe_name' value=\"" +
+         "                    <label>Recipe Title*<span class='label_desc'>What is your recipe called?</span></label> <input required class='formatted_input' type='text' name='recipe_name' value=\"" +
          recipe.getName() + "\"/>" +
          "                </legend>\n" +
          "            </fieldset>\n" +
@@ -1139,7 +1145,7 @@ public class RipeServer extends NanoHTTPD{
          curMeas2.getSpecifier() + "'>\n" +
          "      <label>Unit<span class='label_desc'>Optional 2nd unit</span></label> <input class='formatted_input' type='text' name='unit2_" + index + "' value='" +
          curMeas2.getUnit() + "'>\n" +
-         "      <label>Product<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input class='formatted_input' type='text' name='product_" + index + "'value='" +
+         "      <label>Product*<span class='label_desc'>E.G. Eggs, milk, etc.</span></label> <input required class='formatted_input' type='text' name='product_" + index + "'value='" +
          curIng.getName() + "'>\n" +
          "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input class='formatted_input' type='text' name='specDir_" + index + "'value='" +
          curIng.getSpecialDirections() + "'>\n" +

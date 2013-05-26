@@ -91,7 +91,7 @@ public class WaxeyeParserManager {
          mPreviousSuccess = false;
          mErrorMessage = "There was an error splitting the recipe into" +
             " meaningful sections. Did you format the input recipe appropriately?" +
-            "<br/>The error reported is as follows: " + e.getMessage();
+            "<br/><br/>" + e.getMessage();
          return mPreviousSuccess;
       }
 
