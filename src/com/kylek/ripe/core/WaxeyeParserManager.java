@@ -148,7 +148,11 @@ public class WaxeyeParserManager {
 
    // A method for getting an error message
    private String generateErrorMessage(ParseError error, String input){
-      String err = "Parse Error:<br/><br/><pre>";
+      String err =
+         "There was an error parsing the recipe you've provided. " +
+         "The formatting looks valid, but the system does not know how " +
+         "to handle the value pointed at below. Are you sure it's valid?" +
+         "<br/><br/><pre>";
          
       // Cycle through some of the input string)
       Scanner scanner = new Scanner(input);

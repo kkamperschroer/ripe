@@ -1,59 +1,3 @@
-function removeIngredient(){
-    var num = $(this).attr("id").split("_")[1];
-
-    // Let's delete it if the user is positive that's what they want
-    if (confirm("Are you sure you want to remove this ingredient?")){
-        $("#ingredient_" + num).slideUp('slow', function () {
-            $(this).remove();
-
-            // Now, it's unfortunately necessary to go through each of
-            // the other ingredients in the form and update their actual number
-            var currentNumber = 0;
-            $("#edit_recipe_form_ingredients_list").children("fieldset").each(function(){
-                var numStr = $(this).attr("id").split('_')[1];
-                var num = new Number(parseInt(numStr));
-                if (num != currentNumber){
-                    // this needs to be changed from 'num' to 'currentNum'
-
-                    // First, change the fieldset id
-                    $(this).attr("id", "ingredient_" + currentNumber);
-
-                    //// Now start changing children
-                    // legend
-                    $(this).children("legend").text("Ingredient " + (currentNumber+1));
-                    // inputs (text)
-                    $(this).children("input").each(function() {
-                        // Get the current name
-                        var name = $(this).attr("name");
-
-                        if (name != undefined){
-                            // Split the string
-                            var name_sub = name.split('_')
-
-                            // Now name_sub[0] contains the attribute and
-                            //     name_sub[1] contains the number
-                            // Just build the new string using newNum
-                            $(this).attr("name", name_sub[0] + "_" + currentNumber);
-                        }else{
-                            // Check if this is a button
-                            if ($(this).attr("type") == "button"){
-                                // Update the text of the 'id' field
-                                var id_sub = $(this).attr("id").split('_');
-                                $(this).attr("id", id_sub[0] + "_" + currentNumber);
-                            }
-                        }
-                    });
-                }
-                currentNumber++;
-            });
-            // Now we need to update our hidden field containing the total
-            // count of recipes
-            $("#hidden_total_ingredients").attr("value", currentNumber);
-        });
-    }
-
-}
-
 $(function() { // Doc ready
     // Functionality for adding another recipe to a form
     $("#add_ingredient").click(function(){
@@ -126,11 +70,13 @@ $(function() { // Doc ready
         }
     });
 
+    // A back link just simulates a browser back button.
     $("#back_link").click(function(event){
         event.preventDefault();
         history.back(-1); 
     });
 
+    // Some example recipes that will be useful.
     $("#tip_example_rec1").click(function(event){
         // Update the textarea value to contain this recipe
         $("#recipe_textarea").text(
@@ -206,5 +152,63 @@ $(function() { // Doc ready
                 "5.	Cover, and bake 45 minutes in the preheated oven. Cool slightly before serving.\n"
         );
     });
+
+    // Function used for removing ingredients
+    function removeIngredient(){
+        var num = $(this).attr("id").split("_")[1];
+
+        // Let's delete it if the user is positive that's what they want
+        if (confirm("Are you sure you want to remove this ingredient?")){
+            $("#ingredient_" + num).slideUp('slow', function () {
+                $(this).remove();
+
+                // Now, it's unfortunately necessary to go through each of
+                // the other ingredients in the form and update their actual number
+                var currentNumber = 0;
+                $("#edit_recipe_form_ingredients_list").children("fieldset").each(function(){
+                    var numStr = $(this).attr("id").split('_')[1];
+                    var num = new Number(parseInt(numStr));
+                    if (num != currentNumber){
+                        // this needs to be changed from 'num' to 'currentNum'
+
+                        // First, change the fieldset id
+                        $(this).attr("id", "ingredient_" + currentNumber);
+
+                        //// Now start changing children
+                        // legend
+                        $(this).children("legend").text("Ingredient " + (currentNumber+1));
+                        // inputs (text)
+                        $(this).children("input").each(function() {
+                            // Get the current name
+                            var name = $(this).attr("name");
+
+                            if (name != undefined){
+                                // Split the string
+                                var name_sub = name.split('_')
+
+                                // Now name_sub[0] contains the attribute and
+                                //     name_sub[1] contains the number
+                                // Just build the new string using newNum
+                                $(this).attr("name", name_sub[0] + "_" + currentNumber);
+                            }else{
+                                // Check if this is a button
+                                if ($(this).attr("type") == "button"){
+                                    // Update the text of the 'id' field
+                                    var id_sub = $(this).attr("id").split('_');
+                                    $(this).attr("id", id_sub[0] + "_" + currentNumber);
+                                }
+                            }
+                        });
+                    }
+                    currentNumber++;
+                });
+                // Now we need to update our hidden field containing the total
+                // count of recipes
+                $("#hidden_total_ingredients").attr("value", currentNumber);
+            });
+        }
+
+    }
+
     
 });

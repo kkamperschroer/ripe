@@ -1149,7 +1149,7 @@ public class RipeServer extends NanoHTTPD{
          curIng.getName() + "'>\n" +
          "   <label>Special Directions<span class='label_desc'>E.G. Shaken, stirred, etc.</span></label> <input class='formatted_input' type='text' name='specDir_" + index + "'value='" +
          curIng.getSpecialDirections() + "'>\n" +
-         "   <input class='formatted_input' type='button' class='remove_ingredient' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
+         "   <input class='formatted_input remove_ingredient' type='button' id='removeIng_" + index + "' value='Remove Ingredient'/>\n" +
          "\n" +
          "</fieldset>\n";
 
