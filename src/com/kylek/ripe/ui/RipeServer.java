@@ -167,7 +167,9 @@ public class RipeServer extends NanoHTTPD{
       // for the string CONTENT_STR, once we have the rest of the page rendered.
       String page = renderPageFramework(user);
       String content = "";
-
+      Vector<String> additionalHeaderName = new Vector<String>();
+      Vector<String> additionalHeaderValue = new Vector<String>();
+      
       try{
 
          // Base the page on what is specified.
@@ -371,6 +373,12 @@ public class RipeServer extends NanoHTTPD{
                             ",username=" + user.getUsername());
       }
 
+      // Add to the rest of the header
+      for (int i=0; i<additionalHeaderName.size(); i++){
+         response.addHeader(additionalHeaderName.get(i),
+                            additionalHeaderValue.get(i));
+      }
+
       return response;
    }
 
@@ -412,6 +420,7 @@ public class RipeServer extends NanoHTTPD{
          "        <link href='/stylesheets/ripe.css' rel='stylesheet' type='text/css' />\n" +
          "        <script src='/js/jquery-1.9.1.min.js' type='text/javascript'></script>\n" +
          "        <script src='/js/ripe.js' type='text/javascript'></script>\n" +
+         "        <meta charset=\"UTF-8\" />" +
          "        <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n" +
          "        <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css' />\n" +
          "    </head>\n";
@@ -804,7 +813,7 @@ public class RipeServer extends NanoHTTPD{
       content +=
          "<div id='add_recipe_form_wrapper'>\n" +
          "<div id='add_recipe_form'>\n" +
-         "<form action='?page=add_recipe_go' method='post'>\n" +
+         "<form action='?page=add_recipe_go' method='post' enctype='multipart/form-data' accept-charset='UTF-8'>\n" +
          "    Recipe:\n<br/>\n" +
          "    <textarea cols='60' rows='30' name='raw_recipe'>" +
          "</textarea>\n<br/>\n" +
@@ -1008,7 +1017,7 @@ public class RipeServer extends NanoHTTPD{
       // Build up the form
       String content =
          "<div class='ripe_form'>\n" +
-         "    <form action='?page=edit_go' method='post'>\n" +
+         "    <form action='?page=edit_go' method='post' enctype='multipart/form-data' accept-charset='UTF-8'>\n" +
          "        <span id='edit_recipe_title'>" +
          "            <fieldset id='edit_recipe_form_basic'>\n" +
          "                <legend>Basic</legend>\n" +
@@ -1373,7 +1382,7 @@ public class RipeServer extends NanoHTTPD{
 
       content +=
          "<div class='ripe_form'>\n" +
-         "<form action='?page=register_go' method='post'>\n" +
+         "<form action='?page=register_go' method='post' enctype='multipart/form-data' accept-charset='UTF-8'>\n" +
          "<fieldset class='register_form'>\n" +
          "   <legend>New User Registration</legend>\n" +
          "   <label>Username<span class='label_desc'>Your desired username</span></label><input class='formatted_input' type='text' name='username' />\n" +
@@ -1453,7 +1462,7 @@ public class RipeServer extends NanoHTTPD{
    private String renderLoginForm(){
       String content =
          "<div class='ripe_form'>\n" +
-         "<form action='?page=login_go' method='post'>\n" +
+         "<form action='?page=login_go' method='post' enctype='multipart/form-data' accept-charset='UTF-8'>\n" +
          "<fieldset>\n" +
          "    <legend>Authentication</legend>\n" +
          "    <label>Username<span class='label_desc'>Your registered username</span></label><input class='formatted_input' type='text' name='username' />\n" +
