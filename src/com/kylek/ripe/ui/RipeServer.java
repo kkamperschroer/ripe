@@ -588,9 +588,15 @@ public class RipeServer extends NanoHTTPD{
          String value = yield.getValue();
          String unit = yield.getUnit();
 
-         content +=
-            renderRecipeAttribute("Yield:",
-                                  (value + " " + unit).trim());
+         if (value != null &&
+             !value.equals("")){
+            if (unit == null){
+               unit = "";
+            }
+            content +=
+               renderRecipeAttribute("Yield:",
+                                     (value + " " + unit).trim());
+         }
       }
 
       // TODO : You could calculate any missing times, automatically!
