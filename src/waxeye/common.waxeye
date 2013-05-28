@@ -42,6 +42,7 @@ UNIT <- (
           "ounce"?"s" |
           "pinch"?"s" |
           "quart"?"s" |
+          "tblsp"?"s" |
           "dash"?'es' |
           "inch"?"es" |
           "pint"?"s" |
