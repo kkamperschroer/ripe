@@ -27,7 +27,7 @@ public class TestDriver {
       "2. In a large skillet, brown onion and ground beef over medium heat. Add spaghetti sauce, and simmer 15 minutes.\n" +
       "3. Preheat the oven to 350 degrees F (175 degrees C). Butter a 9x13 inch baking dish. Layer as follows: 1/2 of the ziti, Provolone cheese, sour cream, 1/2 sauce mixture, remaining ziti, mozzarella cheese and remaining sauce mixture. Top with grated Parmesan cheese.\n" +
       "4. Bake for 30 minutes in the preheated oven, or until cheeses are melted.\n";
-**/
+
    "Shiitake Mushroom and Potato Enchiladas\n" +
    "\n" +
    "Serves 4| Hands-On Time: 30m| Total Time: 45m\n" +
@@ -48,8 +48,7 @@ public class TestDriver {
    "Heat oven to 400° F. Combine the mushrooms and 2 cups boiling water in a small bowl and let sit until softened, 20 to 30 minutes. Remove the mushrooms and chop; reserve the soaking liquid.\n" +
    "Meanwhile, heat the oil in a large nonstick skillet over medium-high heat. Add the onion and potato and cook, tossing often, until the potato begins to soften, 6 to 8 minutes. Add the corn, mushrooms, 1 cup of the soaking liquid, ½ teaspoon salt, and ¼ teaspoon pepper. Reduce heat to medium and cook, stirring often, until the potatoes are tender and most of the liquid is absorbed, 6 to 8 minutes. Transfer to a large bowl and stir in 1 cup of the Monterey Jack.\n" +
    "Spread ½ cup of the enchilada sauce in the bottom of a 9-by-13-inch baking dish. Dividing evenly, roll up the mushroom mixture in the tortillas and place seam-side down in the dish. Top with the remaining enchilada sauce and sprinkle with the remaining Monterey Jack. Bake until the sauce is bubbling and the Monterey Jack is melted, 12 to 15 minutes. Sprinkle with the cilantro.\n";
-
-/**
+**/
       "this tring of text should be the title\n" + 
       "serves 6 cups\n" +
       "cook time is 20 minutes\n" +
@@ -66,16 +65,15 @@ public class TestDriver {
       "3 tablespoons butter, softened\n" +
       "1/2 cup chopped pecans\n" +
       "directions and then some\neh?\n\nok then";
-**/
                                                                                                                         
    public static void main(String[] args){
 
-      /**
+      
       // Get our WaxeyeParserManager
       WaxeyeParserManager wpm = new WaxeyeParserManager();
 
       final boolean success = wpm.parseString(TEST_RECIPE);
-      **/
+      
       
       RecipeSplitter recSplit = new RecipeSplitter();
       

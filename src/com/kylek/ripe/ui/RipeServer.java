@@ -620,7 +620,8 @@ public class RipeServer extends NanoHTTPD{
                                   cookTime);
       }
       if (coolTime != null &&
-          !coolTime.equals("")){
+          !coolTime.equals("") &&
+          !coolTime.equals("null")){
          content +=
             renderRecipeAttribute("Cool Time:",
                                    coolTime);
