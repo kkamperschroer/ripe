@@ -301,6 +301,9 @@ public class WaxeyeParserManager {
          else if (curType == AttributesType.UNIT){
             yield.setUnit(getAttributesText(curChild));
          }
+         else if (curType == AttributesType.WORDS_NO_BREAK){
+            yield.setUnit(getAttributesText(curChild));
+         }
       }
 
       // Return out built yield.

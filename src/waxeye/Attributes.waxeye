@@ -17,7 +17,7 @@ ATTRIBUTE <- ( YIELD |
 YIELD <- YIELD_PREFIX ?wsn
          ?(ATTRIBUTE_SEPARATOR wsn)
          ?(YIELD_PREFIX wsn)
-         AMOUNT ?ws ?UNIT
+         AMOUNT ?ws ?(UNIT | WORDS_NO_BREAK)
 
 YIELD_PREFIX <- ( "yield"?"s" |
                   "serve"?"s" |

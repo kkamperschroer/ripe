@@ -14,7 +14,24 @@ WORDS <= +[A-Za-z0-9:;_!?.,()/ -°½¼é]
 WORDS_NO_BREAK <= +[A-Za-z_!?/ ]
 WORDS_NO_PARENS <= +[A-Za-z0-9:;_!?.,/ -]
 
-AMOUNT <- NUMBER_OR_FRACTION
+AMOUNT <- AMOUNT_WORD ?(ws AMOUNT_WORD) |
+          NUMBER_OR_FRACTION ws AMOUNT_WORD |
+          NUMBER_OR_FRACTION
+
+AMOUNT_WORD <- (
+                  "baker's dozen" |
+                  "bakers dozen" |
+                  "half a dozen" |
+                  "great gross" |
+                  "bushel"?"s" |
+                  "half dozen" |
+                  "dozen"?"s" |
+                  "pair"?"s" |
+                  "couple" |
+                  "score" |
+                  "gross"
+               )
+
 NUMBER_OR_FRACTION <= +[0-9]" and "+[0-9]'/'+[0-9] |
                       +[0-9]' '+[0-9]'/'+[0-9] |
                       +[0-9]'/'+[0-9] |

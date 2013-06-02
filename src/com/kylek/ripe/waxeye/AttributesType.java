@@ -37,6 +37,7 @@ public enum AttributesType
     WORDS_NO_BREAK,
     WORDS_NO_PARENS,
     AMOUNT,
+    AMOUNT_WORD,
     NUMBER_OR_FRACTION,
     UNIT
 }
