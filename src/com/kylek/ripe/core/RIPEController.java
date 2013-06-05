@@ -95,6 +95,20 @@ public class RIPEController {
       // All is fine and dandy
       return true;
    }
+
+   // Update a users password
+   public void changeUserPassword(User user, String newRawPassword){
+      // Get out if we can
+      if (user == null){
+         return;
+      }
+
+      // Update the password
+      user.setPassword(hashPassword(newRawPassword));
+
+      // Update the user in the db
+      updateUser(user);
+   }
    
    // Add a new recipe for a user
    public boolean addRecipeForUser(Recipe recipe, User user){

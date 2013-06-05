@@ -348,6 +348,26 @@ public class RipeServer extends NanoHTTPD{
                   "<a href='?page=login'>logged in</a>.</p>\n";
             }
          }
+         else if (requestedPage.equals("change_password")){
+            if (loggedIn){
+               content = renderChangePassword();
+            }
+            else{
+               content =
+                  "<p>You can't change passwords if you aren't " +
+                  "<a href='?page=login'>logged in</a>.</p>\n";
+            }
+         }
+         else if (requestedPage.equals("change_password_go")){
+            if (loggedIn){
+               content = renderChangePasswordGo(user, parms);
+            }
+            else{
+               content =
+                  "<p>You can't change passwords if you aren't " +
+                  "<a href='?page=login'>logged in</a>.</p>\n";
+            }
+         }
          else if (requestedPage.equals("list_public_recipes")){
             content += renderPublicRecipes();
          }
@@ -955,8 +975,11 @@ public class RipeServer extends NanoHTTPD{
          // Cool. Render a welcome message
          content += "Welcome, " + user.getUsername();
 
-         // Also want a sign out button
-         content += "<br/>\n<a href='?page=logout'>Log Out</a>\n";
+         // Render a change password link
+         content += "<br/><a href='?page=change_password'>Change Password</a>\n";
+         
+         // We also want a sign out button
+         content += "<br/><a href='?page=logout'>Log Out</a>\n";
       }
 
       content += "</div>\n";
@@ -1477,8 +1500,8 @@ public class RipeServer extends NanoHTTPD{
          "<form action='?page=login_go' method='post' accept-charset='UTF-8' enctype='multipart/form-data'>\n" +
          "<fieldset>\n" +
          "    <legend>Authentication</legend>\n" +
-         "    <label>Username<span class='label_desc'>Your registered username</span></label><input class='formatted_input' type='text' name='username' />\n" +
-         "    <label>Password<span class='label_desc'>Your secure password</span></label><input class='formatted_input' type='password' name='password' />\n" +
+         "    <label>Username<span class='label_desc'>Your registered username</span></label><input class='formatted_input' type='text' name='username' required />\n" +
+         "    <label>Password<span class='label_desc'>Your secure password</span></label><input class='formatted_input' type='password' name='password' required />\n" +
          "</fieldset>\n" +
          "<input class='formatted_input' type='submit' value='Login'/>\n" +
          "</form><br/>\n" +
@@ -1486,7 +1509,55 @@ public class RipeServer extends NanoHTTPD{
       
       return content;
    }
-   
+
+   // Render the change password form
+   private String renderChangePassword(){
+      String content = renderContentHeader("Change Password");
+
+      // Render the form
+      content +=
+         "<div class='ripe_form'>\n" +
+         "<form action='?page=change_password_go' method='post' accept-charset='UTF-8' enctype='multipart/form-data'>\n" +
+         "<fieldset>\n" +
+         "    <legend>Passwords</legend>\n" +
+         "    <label>Current Password<span class='label_desc'>Your current password</span></label><input class='formatted_input' type='password' name='current_password' required />\n" +
+         "    <label>New Password<span class='label_desc'>Your desired password</span></label><input class='formatted_input' type='password' name='new_password' required pattern='.{6,}' title='6 characters minimum' />\n" +
+         "    <label>Verify Password<span class='label_desc'>Repeat your desired password</span></label><input class='formatted_input' type='password' name='new_password_verify' required pattern='.{6,}' title='6 characters minimum' />\n" +
+         "</fieldset>\n" +
+         "<input class='formatted_input' type='submit' value='Submit'/>\n" +
+         "</form><br/>\n" +
+         "</div>\n";
+
+      return content;
+   }
+
+   // Render the status page from changing passwords
+   private String renderChangePasswordGo(User user, Properties parms){
+      String content = renderContentHeader("Change Password Status");
+
+      // Get the strings from each piece of the form
+      String currentPassword = parms.getProperty("current_password");
+      String newPassword = parms.getProperty("new_password");
+      String newPasswordVerify = parms.getProperty("new_password_verify");
+
+      // Validate some things
+      if (!mRipe.authenticateUser(user, currentPassword)){
+         content += "<p>Error! Current password is incorrect! <a id='back_link' href=''>Back</a></p>\n";
+            return content;
+      }
+      else if (!newPassword.equals(newPasswordVerify)){
+         content += "<p>Error! New password fields did not match! <a id='back_link' href=''>Back</a></p>\n";
+         return content;
+      }
+      
+      // Else, we change it
+      mRipe.changeUserPassword(user, newPassword);
+
+      content += "<p>Success! Your password has been changes</p>\n";
+
+      return content;
+   }
+      
    // A useful utility method for reading a String from a file
    // Credit to erickson from SO:
    // http://stackoverflow.com/questions/326390/how-to-create-a-java-string-from-the-contents-of-a-file
