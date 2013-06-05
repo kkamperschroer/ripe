@@ -1397,9 +1397,9 @@ public class RipeServer extends NanoHTTPD{
          "<form action='?page=register_go' method='post' accept-charset='UTF-8' enctype='multipart/form-data'>\n" +
          "<fieldset class='register_form'>\n" +
          "   <legend>New User Registration</legend>\n" +
-         "   <label>Username<span class='label_desc'>Your desired username</span></label><input class='formatted_input' type='text' name='username' />\n" +
-         "   <label>Password<span class='label_desc'>Your password</span></label><input class='formatted_input' type='password' name='password' />\n" +
-         "   <label>Password Verification<span class='label_desc'>Re-type your password</span></label><input class='formatted_input' type='password' name='password_verify' />\n" +
+         "   <label>Username<span class='label_desc'>Your desired username</span></label><input class='formatted_input' type='text' name='username' required/>\n" +
+         "   <label>Password<span class='label_desc'>Your password</span></label><input class='formatted_input' type='password' name='password' required pattern='.{6,}' title='6 characters minimum'/>\n" +
+         "   <label>Password Verification<span class='label_desc'>Re-type your password</span></label><input class='formatted_input' type='password' name='password_verify' required pattern='.{6,}' title='6 characters minimum'/>\n" +
          "</fieldset>\n" +
          "<input class='formatted_input' type='submit' value='Register'/>\n" +
          "</form><br/>\n" +
