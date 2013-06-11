@@ -23,6 +23,7 @@ public class RecipeSplitter {
    private static final String INGREDIENTS_BREAK_REGEX =
       "(ingredient(s)?( list)?(:)?)";
    private static final String DOUBLE_NEWLINE = "\r\n\r\n";
+   private static final String DOUBLE_NEWLINE2 = "\n\n";
    private static final String LINE_BEGINS_WITH_NUM_REGEX = "^[0-9]";
    
    ////////////////////////////////////////
@@ -147,6 +148,22 @@ public class RecipeSplitter {
          // Now return our attributes section
          return inputRecipe;
       }
+      
+      // Now try to find a double newline (no \r)
+      matchStart = inputRecipe.indexOf(DOUBLE_NEWLINE2);
+
+      // See if we have a match
+      if (matchStart > 0){
+         // The attributes section will be up to the match start
+         mAttributes = inputRecipe.substring(0, matchStart).trim();
+
+         // Now shave the input recipe to start after the end of the match,
+         // so we are cutting out the actual break, such as "Ingredients"
+         inputRecipe = inputRecipe.substring(matchStart).trim();
+
+         // Now return our attributes section
+         return inputRecipe;
+      }
 
       // Crap, no match. Try to find a line that starts with a number and
       // call that the beginning of the ingredients list.
@@ -215,6 +232,21 @@ public class RecipeSplitter {
 
       // Well, let's look for a double newline
       matchStart = inputRecipe.indexOf(DOUBLE_NEWLINE);
+
+      if (matchStart > 0){
+         // The ingredients list section will be up to the match start
+         mIngredientsList = inputRecipe.substring(0, matchStart).trim();
+
+         // Now shave the input recipe to start after the end of the match,
+         // so we are cutting out the actual break, such as "Directions"
+         inputRecipe = inputRecipe.substring(matchStart).trim();
+
+         // Now return our shaved input recipe.
+         return inputRecipe;
+      }    
+      
+      // Well, let's look for a double newline (no \r)
+      matchStart = inputRecipe.indexOf(DOUBLE_NEWLINE2);
 
       if (matchStart > 0){
          // The ingredients list section will be up to the match start

@@ -833,7 +833,7 @@ public class RipeServer extends NanoHTTPD{
          "<div id='add_recipe_form'>\n" +
          "<form action='?page=add_recipe_go' method='post' accept-charset='UTF-8' enctype='multipart/form-data'>\n" +
          "    Recipe:\n<br/>\n" +
-         "    <textarea id='recipe_textarea' required cols='60' rows='30' name='raw_recipe' autofocus>" +
+         "    <textarea id='recipe_textarea' cols='60' rows='30' name='raw_recipe' autofocus>" +
          "</textarea>\n<br/>\n" +
          "    <input type='checkbox' name='public'/>Public?<br/>\n" +
          "    <input type='submit' value='Parse it!'/>\n" +
