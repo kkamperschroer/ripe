@@ -70,6 +70,7 @@ public class AmazonScraper {
          HttpURLConnection connection =
             (HttpURLConnection) searchUrl.openConnection();
          connection.setRequestMethod("GET");
+         connection.setRequestProperty("cookie", "JSESSIONID=F1D99E137ECF512E40ABE86166D65EBD;freshSessionId=357-5228731-5073629;freshBrowseMP=A83PXQN2224PA");
          connection.connect();
 
          InputStream stream = connection.getInputStream();
